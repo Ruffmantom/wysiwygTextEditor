@@ -4,7 +4,7 @@
 
 A simple WYSIWYG (What You See Is What You Get) editor built using React.
 
-## Features
+## Features and goals
 
 - **Content Editing**: Edit text, add images, and format content easily.
 - **Text Formatting**: Bold, italic, underline, and more formatting options.

@@ -43,14 +43,13 @@ const AddCode = ({ textSelection, setCodeModalOpen }) => {
             </div>
             <div className="add_code form_group">
               <label htmlFor="code">Add Code</label>
-              {/* <textarea name="code" placeholder="Place code here...">
-                {textSelection ? textSelection : ""}
-              </textarea> */}
-              <div contentEditable className="editable_container">
-                <pre>
+              {/* <div contentEditable className="editable_container"> */}
+                <pre contentEditable className="editable_container code_block">
+                  <code>
                     // Place code here...
+                  </code>
                 </pre>
-              </div>
+              {/* </div> */}
             </div>
           </div>
         </div>

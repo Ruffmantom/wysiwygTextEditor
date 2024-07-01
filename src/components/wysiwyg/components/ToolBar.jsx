@@ -8,20 +8,20 @@ import { ReactComponent as H4Icon } from "../../../assets/icons/h4.svg";
 import { ReactComponent as LinkIcon } from "../../../assets/icons/link.svg";
 import { ReactComponent as CodeIcon } from "../../../assets/icons/code.svg";
 
-const ToolBar = ({ containerRef, setCodeModalOpen, setLinkModalOpen }) => {
+const ToolBar = ({ setCodeModalOpen, setLinkModalOpen, setFullContent, fullContent, selectedContent }) => {
 
   const applyFormat = (tag) => {
-    const selection = window.getSelection();
-    if (!selection.rangeCount) return;
-
-    const range = selection.getRangeAt(0);
-    const selectedText = range.extractContents();
-    const span = document.createElement(tag);
-    span.appendChild(selectedText);
-    range.insertNode(span);
-
-    // Deselect the text after formatting
-    selection.removeAllRanges();
+    console.log("hit apply format")
+    if (selectedContent) {
+      console.log("Selected Text: " + selectedContent)
+      console.log("Full Content: " + fullContent)
+      
+      let newElement = `<${tag}>${selectedContent}</${tag}>`
+      let formatTxt = fullContent.replace(selectedContent, newElement)
+      console.log("Full Content with replacement: " + formatTxt)
+      // set full content
+      setFullContent(formatTxt)
+    }
   };
 
   const handleFormatBold = () => applyFormat('b');

@@ -7,49 +7,46 @@ import { ReactComponent as H3Icon } from "../../../assets/icons/h3.svg";
 import { ReactComponent as H4Icon } from "../../../assets/icons/h4.svg";
 import { ReactComponent as LinkIcon } from "../../../assets/icons/link.svg";
 import { ReactComponent as CodeIcon } from "../../../assets/icons/code.svg";
-// helpers
-import { formatBold, formatItalic } from "../helpers/helpers"
 
+const ToolBar = ({ containerRef, setCodeModalOpen, setLinkModalOpen }) => {
 
-const ToolBar = ({
-  textSelection,
-  setCodeModalOpen,
-  setLinkModalOpen,
-  fullContent,
-  setFullContent
-}) => {
+  const applyFormat = (tag) => {
+    const selection = window.getSelection();
+    if (!selection.rangeCount) return;
 
-  const handleFormatItalic = ()=>{
-    const formattedTxt = formatItalic(fullContent,textSelection)
-    setFullContent(formattedTxt)
-  }
+    const range = selection.getRangeAt(0);
+    const selectedText = range.extractContents();
+    const span = document.createElement(tag);
+    span.appendChild(selectedText);
+    range.insertNode(span);
 
-  const handleFormatBold = () => {
-    const formattedTxt = formatBold(fullContent,textSelection)
-    setFullContent(formattedTxt)
-  }
+    // Deselect the text after formatting
+    selection.removeAllRanges();
+  };
+
+  const handleFormatBold = () => applyFormat('b');
+  const handleFormatItalic = () => applyFormat('i');
+  const handleFormatHeading = (heading) => () => applyFormat(heading);
 
   return (
     <div className="wysiwyg_tool_bar">
-      <div className={`text_formatting ${textSelection !== "" ? "active" : ""}`}>
-        <div className="icon_button" onClick={()=>handleFormatBold()}>
-          <BoldIcon />
-        </div>
-        <div className="icon_button" onClick={()=>handleFormatItalic()}>
-          <ItalicIcon />
-        </div>
-        <div className="icon_button heading">
-          <H1Icon />
-        </div>
-        <div className="icon_button heading">
-          <H2Icon />
-        </div>
-        <div className="icon_button heading">
-          <H3Icon />
-        </div>
-        <div className="icon_button heading">
-          <H4Icon />
-        </div>
+      <div className="icon_button" onClick={handleFormatBold}>
+        <BoldIcon />
+      </div>
+      <div className="icon_button" onClick={handleFormatItalic}>
+        <ItalicIcon />
+      </div>
+      <div className="icon_button heading" onClick={handleFormatHeading('h1')}>
+        <H1Icon />
+      </div>
+      <div className="icon_button heading" onClick={handleFormatHeading('h2')}>
+        <H2Icon />
+      </div>
+      <div className="icon_button heading" onClick={handleFormatHeading('h3')}>
+        <H3Icon />
+      </div>
+      <div className="icon_button heading" onClick={handleFormatHeading('h4')}>
+        <H4Icon />
       </div>
       <div className="icon_button heading" onClick={() => setLinkModalOpen(true)}>
         <LinkIcon />

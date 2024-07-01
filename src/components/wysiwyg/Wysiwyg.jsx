@@ -1,91 +1,43 @@
 import React, { useRef, useState } from "react";
+import sanitizeHtml from "sanitize-html";
 import "./style.css";
-//components
-import TextFormatter from "./components/TextFormatter";
+import ContentEditable from 'react-contenteditable';
 import ToolBar from "./components/ToolBar";
 import AddCode from "./components/AddCode";
 import AddLink from "./components/AddLink";
 
 const Wysiwyg = () => {
   const containerRef = useRef(null);
-  const [txtFormatterOpen, setTxtFormatterOpen] = useState(false);
   const [codeModalOpen, setCodeModalOpen] = useState(false);
   const [linkModalOpen, setLinkModalOpen] = useState(false);
-  const [textNodeSelection, setTextNodeSelection] = useState(null);
-  const [textSelection, setTextSelection] = useState("");
-  const [txtFormatterTop, setTxtFormatterTop] = useState("");
-  const [txtFormatterLeft, setTxtFormatterLeft] = useState("");
-  const [fullContent, setFullContent] = useState(`<h1>Place Content Here</h1><br><p>You can type, add images, <span>links</span> and all sorts of stuff!😁</p>`);
+  const [fullContent, setFullContent] = useState("");
 
-  const handleSelection = () => {
-    const selection = window.getSelection();
-    if (selection && selection.rangeCount > 0) {
-      // this will be needed when replacing
-      const fullParentNode = selection.anchorNode.parentElement.outerHTML;
-      console.log(selection)
-      console.log(selection.toString())
-      // this will be needed when replacing
-    //   setTextNodeSelection(selection);
-      setTextSelection(selection.toString());
-      const range = selection.getRangeAt(0);
-      const startContainer = range.startContainer;
-      const startOffset = range.startOffset;
+  const onContentBlur = React.useCallback(evt => {
+    const sanitizeConf = {
+      allowedTags: ["b", "i", "a", "p", "h1", "h2", "h3", "h4", "h5", "span", "pre", "code"],
+      allowedAttributes: { a: ["href"] }
+    };
 
-      // Create a range to encompass the start of the selection
-      const rangeClone = range.cloneRange();
-      rangeClone.setStart(startContainer, startOffset);
-
-      // Get the bounding client rect of the range
-      const rect = rangeClone.getBoundingClientRect();
-      const container = containerRef.current;
-      const containerRect = container.getBoundingClientRect();
-      // Calculate start position in pixels relative to the container
-      const startPositionX = rect.left - containerRect.left;
-      const startPositionY = rect.top - containerRect.top;
-      setTxtFormatterTop(startPositionY - 55);
-      setTxtFormatterLeft(startPositionX);
-      setTxtFormatterOpen(true);
-    } else {
-      setTextSelection("");
-      setTxtFormatterOpen(false);
-    }
-  };
-
-  const handleInput = () => {
-    // Update fullContent state with the current content of the editable container
-    const content = containerRef.current.innerHTML;
-    setFullContent(content);
-  };
+    setFullContent(sanitizeHtml(evt.currentTarget.innerHTML, sanitizeConf));
+  }, []);
 
   return (
     <div className="editable_container_cont">
-        {/* {txtFormatterOpen && textSelection ? (
-          <TextFormatter
-            txtFormatterTop={txtFormatterTop}
-            txtFormatterLeft={txtFormatterLeft}
-          />
-        ) : (
-          ""
-        )} */}
-        <ToolBar 
-        textSelection={textSelection} 
-        setCodeModalOpen={setCodeModalOpen} 
+      <ToolBar
+        containerRef={containerRef}
+        setCodeModalOpen={setCodeModalOpen}
         setLinkModalOpen={setLinkModalOpen}
-        fullContent={fullContent}
-        setFullContent={setFullContent}
-        />
-        {codeModalOpen ? <AddCode textSelection={textSelection} setCodeModalOpen={setCodeModalOpen}/>:""}
-        {linkModalOpen ? <AddLink textSelection={textSelection} setLinkModalOpen={setLinkModalOpen}/>:""}
-      <div
-        ref={containerRef}
-        contentEditable
+      />
+      {codeModalOpen ? <AddCode setCodeModalOpen={setCodeModalOpen} /> : ""}
+      {linkModalOpen ? <AddLink setLinkModalOpen={setLinkModalOpen} /> : ""}
+
+      <ContentEditable
+        innerRef={containerRef}
         className="editable_container"
-        onSelect={handleSelection}
-        onInput={handleInput}
-          dangerouslySetInnerHTML={{__html: fullContent}}
-      >
-        
-      </div>
+        onBlur={onContentBlur}
+        html={fullContent}
+        onChange={(e) => setFullContent(e.target.value)}
+      />
     </div>
   );
 };

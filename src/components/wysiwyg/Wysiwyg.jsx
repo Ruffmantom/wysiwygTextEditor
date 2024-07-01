@@ -4,16 +4,18 @@ import "./style.css";
 import TextFormatter from "./components/TextFormatter";
 import ToolBar from "./components/ToolBar";
 import AddCode from "./components/AddCode";
+import AddLink from "./components/AddLink";
 
 const Wysiwyg = () => {
   const containerRef = useRef(null);
   const [txtFormatterOpen, setTxtFormatterOpen] = useState(false);
   const [codeModalOpen, setCodeModalOpen] = useState(false);
+  const [linkModalOpen, setLinkModalOpen] = useState(false);
   const [textNodeSelection, setTextNodeSelection] = useState(null);
   const [textSelection, setTextSelection] = useState("");
   const [txtFormatterTop, setTxtFormatterTop] = useState("");
   const [txtFormatterLeft, setTxtFormatterLeft] = useState("");
-  const [fullContent, setFullContent] = useState("");
+  const [fullContent, setFullContent] = useState(`<h1>Place Content Here</h1><br><p>You can type, add images, <span>links</span> and all sorts of stuff!😁</p>`);
 
   const handleSelection = () => {
     const selection = window.getSelection();
@@ -21,6 +23,7 @@ const Wysiwyg = () => {
       // this will be needed when replacing
       const fullParentNode = selection.anchorNode.parentElement.outerHTML;
       console.log(selection)
+      console.log(selection.toString())
       // this will be needed when replacing
     //   setTextNodeSelection(selection);
       setTextSelection(selection.toString());
@@ -64,17 +67,24 @@ const Wysiwyg = () => {
         ) : (
           ""
         )} */}
-        <ToolBar textSelection={textSelection} setCodeModalOpen={setCodeModalOpen}/>
+        <ToolBar 
+        textSelection={textSelection} 
+        setCodeModalOpen={setCodeModalOpen} 
+        setLinkModalOpen={setLinkModalOpen}
+        fullContent={fullContent}
+        setFullContent={setFullContent}
+        />
         {codeModalOpen ? <AddCode textSelection={textSelection} setCodeModalOpen={setCodeModalOpen}/>:""}
+        {linkModalOpen ? <AddLink textSelection={textSelection} setLinkModalOpen={setLinkModalOpen}/>:""}
       <div
         ref={containerRef}
         contentEditable
         className="editable_container"
         onSelect={handleSelection}
         onInput={handleInput}
+          dangerouslySetInnerHTML={{__html: fullContent}}
       >
-        <h1>Place Content Here</h1>
-        <p>You can type, add images, <span>links</span> and all sorts of stuff!😁</p>
+        
       </div>
     </div>
   );

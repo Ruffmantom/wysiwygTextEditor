@@ -34,6 +34,7 @@
     padding: 5px;
     display: flex;
     gap: 5px;
+    border-radius: 3px;
     background-color: var(--shade-0);
     outline: 1px solid var(--shade-2);
     .text_formatting{

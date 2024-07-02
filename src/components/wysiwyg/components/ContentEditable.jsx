@@ -4,6 +4,8 @@ export default function ContentEditable(props) {
     const contentEditableRef = useRef(null);
     const [cursorPosition, setCursorPosition] = useState(null);
 
+
+    
     const handleSelection = () => {
         const selection = window.getSelection();
         if (selection && selection.rangeCount > 0) {

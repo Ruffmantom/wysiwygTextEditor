@@ -54,7 +54,7 @@ const Wysiwyg = () => {
       <ContentEditable
       
         value={fullContent}
-        // onBlur={onContentBlur}
+        onBlur={onContentBlur}
         setSelectedContent={setSelectedContent}
         onChange={updatedContent => {
           setFullContent(updatedContent);

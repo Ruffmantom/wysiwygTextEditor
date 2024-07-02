@@ -19,6 +19,30 @@ import { ReactComponent as AlignLIcon } from "../../../assets/icons/align-l.svg"
 import { ReactComponent as AlignCIcon } from "../../../assets/icons/align-c.svg";
 import { ReactComponent as MoreIcon } from "../../../assets/icons/more-v.svg";
 
+const highlightColors = [
+  "#FFEB3B",
+  "#FF5722",
+  "#4CAF50",
+  "#2196F3",
+  "#9C27B0",
+  "#FF9800",
+  "#00BCD4",
+  "#eb361e",
+];
+
+const deepFontColors = [
+  "#D0C031",
+  "#D0481C",
+  "#1B5E20",
+  "#0D47A1",
+  "#4A148C",
+  "#D07C00",
+  "#006064",
+  "#B12917",
+];
+
+
+
 const ToolBar = ({
   setCodeModalOpen,
   setLinkModalOpen,
@@ -27,6 +51,8 @@ const ToolBar = ({
   selectedContent,
 }) => {
   const [paragraphDdOpen, setParagraphDdOpen] = useState(false);
+  const [highlightDdOpen, setHighlightDdOpen] = useState(false);
+  const [colorDdOpen, setColorDdOpen] = useState(false);
 
   const applyFormat = (tag) => {
     console.log("hit apply format");
@@ -79,39 +105,54 @@ const ToolBar = ({
           Strike Through <span className="key_command">ctrl + shift + s</span>
         </span>
       </div>
+
       <div className="wysiwyg_tool_bar_divider"></div>
-      <div className="icon_button tool_bar">
+
+      <div className="icon_button tool_bar tool_bar_dd">
+        <div className="btn_overlay" onClick={() => handleOpenClose(highlightDdOpen, setHighlightDdOpen)}></div>
         <HighlightIcon />
         <span className="wysiwyg_tool_tip">Highlight Color</span>
+        <div className={`tool_bar_dd_content color_dd ${highlightDdOpen ? "active" : ""}`}>
+          <div className="highlight_colors">
+            {highlightColors.map(c => (
+              <div className="color_swatch" key={c} style={{ backgroundColor: c }}></div>
+            ))}
+          </div>
+          <div className="tool_bar_dd_item p center" >
+            <span>Automatic</span>
+          </div>
+        </div>
       </div>
+
       <div className="icon_button tool_bar">
         <FontcolorIcon />
         <span className="wysiwyg_tool_tip">Font Color</span>
       </div>
-      <div className="icon_button tool_bar_dd">
+
+      <div className="icon_button tool_bar tool_bar_dd">
         <p onClick={() => handleOpenClose(paragraphDdOpen, setParagraphDdOpen)}>
           Paragraph
         </p>
         <div
           className={`tool_bar_dd_content ${paragraphDdOpen ? "active" : ""}`}
         >
-          <div className="tool_bar_dd_item" onClick={handleFormatHeading("h1")}>
+          <div className="tool_bar_dd_item h1" onClick={handleFormatHeading("h1")}>
             <span>Heading 1</span>
             <H1Icon />
           </div>
-          <div className="tool_bar_dd_item" onClick={handleFormatHeading("h2")}>
+          <div className="tool_bar_dd_item h2" onClick={handleFormatHeading("h2")}>
             <span>Heading 2</span>
             <H2Icon />
           </div>
-          <div className="tool_bar_dd_item" onClick={handleFormatHeading("h3")}>
+          <div className="tool_bar_dd_item h3" onClick={handleFormatHeading("h3")}>
             <span>Heading 3</span>
             <H3Icon />
           </div>
-          <div className="tool_bar_dd_item" onClick={handleFormatHeading("h4")}>
+          <div className="tool_bar_dd_item h4" onClick={handleFormatHeading("h4")}>
             <span>Heading 4</span>
             <H4Icon />
           </div>
-          <div className="tool_bar_dd_item" onClick={handleFormatHeading("p")}>
+          <div className="tool_bar_dd_item p" onClick={handleFormatHeading("p")}>
             <span>Paragraph</span>P
           </div>
         </div>

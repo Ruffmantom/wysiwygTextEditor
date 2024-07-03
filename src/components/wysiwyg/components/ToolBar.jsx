@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ReactComponent as BoldIcon } from "../../../assets/icons/bold.svg";
 import { ReactComponent as ItalicIcon } from "../../../assets/icons/italic.svg";
 import { ReactComponent as H1Icon } from "../../../assets/icons/h1.svg";
@@ -54,6 +54,10 @@ const ToolBar = ({
   const [highlightDdOpen, setHighlightDdOpen] = useState(false);
   const [colorDdOpen, setColorDdOpen] = useState(false);
 
+  const paragraphDropDownRef = useRef(null);
+  const highlightColorDropDownRef = useRef(null);
+  const colorDropDownRef = useRef(null);
+
   const applyFormat = (tag) => {
     console.log("hit apply format");
     if (selectedContent) {
@@ -74,6 +78,31 @@ const ToolBar = ({
       setter(true);
     }
   };
+
+
+  const handleClickOutside = (event) => {
+    if (paragraphDropDownRef.current && !paragraphDropDownRef.current.contains(event.target)) {
+      setParagraphDdOpen(false);
+    }
+    if (highlightColorDropDownRef.current && !highlightColorDropDownRef.current.contains(event.target)) {
+      setHighlightDdOpen(false);
+    }
+    if (colorDropDownRef.current && !colorDropDownRef.current.contains(event.target)) {
+      setColorDdOpen(false);
+    }
+  };
+
+  const handleHighlightClick = (color) => {
+    console.log('clicked color: ' + color)
+  }
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
 
   const handleFormatBold = () => applyFormat("b");
   const handleFormatItalic = () => applyFormat("i");
@@ -108,14 +137,14 @@ const ToolBar = ({
 
       <div className="wysiwyg_tool_bar_divider"></div>
 
-      <div className="icon_button tool_bar tool_bar_dd">
-        <div className="btn_overlay" onClick={() => handleOpenClose(highlightDdOpen, setHighlightDdOpen)}></div>
+      <div className="icon_button tool_bar tool_bar_dd" ref={colorDropDownRef}>
+        <div className="btn_overlay" onClick={() => setHighlightDdOpen(true)}></div>
         <HighlightIcon />
         <span className="wysiwyg_tool_tip">Highlight Color</span>
-        <div className={`tool_bar_dd_content color_dd ${highlightDdOpen ? "active" : ""}`}>
+        <div className={`tool_bar_dd_content color_dd ${highlightDdOpen ? "active" : ""}`} >
           <div className="highlight_colors">
             {highlightColors.map(c => (
-              <div className="color_swatch" key={c} style={{ backgroundColor: c }}></div>
+              <div onClick={() => handleHighlightClick(c)} className="color_swatch" key={c} style={{ backgroundColor: c }}></div>
             ))}
           </div>
           <div className="tool_bar_dd_item p center" >
@@ -128,7 +157,7 @@ const ToolBar = ({
         <div className="btn_overlay" onClick={() => handleOpenClose(colorDdOpen, setColorDdOpen)}></div>
         <FontcolorIcon />
         <span className="wysiwyg_tool_tip">Font Color</span>
-        <div className={`tool_bar_dd_content color_dd ${colorDdOpen ? "active" : ""}`}>
+        <div className={`tool_bar_dd_content color_dd ${colorDdOpen ? "active" : ""}`} ref={highlightColorDropDownRef}>
           <div className="highlight_colors">
             {deepFontColors.map(c => (
               <div className="color_swatch" key={c} style={{ backgroundColor: c }}></div>
@@ -145,7 +174,7 @@ const ToolBar = ({
           Paragraph
         </p>
         <div
-          className={`tool_bar_dd_content ${paragraphDdOpen ? "active" : ""}`}
+          className={`tool_bar_dd_content ${paragraphDdOpen ? "active" : ""}`} ref={paragraphDropDownRef}
         >
           <div className="tool_bar_dd_item h1" onClick={handleFormatHeading("h1")}>
             <span>Heading 1</span>

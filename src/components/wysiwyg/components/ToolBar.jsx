@@ -119,14 +119,25 @@ const ToolBar = ({
             ))}
           </div>
           <div className="tool_bar_dd_item p center" >
-            <span>Automatic</span>
+            <span>None</span>
           </div>
         </div>
       </div>
 
-      <div className="icon_button tool_bar">
+      <div className="icon_button tool_bar tool_bar_dd">
+        <div className="btn_overlay" onClick={() => handleOpenClose(colorDdOpen, setColorDdOpen)}></div>
         <FontcolorIcon />
         <span className="wysiwyg_tool_tip">Font Color</span>
+        <div className={`tool_bar_dd_content color_dd ${colorDdOpen ? "active" : ""}`}>
+          <div className="highlight_colors">
+            {deepFontColors.map(c => (
+              <div className="color_swatch" key={c} style={{ backgroundColor: c }}></div>
+            ))}
+          </div>
+          <div className="tool_bar_dd_item p center" >
+            <span>Automatic</span>
+          </div>
+        </div>
       </div>
 
       <div className="icon_button tool_bar tool_bar_dd">

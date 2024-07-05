@@ -50,6 +50,9 @@ const ToolBar = ({
   fullContent,
   selectedContent,
 }) => {
+
+  // const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+  const isMac = navigator.userAgent.toLowerCase().includes('macintosh')
   const [paragraphDdOpen, setParagraphDdOpen] = useState(false);
   const [highlightDdOpen, setHighlightDdOpen] = useState(false);
   const [colorDdOpen, setColorDdOpen] = useState(false);
@@ -82,20 +85,19 @@ const ToolBar = ({
 
   const handleClickOutside = (event) => {
     if (paragraphDropDownRef.current && !paragraphDropDownRef.current.contains(event.target)) {
+      event.stopPropagation()
       setParagraphDdOpen(false);
     }
     if (highlightColorDropDownRef.current && !highlightColorDropDownRef.current.contains(event.target)) {
+      event.stopPropagation()
       setHighlightDdOpen(false);
     }
     if (colorDropDownRef.current && !colorDropDownRef.current.contains(event.target)) {
+      event.stopPropagation()
       setColorDdOpen(false);
     }
   };
-
-  const handleHighlightClick = (color) => {
-    console.log('clicked color: ' + color)
-  }
-
+  // if click outside of dropdowns
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
@@ -103,6 +105,16 @@ const ToolBar = ({
     };
   }, []);
 
+
+  const handleHighlightClick = (e, color) => {
+    e.preventDefault()
+    console.log('clicked color: ' + color)
+  }
+
+  const handleTxtColorClick = (e, color) => {
+    e.preventDefault()
+    console.log('clicked color: ' + color)
+  }
 
   const handleFormatBold = () => applyFormat("b");
   const handleFormatItalic = () => applyFormat("i");
@@ -113,25 +125,25 @@ const ToolBar = ({
       <div className="icon_button tool_bar" onClick={handleFormatBold}>
         <BoldIcon />
         <span className="wysiwyg_tool_tip">
-          Bold <span className="key_command">ctrl + b</span>
+          Bold <span className="key_command">{isMac ? "cmd + b" : "ctrl + b"}</span>
         </span>
       </div>
       <div className="icon_button tool_bar" onClick={handleFormatItalic}>
         <ItalicIcon />
         <span className="wysiwyg_tool_tip">
-          Italic <span className="key_command">ctrl + i</span>
+          Italic <span className="key_command">{isMac ? "cmd + i" : "ctrl + i"}</span>
         </span>
       </div>
       <div className="icon_button tool_bar">
         <UnderlineIcon />
         <span className="wysiwyg_tool_tip">
-          Underline <span className="key_command">ctrl + u</span>
+          Underline <span className="key_command">{isMac ? "cmd + u" : "ctrl + u"}</span>
         </span>
       </div>
       <div className="icon_button tool_bar">
         <StrikeIcon />
         <span className="wysiwyg_tool_tip">
-          Strike Through <span className="key_command">ctrl + shift + s</span>
+          Strike Through <span className="key_command">{isMac ? "cmd + shift + s" : "ctrl + shift + s"}</span>
         </span>
       </div>
 
@@ -144,7 +156,7 @@ const ToolBar = ({
         <div className={`tool_bar_dd_content color_dd ${highlightDdOpen ? "active" : ""}`} >
           <div className="highlight_colors">
             {highlightColors.map(c => (
-              <div onClick={() => handleHighlightClick(c)} className="color_swatch" key={c} style={{ backgroundColor: c }}></div>
+              <button onClick={(e) => handleHighlightClick(e, c)} className="color_swatch" key={c} style={{ backgroundColor: c }}></button>
             ))}
           </div>
           <div className="tool_bar_dd_item p center" >
@@ -154,13 +166,13 @@ const ToolBar = ({
       </div>
 
       <div className="icon_button tool_bar tool_bar_dd">
-        <div className="btn_overlay" onClick={() => handleOpenClose(colorDdOpen, setColorDdOpen)}></div>
+        <div className="btn_overlay" onClick={() => setColorDdOpen(true)}></div>
         <FontcolorIcon />
         <span className="wysiwyg_tool_tip">Font Color</span>
         <div className={`tool_bar_dd_content color_dd ${colorDdOpen ? "active" : ""}`} ref={highlightColorDropDownRef}>
           <div className="highlight_colors">
             {deepFontColors.map(c => (
-              <div className="color_swatch" key={c} style={{ backgroundColor: c }}></div>
+              <button onClick={(e) => handleTxtColorClick(e, c)} className="color_swatch" key={c} style={{ backgroundColor: c }}></button>
             ))}
           </div>
           <div className="tool_bar_dd_item p center" >
@@ -170,7 +182,7 @@ const ToolBar = ({
       </div>
 
       <div className="icon_button tool_bar tool_bar_dd">
-        <p onClick={() => handleOpenClose(paragraphDdOpen, setParagraphDdOpen)}>
+        <p onClick={() => setParagraphDdOpen(true)}>
           Paragraph
         </p>
         <div

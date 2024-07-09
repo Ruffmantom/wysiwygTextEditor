@@ -112,6 +112,8 @@ const ToolBar = ({
     e.preventDefault();
     console.log("clicked color: " + color);
     handleColorText(color)
+    // close drop down
+    setColorDdClose()
   };
 
   // if click outside of dropdowns

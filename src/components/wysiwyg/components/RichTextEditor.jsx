@@ -6,7 +6,12 @@ export default function RichTextEditor() {
   const [content, setContent] = useState("<p><br></p>");
 
   const handleKeyDown = (e) => {
-    handleDoubleSpace(e)
+    console.log(e.key)
+    handleEnterKey(e)
+    handleExitCurrentElement(e)
+  };
+
+  const handleEnterKey = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
 
@@ -29,9 +34,81 @@ export default function RichTextEditor() {
       selection.removeAllRanges();
       selection.addRange(newRange);
     }
-    
-  };
+  }
 
+  const handleExitCurrentElement = (e) => {
+    if (e.keyCode === 32 && e.target === editorRef.current) {  // Check for spacebar using key code
+      if (editorRef.current._lastKey && editorRef.current._lastKey === 32) {
+        const selection = window.getSelection();
+        const range = selection.getRangeAt(0);
+
+        // Move the cursor outside the current element
+        const currentNode = range.endContainer;
+        const currentNodeParent = currentNode.parentNode;
+
+        // Check if currentNode is a text node and inside a span element
+        if (currentNode.nodeType === Node.TEXT_NODE && currentNodeParent !== editorRef.current) {
+          // Create a new range to move the cursor outside the span element
+          const newRange = document.createRange();
+
+          // Move the cursor after the current node parent
+          newRange.setStartAfter(currentNodeParent);
+          newRange.collapse(true);
+
+          // Insert a text node at the new range to start new text content
+          const textNode = document.createTextNode('');
+          newRange.insertNode(textNode);
+
+          // Adjust the range to place the cursor inside the new text node
+          newRange.setStart(textNode, 0);
+          newRange.collapse(true);
+
+          // Remove all ranges and add the new one
+          selection.removeAllRanges();
+          selection.addRange(newRange);
+
+          // Prevent default behavior of adding an additional space
+          e.preventDefault();
+        }
+      }
+      editorRef.current._lastKey = 32;  // Store key code for spacebar
+    } else if (e.keyCode === 27 && e.target === editorRef.current) {  // Check for Escape key using key code
+      const selection = window.getSelection();
+      const range = selection.getRangeAt(0);
+
+      // Move the cursor outside the current element
+      const currentNode = range.endContainer;
+      const currentNodeParent = currentNode.parentNode;
+
+      // Check if currentNode is a text node and inside a span element
+      if (currentNode.nodeType === Node.TEXT_NODE && currentNodeParent !== editorRef.current) {
+        // Create a new range to move the cursor outside the span element
+        const newRange = document.createRange();
+
+        // Move the cursor after the current node parent
+        newRange.setStartAfter(currentNodeParent);
+        newRange.collapse(true);
+
+        // Insert a text node at the new range to start new text content
+        const textNode = document.createTextNode('');
+        newRange.insertNode(textNode);
+
+        // Adjust the range to place the cursor inside the new text node
+        newRange.setStart(textNode, 0);
+        newRange.collapse(true);
+
+        // Remove all ranges and add the new one
+        selection.removeAllRanges();
+        selection.addRange(newRange);
+
+        // Prevent default behavior
+        e.preventDefault();
+      }
+    } else {
+      editorRef.current._lastKey = e.keyCode;
+    }
+  };
+// formatting functions
   const handleTag = (tag) => {
     const selection = window.getSelection();
     if (!selection || selection.isCollapsed) return;
@@ -122,39 +199,6 @@ export default function RichTextEditor() {
 
     }
   }
-
-  const handleDoubleSpace = (e) => {
-    if (e.key === ' ' && e.target === editorRef.current) {
-      if (editorRef.current._lastKey && editorRef.current._lastKey === ' ') {
-        const selection = window.getSelection();
-        const range = selection.getRangeAt(0);
-
-        // Move the cursor outside the current element
-        const parentElement = range.endContainer.parentElement;
-        const textNode = document.createTextNode(' ');
-
-        if (parentElement !== editorRef.current) {
-          // Insert the space after the parent element
-          parentElement.parentNode.insertBefore(textNode, parentElement.nextSibling);
-        } else {
-          // If already in the parent element, just insert the space
-          range.insertNode(textNode);
-        }
-
-        // Move the cursor after the inserted space
-        range.setStartAfter(textNode);
-        range.collapse(true);
-        selection.removeAllRanges();
-        selection.addRange(range);
-
-        // Prevent default behavior of adding an additional space
-        e.preventDefault();
-      }
-      editorRef.current._lastKey = ' ';
-    } else {
-      editorRef.current._lastKey = e.key;
-    }
-  };
 
   const handleHeading = (level) => {
     // Ensure focus returns to the editor

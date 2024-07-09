@@ -1,10 +1,13 @@
 import React from "react";
 import { ReactComponent as CloseIcon } from "../../../assets/icons/close.svg";
-const AddCode = ({ textSelection, setCodeModalOpen }) => {
+import { richTextEditorStore } from "../../../stores/richTextEditorStore";
+
+const AddCode = () => {
+  const {setCodeModal} = richTextEditorStore()
 
   const handleClose = (e) => {
     e.preventDefault();
-    setCodeModalOpen(false);
+    setCodeModal(false);
   };
 
   return (
@@ -12,7 +15,7 @@ const AddCode = ({ textSelection, setCodeModalOpen }) => {
       <div className="hub_modal fit_content shade0">
         <div
           className="modal_close icon_button"
-          onClick={() => setCodeModalOpen(false)}
+          onClick={() => setCodeModal(false)}
         >
           <CloseIcon />
         </div>

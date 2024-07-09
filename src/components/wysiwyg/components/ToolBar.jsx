@@ -18,7 +18,8 @@ import { ReactComponent as AlignLIcon } from "../../../assets/icons/align-l.svg"
 import { ReactComponent as AlignCIcon } from "../../../assets/icons/align-c.svg";
 import { ReactComponent as JustifyIcon } from "../../../assets/icons/justify.svg";
 import { ReactComponent as MoreIcon } from "../../../assets/icons/more-v.svg";
-
+// state
+import { richTextEditorStore } from "../../../stores/richTextEditorStore";
 const highlightColors = [
   "#FFEB3B",
   "#FF5722",
@@ -42,45 +43,35 @@ const deepFontColors = [
 ];
 
 const ToolBar = ({
-  setCodeModalOpen,
-  setLinkModalOpen,
-  setFullContent,
-  fullContent,
-  selectedContent,
+  handleTag,
+  handleItalic,
+  handleUnderline,
+  handleHeading,
 }) => {
   // const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
   const isMac = navigator.userAgent.toLowerCase().includes("macintosh");
-  const [paragraphDdOpen, setParagraphDdOpen] = useState(false);
-  const [highlightDdOpen, setHighlightDdOpen] = useState(false);
-  const [colorDdOpen, setColorDdOpen] = useState(false);
+  const {
+    paragraphDdOpen,
+    highlightDdOpen,
+    colorDdOpen,
+    textAlignDdOpen,
+    // drop down actions
+    setParaDdOpen,
+    setParaDdClose,
+    setHighlightDdOpen,
+    setHighlightDdClose,
+    setColorDdOpen,
+    setColorDdClose,
+    setTxtAlignDd,
+    // modal actions
+    setLinkModal,
+    setCodeModal,
+  } = richTextEditorStore();
 
   const paragraphDropDownRef = useRef(null);
   const highlightColorDropDownRef = useRef(null);
   const colorDropDownRef = useRef(null);
-
-  const applyFormat = (tag) => {
-    console.log("hit apply format");
-    if (selectedContent) {
-      console.log("Selected Text: " + selectedContent);
-      console.log("Full Content: " + fullContent);
-
-      let newElement = `<${tag}>${selectedContent}</${tag}>`;
-      let formatTxt = fullContent.replace(selectedContent, newElement);
-      console.log("Full Content with replacement: " + formatTxt);
-      // set full content
-      setFullContent(formatTxt);
-    }
-  };
-
-  const handleHighlightClick = (color) => {
-    // e.preventDefault()
-    console.log("clicked color: " + color);
-  };
-
-  const handleTxtColorClick = (color) => {
-    // e.preventDefault()
-    console.log("clicked color: " + color);
-  };
+  const txtAlignDropDownRef = useRef(null);
 
   const handleClickOutside = (event) => {
     if (
@@ -88,27 +79,40 @@ const ToolBar = ({
       !paragraphDropDownRef.current.contains(event.target)
     ) {
       event.stopPropagation();
-      setParagraphDdOpen(false);
+      setParaDdClose();
     }
     if (
       highlightColorDropDownRef.current &&
       !highlightColorDropDownRef.current.contains(event.target)
     ) {
       event.stopPropagation();
-      setHighlightDdOpen(false);
+      setHighlightDdClose();
     }
     if (
       colorDropDownRef.current &&
       !colorDropDownRef.current.contains(event.target)
     ) {
       event.stopPropagation();
-      setColorDdOpen(false);
+      setColorDdClose();
+    }
+    if (
+      txtAlignDropDownRef.current &&
+      !txtAlignDropDownRef.current.contains(event.target)
+    ) {
+      event.stopPropagation();
+      setTxtAlignDd(false);
     }
   };
 
-  const handleFormatBold = () => applyFormat("b");
-  const handleFormatItalic = () => applyFormat("i");
-  const handleFormatHeading = (heading) => () => applyFormat(heading);
+  const handleHighlightClick = (e, color) => {
+    e.preventDefault();
+    console.log("clicked color: " + color);
+  };
+
+  const handleTxtColorClick = (e, color) => {
+    e.preventDefault();
+    console.log("clicked color: " + color);
+  };
 
   // if click outside of dropdowns
   useEffect(() => {
@@ -120,44 +124,30 @@ const ToolBar = ({
 
   return (
     <div className="wysiwyg_tool_bar">
-      <div className="icon_button tool_bar" onClick={handleFormatBold}>
+      <button className="icon_button tool_bar" onClick={() => handleTag("b")}>
         <BoldIcon />
         <span className="wysiwyg_tool_tip">
           Bold{" "}
           <span className="key_command">{isMac ? "cmd + b" : "ctrl + b"}</span>
         </span>
-      </div>
-      <div className="icon_button tool_bar" onClick={handleFormatItalic}>
+      </button>
+      <button className="icon_button tool_bar" onClick={() => handleTag("i")}>
         <ItalicIcon />
         <span className="wysiwyg_tool_tip">
           Italic{" "}
           <span className="key_command">{isMac ? "cmd + i" : "ctrl + i"}</span>
         </span>
-      </div>
-      <div className="icon_button tool_bar">
-        <UnderlineIcon />
-        <span className="wysiwyg_tool_tip">
-          Underline{" "}
-          <span className="key_command">{isMac ? "cmd + u" : "ctrl + u"}</span>
-        </span>
-      </div>
-      <div className="icon_button tool_bar">
-        <StrikeIcon />
-        <span className="wysiwyg_tool_tip">
-          Strike Through{" "}
-          <span className="key_command">
-            {isMac ? "cmd + shift + s" : "ctrl + shift + s"}
-          </span>
-        </span>
-      </div>
+      </button>
 
       <div className="wysiwyg_tool_bar_divider"></div>
 
       <div className="icon_button tool_bar tool_bar_dd">
-        <div
+        <button
           className="btn_overlay"
-          onClick={() => setHighlightDdOpen(true)}
-        ></div>
+          onClick={() =>
+            highlightDdOpen ? setHighlightDdClose() : setHighlightDdOpen()
+          }
+        ></button>
         <HighlightIcon />
         <span className="wysiwyg_tool_tip">Highlight Color</span>
         {/* drop down content */}
@@ -169,12 +159,12 @@ const ToolBar = ({
         >
           <div className="highlight_colors">
             {highlightColors.map((c) => (
-              <div
+              <button
                 key={c}
                 className="color_swatch"
-                onClick={() => handleHighlightClick(c)}
+                onClick={(e) => handleHighlightClick(e, c)}
                 style={{ backgroundColor: c }}
-              ></div>
+              ></button>
             ))}
           </div>
           <div className="tool_bar_dd_item p center">
@@ -184,7 +174,7 @@ const ToolBar = ({
       </div>
 
       <div className="icon_button tool_bar tool_bar_dd">
-        <div className="btn_overlay" onClick={() => setColorDdOpen(true)}></div>
+        <div className="btn_overlay" onClick={() => setColorDdOpen()}></div>
         <FontcolorIcon />
         <span className="wysiwyg_tool_tip">Font Color</span>
         {/* drop down content */}
@@ -196,12 +186,12 @@ const ToolBar = ({
         >
           <div className="highlight_colors">
             {deepFontColors.map((c) => (
-              <div
+              <button
                 key={c}
                 className="color_swatch"
-                onClick={() => handleTxtColorClick(c)}
+                onClick={(e) => handleTxtColorClick(e, c)}
                 style={{ backgroundColor: c }}
-              ></div>
+              ></button>
             ))}
           </div>
           <div className="tool_bar_dd_item p center">
@@ -211,103 +201,126 @@ const ToolBar = ({
       </div>
 
       <div className="icon_button tool_bar tool_bar_dd">
-        <p onClick={() => setParagraphDdOpen(true)}>Paragraph</p>
+        <button className="btn_overlay" onClick={() => setParaDdOpen()}></button>
+        <p>Paragraph</p>
         <div
           className={`tool_bar_dd_content ${paragraphDdOpen ? "active" : ""}`}
           ref={paragraphDropDownRef}
         >
-          <div
+          <button
             className="tool_bar_dd_item h1"
-            onClick={handleFormatHeading("h1")}
+            onClick={() => handleHeading("h1")}
           >
             <span>Heading 1</span>
             <H1Icon />
-          </div>
-          <div
+          </button>
+          <button
             className="tool_bar_dd_item h2"
-            onClick={handleFormatHeading("h2")}
+            onClick={() => handleHeading("h2")}
           >
             <span>Heading 2</span>
             <H2Icon />
-          </div>
-          <div
+          </button>
+          <button
             className="tool_bar_dd_item h3"
-            onClick={handleFormatHeading("h3")}
+            onClick={() => handleHeading("h3")}
           >
             <span>Heading 3</span>
             <H3Icon />
-          </div>
-          <div
+          </button>
+          <button
             className="tool_bar_dd_item h4"
-            onClick={handleFormatHeading("h4")}
+            onClick={() => handleHeading("h4")}
           >
             <span>Heading 4</span>
             <H4Icon />
-          </div>
-          <div
+          </button>
+          <button
             className="tool_bar_dd_item p"
-            onClick={handleFormatHeading("p")}
+            onClick={() => handleHeading("p")}
           >
             <span>Paragraph</span>P
-          </div>
+          </button>
         </div>
       </div>
+
+      <div className="icon_button tool_bar tool_bar_dd icon">
+        <button className="btn_overlay" onClick={() => setTxtAlignDd(true)}></button>
+        <div className="icon_button tool_bar heading">
+          <MoreIcon />
+          <span className="wysiwyg_tool_tip">More</span>
+        </div>
+        <div
+          className={`tool_bar_dd_content icons ${
+            textAlignDdOpen ? "active" : ""
+          }`}
+          ref={txtAlignDropDownRef}
+        >
+          <button className="icon_button tool_bar" onClick={() => handleTag("u")}>
+            <UnderlineIcon />
+            <span className="wysiwyg_tool_tip">
+              Underline{" "}
+              <span className="key_command">
+                {isMac ? "cmd + u" : "ctrl + u"}
+              </span>
+            </span>
+          </button>
+
+          <button className="icon_button tool_bar">
+            <StrikeIcon />
+            <span className="wysiwyg_tool_tip">
+              Strike Through{" "}
+              <span className="key_command">
+                {isMac ? "cmd + shift + s" : "ctrl + shift + s"}
+              </span>
+            </span>
+          </button>
+
+          <button className="icon_button tool_bar heading">
+            <AlignLIcon />
+            <span className="wysiwyg_tool_tip">Align Left</span>
+          </button>
+
+          <button className="icon_button tool_bar heading">
+            <AlignCIcon />
+            <span className="wysiwyg_tool_tip">Align Center</span>
+          </button>
+
+          <button className="icon_button tool_bar heading">
+            <AlignRIcon />
+            <span className="wysiwyg_tool_tip">Align Right</span>
+          </button>
+
+          <button className="icon_button tool_bar heading">
+            <JustifyIcon />
+            <span className="wysiwyg_tool_tip">Justify Text</span>
+          </button>
+        </div>
+      </div>
+      <div className="wysiwyg_tool_bar_divider"></div>
       <div
         className="icon_button tool_bar heading"
-        onClick={() => setLinkModalOpen(true)}
+        onClick={() => setLinkModal(true)}
       >
         <LinkIcon />
         <span className="wysiwyg_tool_tip">Link</span>
       </div>
       <div
         className="icon_button tool_bar heading"
-        onClick={() => setCodeModalOpen(true)}
+        onClick={() => setCodeModal(true)}
       >
         <CodeIcon />
         <span className="wysiwyg_tool_tip">Code Block</span>
       </div>
 
-      <div
-        className="icon_button tool_bar heading"
-      >
+      <div className="icon_button tool_bar heading">
         <QuoteIcon />
         <span className="wysiwyg_tool_tip">Quote</span>
       </div>
-      <div
-        className="icon_button tool_bar heading"
-      >
+
+      <div className="icon_button tool_bar heading">
         <DividerIcon />
         <span className="wysiwyg_tool_tip">Divider</span>
-      </div>
-      <div
-        className="icon_button tool_bar heading"
-      >
-        <AlignRIcon />
-        <span className="wysiwyg_tool_tip">Align Right</span>
-      </div>
-      <div
-        className="icon_button tool_bar heading"
-      >
-        <AlignLIcon />
-        <span className="wysiwyg_tool_tip">Align Left</span>
-      </div>
-      <div
-        className="icon_button tool_bar heading"
-      >
-        <AlignCIcon />
-        <span className="wysiwyg_tool_tip">Align Center</span>
-      </div>
-      <div
-        className="icon_button tool_bar heading"
-      >
-        <JustifyIcon />
-        <span className="wysiwyg_tool_tip">Justify Text</span>
-      </div>
-      <div
-        className="icon_button tool_bar heading"
-      >
-        <MoreIcon />
-        <span className="wysiwyg_tool_tip">More</span>
       </div>
     </div>
   );

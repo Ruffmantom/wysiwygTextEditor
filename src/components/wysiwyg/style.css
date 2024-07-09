@@ -1,57 +1,51 @@
-:root{
---color:#D0C031;
---color:#D0481C;
---color:#1B5E20;
---color:#0D47A1;
---color:#4A148C;
---color:#D07C00;
---color:#006064;
---color:#B12917;
+:root {
+  --color: #d0c031;
+  --color: #d0481c;
+  --color: #1b5e20;
+  --color: #0d47a1;
+  --color: #4a148c;
+  --color: #d07c00;
+  --color: #006064;
+  --color: #b12917;
 
-
---highlight-color:#FFEB3B;
---highlight-color:#FF5722;
---highlight-color:#4CAF50;
---highlight-color:#2196F3;
---highlight-color:#9C27B0;
---highlight-color:#FF9800;
---highlight-color:#00BCD4;
---highlight-color:#eb361e;
-
+  --highlight-color: #ffeb3b;
+  --highlight-color: #ff5722;
+  --highlight-color: #4caf50;
+  --highlight-color: #2196f3;
+  --highlight-color: #9c27b0;
+  --highlight-color: #ff9800;
+  --highlight-color: #00bcd4;
+  --highlight-color: #eb361e;
 }
 
+.rich_text_editor {
+  display: flex;
+  flex-direction: column;
+  border-radius: 5px;
+  padding: 2px;
+  height: 100%;
+}
+.rich_text_editor:has(:focus) {
+  outline: 2px solid var(--blue);
+}
 .editable_container_cont {
   height: 100%;
   width: 100%;
-  padding-top: 45px;
   position: relative;
 }
-.wysiwyg_txt_formatter_cont {
-  position: absolute;
-  z-index: 9;
-  top: 5px;
-  left: 5px;
-  padding: 5px;
-  background-color: var(--shade-0);
-  outline: 1px solid var(--blue);
-  border-radius: 3px;
-  display: flex;
-  gap: 5px;
-  .icon_button:not(.heading) > svg {
-    height: 12px;
-  }
+.editable_container {
+  flex-grow: 1;
 }
+
 .wysiwyg_tool_bar {
   width: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
   padding: 5px;
   display: flex;
   gap: 5px;
   border-radius: 3px;
   background-color: var(--shade-0);
   outline: 1px solid var(--shade-2);
+  margin-bottom: 2px;
   .text_formatting {
     display: flex;
     gap: 5px;
@@ -104,8 +98,11 @@
   position: relative;
   .wysiwyg_tool_tip {
     position: absolute;
-    bottom: 40px;
-    width: max-content;
+    /* just to get it out of the area */
+    bottom: 440px;
+    width: 0;
+    height: 0;
+    overflow: hidden;
     background-color: var(--shade-1);
     font-size: 12px;
     padding: 4px;
@@ -119,13 +116,16 @@
       border-radius: 3px;
     }
   }
-  &&:hover {
-    .wysiwyg_tool_tip {
-      opacity: 1;
-      z-index: 9;
-      transition: opacity 150ms ease-in-out;
-    }
-  }
+}
+
+.icon_button:hover > .wysiwyg_tool_tip {
+  width: max-content;
+  height: unset;
+  overflow: unset;
+  bottom: 40px;
+  opacity: 1;
+  z-index: 9;
+  transition: opacity 150ms ease-in-out;
 }
 
 .tool_bar_dd {
@@ -134,6 +134,9 @@
   position: relative;
   P {
     font-size: smaller;
+  }
+  &&.icon {
+    width: 35px;
   }
   .tool_bar_dd_content {
     position: absolute;
@@ -144,7 +147,11 @@
     background-color: var(--shade-0);
     box-shadow: var(--shadow);
     width: 150px;
-    &&.color_dd{
+    &&.icons {
+      flex-direction: row;
+      width: fit-content;
+    }
+    &&.color_dd {
       width: 120px;
     }
     padding: 5px;
@@ -160,6 +167,7 @@
       display: flex;
       gap: 10px;
       justify-content: space-between;
+      align-items: center;
       padding: 5px 7px;
       border-radius: 3px;
 
@@ -191,7 +199,7 @@
 .tool_bar_dd_item.p.center {
   justify-content: center;
 }
-.btn_overlay{
+.btn_overlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -199,17 +207,17 @@
   height: 100%;
   width: 100%;
 }
-.highlight_colors{
+.highlight_colors {
   display: flex;
   gap: 7px;
   justify-content: center;
   flex-wrap: wrap;
 }
-.color_swatch{
+.color_swatch {
   height: 20px;
   width: 20px;
   border-radius: 3px;
-  &&:hover{
+  &&:hover {
     outline: 2px solid var(--black-2);
   }
 }

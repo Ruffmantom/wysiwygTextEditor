@@ -44,9 +44,8 @@ const deepFontColors = [
 
 const ToolBar = ({
   handleTag,
-  handleItalic,
-  handleUnderline,
   handleHeading,
+  handleColorText,
 }) => {
   // const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
   const isMac = navigator.userAgent.toLowerCase().includes("macintosh");
@@ -108,10 +107,11 @@ const ToolBar = ({
     e.preventDefault();
     console.log("clicked color: " + color);
   };
-
+  
   const handleTxtColorClick = (e, color) => {
     e.preventDefault();
     console.log("clicked color: " + color);
+    handleColorText(color)
   };
 
   // if click outside of dropdowns
@@ -174,7 +174,7 @@ const ToolBar = ({
       </div>
 
       <div className="icon_button tool_bar tool_bar_dd">
-        <div className="btn_overlay" onClick={() => setColorDdOpen()}></div>
+        <button className="btn_overlay" onClick={() => setColorDdOpen()}></button>
         <FontcolorIcon />
         <span className="wysiwyg_tool_tip">Font Color</span>
         {/* drop down content */}
@@ -195,7 +195,7 @@ const ToolBar = ({
             ))}
           </div>
           <div className="tool_bar_dd_item p center">
-            <span>Automatic</span>
+            <button onClick={(e) => handleTxtColorClick(e, "auto")}>Automatic</button>
           </div>
         </div>
       </div>

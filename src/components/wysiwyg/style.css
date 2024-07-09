@@ -1,12 +1,12 @@
 :root {
-  --color: #d0c031;
-  --color: #d0481c;
-  --color: #1b5e20;
-  --color: #0d47a1;
-  --color: #4a148c;
-  --color: #d07c00;
-  --color: #006064;
-  --color: #b12917;
+  --color-1: #d0c031;
+  --color-2: #d0481c;
+  --color-3: #1b5e20;
+  --color-4: #0d47a1;
+  --color-5: #4a148c;
+  --color-6: #d07c00;
+  --color-7: #006064;
+  --color-8: #b12917;
 
   --highlight-color: #ffeb3b;
   --highlight-color: #ff5722;
@@ -18,6 +18,42 @@
   --highlight-color: #eb361e;
 }
 
+.text_d0c031 {
+  color: #d0c031 !important;
+}
+
+.text_d0481c {
+  color: #d0481c !important;
+}
+
+.text_1b5e20 {
+  color: #1b5e20 !important;
+}
+
+.text_0d47a1 {
+  color: #0d47a1 !important;
+}
+
+.text_4a148c {
+  color: #4a148c !important;
+
+}
+
+.text_d07c00 {
+  color: #d07c00 !important;
+}
+
+.text_006064 {
+  color: #006064 !important;
+}
+
+.text_b12917 {
+  color: #b12917 !important;
+}
+.text_auto {
+  color: var(--black) !important;
+}
+
 .rich_text_editor {
   display: flex;
   flex-direction: column;
@@ -25,14 +61,17 @@
   padding: 2px;
   height: 100%;
 }
+
 .rich_text_editor:has(:focus) {
   outline: 2px solid var(--blue);
 }
+
 .editable_container_cont {
   height: 100%;
   width: 100%;
   position: relative;
 }
+
 .editable_container {
   flex-grow: 1;
 }
@@ -46,36 +85,44 @@
   background-color: var(--shade-0);
   outline: 1px solid var(--shade-2);
   margin-bottom: 2px;
+
   .text_formatting {
     display: flex;
     gap: 5px;
     opacity: 0.5;
+
     &&.active {
       opacity: 1;
     }
   }
-  .icon_button > svg {
+
+  .icon_button>svg {
     height: 10px;
     width: unset;
     max-height: unset;
     max-width: 18px;
   }
-  .icon_button:not(.heading) > svg {
+
+  .icon_button:not(.heading)>svg {
     height: 14px;
   }
 }
+
 .fit_content {
   height: fit-content;
   flex-grow: unset;
   max-height: 90%;
 }
+
 .shade0 {
   background-color: var(--shade-0);
 }
-.add_code > textarea {
+
+.add_code>textarea {
   max-width: 100%;
   max-height: 400px;
 }
+
 .code_block {
   height: 200px;
   max-height: 350px;
@@ -94,8 +141,10 @@
   border-radius: 10px;
   background-color: var(--shade-2);
 }
+
 .icon_button.tool_bar {
   position: relative;
+
   .wysiwyg_tool_tip {
     position: absolute;
     /* just to get it out of the area */
@@ -110,6 +159,7 @@
     box-shadow: var(--shadow);
     opacity: 0;
     z-index: -1;
+
     .key_command {
       background-color: var(--shade-2);
       padding: 2px 4px;
@@ -118,7 +168,7 @@
   }
 }
 
-.icon_button:hover > .wysiwyg_tool_tip {
+.icon_button:hover>.wysiwyg_tool_tip {
   width: max-content;
   height: unset;
   overflow: unset;
@@ -132,12 +182,15 @@
   width: max-content;
   padding: 0 10px;
   position: relative;
+
   P {
     font-size: smaller;
   }
+
   &&.icon {
     width: 35px;
   }
+
   .tool_bar_dd_content {
     position: absolute;
     top: 40px;
@@ -147,22 +200,27 @@
     background-color: var(--shade-0);
     box-shadow: var(--shadow);
     width: 150px;
+
     &&.icons {
       flex-direction: row;
       width: fit-content;
     }
+
     &&.color_dd {
       width: 120px;
     }
+
     padding: 5px;
     border-radius: 5px;
     opacity: 0;
     z-index: -1;
+
     &&.active {
       opacity: 1;
       z-index: 9;
       transition: opacity 150ms ease-in-out;
     }
+
     .tool_bar_dd_item {
       display: flex;
       gap: 10px;
@@ -177,28 +235,35 @@
     }
   }
 }
+
 .tool_bar_dd_item.h1 {
   font-size: larger;
   font-weight: bold;
 }
+
 .tool_bar_dd_item.h2 {
   font-size: large;
   font-weight: bold;
 }
+
 .tool_bar_dd_item.h3 {
   font-size: medium;
   font-weight: bold;
 }
+
 .tool_bar_dd_item.h4 {
   font-size: small;
   font-weight: bold;
 }
+
 .tool_bar_dd_item.p {
   font-size: small;
 }
+
 .tool_bar_dd_item.p.center {
   justify-content: center;
 }
+
 .btn_overlay {
   position: absolute;
   top: 0;
@@ -207,16 +272,19 @@
   height: 100%;
   width: 100%;
 }
+
 .highlight_colors {
   display: flex;
   gap: 7px;
   justify-content: center;
   flex-wrap: wrap;
 }
+
 .color_swatch {
   height: 20px;
   width: 20px;
   border-radius: 3px;
+
   &&:hover {
     outline: 2px solid var(--black-2);
   }

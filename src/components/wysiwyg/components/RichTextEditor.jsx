@@ -6,6 +6,7 @@ export default function RichTextEditor() {
   const [content, setContent] = useState("<p><br></p>");
 
   const handleKeyDown = (e) => {
+    handleDoubleSpace(e)
     if (e.key === "Enter") {
       e.preventDefault();
 
@@ -28,83 +29,146 @@ export default function RichTextEditor() {
       selection.removeAllRanges();
       selection.addRange(newRange);
     }
+    
   };
 
   const handleTag = (tag) => {
     const selection = window.getSelection();
     if (!selection || selection.isCollapsed) return;
-  
-    const range = selection.getRangeAt(0);
-  
-    // Check if the current selection is already inside the passed-in tag
-    let isInsideTag = false;
-    let commonAncestorContainer = range.commonAncestorContainer;
-    while (commonAncestorContainer) {
-      if (commonAncestorContainer.tagName && commonAncestorContainer.tagName.toLowerCase() === tag) {
-        isInsideTag = true;
-        break;
+
+    if (selection && selection.anchorNode) {
+      let parentNode = selection.anchorNode.parentNode;
+      let parentName = parentNode.tagName.toLowerCase()
+      const range = selection.getRangeAt(0);
+      if (parentName === tag) {
+        // console.log(`True: ${parentName} === ${tag}`)
+        // remove parent tag
+        let tagContent = parentNode.textContent
+        // console.log(tagContent)
+        parentNode.replaceWith(tagContent)
+      } else {
+        // console.log(`False: ${parentName} !== ${tag}`)
+        // continue with format
+        // Wrap the selected content with the new tag element
+        const newElement = document.createElement(tag);
+        newElement.appendChild(range.extractContents());
+        range.insertNode(newElement);
       }
-      commonAncestorContainer = commonAncestorContainer.parentNode;
     }
-  
-    if (isInsideTag) {
-      // Unwrap the content from the current tag
-      const selectedNodes = getSelectedNodes(range);
-      const wrapper = document.createElement('div');
-      selectedNodes.forEach(node => wrapper.appendChild(node));
-      range.deleteContents();
-      range.insertNode(wrapper);
-      wrapper.outerHTML = wrapper.innerHTML;
-    } else {
-      // Wrap the selected content with the new tag element
-      const newElement = document.createElement(tag);
-      newElement.appendChild(range.extractContents());
-      range.insertNode(newElement);
-    }
-  
+
     // Ensure focus returns to the editor
     editorRef.current.focus();
   };
-  
-  const getSelectedNodes = (range) => {
-    const selectedNodes = [];
-    let node = range.startContainer;
-    while (node) {
-      if (node.nodeType === Node.ELEMENT_NODE) {
-        if (node === range.endContainer) {
-          selectedNodes.push(node);
-          break;
-        }
-        selectedNodes.push(node);
-        node = node.nextSibling;
-      } else if (node.nodeType === Node.TEXT_NODE) {
-        const selectedText = range.toString();
-        if (selectedText === node.textContent) {
-          selectedNodes.push(node);
-          break;
-        } else {
-          const selectedTextIndex = node.textContent.indexOf(selectedText);
-          const nextNode = node.splitText(selectedTextIndex);
-          selectedNodes.push(node);
-          node = nextNode;
-        }
-      }
-    }
-    return selectedNodes;
-  };
-  
 
-  const handleHeading = (level) => {
+  const handleColorText = (color) => {
+    // Ensure focus returns to the editor
+    editorRef.current.focus();
     const selection = window.getSelection();
     const range = selection.getRangeAt(0);
-  
+    let chosenColor = color.replace("#", "").toLowerCase()
+
+    if (!selection || selection.isCollapsed) {
+      // Create a new colored span element at the current cursor position
+      const colorSpan = document.createElement('span');
+      // Add class
+      colorSpan.classList.add(`text_${chosenColor}`);
+
+      // Create an empty text node inside the colorSpan
+      const textNode = document.createTextNode("\u200B"); // Zero-width space character
+
+      colorSpan.appendChild(textNode);
+      range.insertNode(colorSpan);
+
+      // Adjust the range to place the cursor inside the new colorSpan
+      const newRange = document.createRange();
+      newRange.setStart(textNode, 1);
+      newRange.collapse(true);
+      selection.removeAllRanges();
+      selection.addRange(newRange);
+    } else {
+      // check if selected text is already colored. else color it
+      let parentNode = selection.anchorNode.parentNode;
+      const range = selection.getRangeAt(0);
+      let parentClassName = parentNode.classList.value
+      let tagClass = `text_${chosenColor}`
+
+      if (parentClassName === tagClass) {
+        console.log(`True: ${parentClassName} === ${tagClass}`)
+        // remove parent tag
+        let tagContent = parentNode.textContent
+        console.log(tagContent)
+        parentNode.replaceWith(tagContent)
+
+      } else {
+        console.log(`False: ${parentClassName} !== ${tagClass}`)
+        // continue with format
+        // check if the text already is colored
+
+        console.log("This text is already colored?: " + parentClassName.includes('text_'))
+        if (parentClassName.includes('text_')) {
+          // replace existing classname with new one
+          parentNode.classList.replace(parentClassName, tagClass)
+        } else {
+          // Wrap the selected content with the new tag element
+          // Create a new colored span element at the current cursor position
+          const newElement = document.createElement('span');
+          // Add class
+          newElement.classList.add(tagClass);
+          newElement.appendChild(range.extractContents());
+          range.insertNode(newElement);
+        }
+
+      }
+
+    }
+  }
+
+  const handleDoubleSpace = (e) => {
+    if (e.key === ' ' && e.target === editorRef.current) {
+      if (editorRef.current._lastKey && editorRef.current._lastKey === ' ') {
+        const selection = window.getSelection();
+        const range = selection.getRangeAt(0);
+
+        // Move the cursor outside the current element
+        const parentElement = range.endContainer.parentElement;
+        const textNode = document.createTextNode(' ');
+
+        if (parentElement !== editorRef.current) {
+          // Insert the space after the parent element
+          parentElement.parentNode.insertBefore(textNode, parentElement.nextSibling);
+        } else {
+          // If already in the parent element, just insert the space
+          range.insertNode(textNode);
+        }
+
+        // Move the cursor after the inserted space
+        range.setStartAfter(textNode);
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
+
+        // Prevent default behavior of adding an additional space
+        e.preventDefault();
+      }
+      editorRef.current._lastKey = ' ';
+    } else {
+      editorRef.current._lastKey = e.key;
+    }
+  };
+
+  const handleHeading = (level) => {
+    // Ensure focus returns to the editor
+    editorRef.current.focus();
+    const selection = window.getSelection();
+    const range = selection.getRangeAt(0);
+
     if (!selection || selection.isCollapsed) {
       // Create a new heading element at the current cursor position
       const heading = document.createElement(level);
       heading.innerHTML = "<br>"; // Ensure there's a line break inside the new heading
       range.deleteContents(); // Clear any existing content in the range
       range.insertNode(heading);
-  
+
       // Adjust the range to place the cursor inside the new heading
       const newRange = document.createRange();
       newRange.setStart(heading.firstChild, 0);
@@ -122,7 +186,7 @@ export default function RichTextEditor() {
         }
         parentNode = parentNode.parentNode;
       }
-  
+
       if (currentHeading) {
         // Replace the current heading with the new heading level
         const newHeading = document.createElement(level);
@@ -135,18 +199,19 @@ export default function RichTextEditor() {
         range.insertNode(heading);
       }
     }
-  
+
     // Ensure focus returns to the editor
     editorRef.current.focus();
   };
-  
-  
+
+
 
   return (
     <div className="rich_text_editor">
       <ToolBar
         handleTag={handleTag}
         handleHeading={handleHeading}
+        handleColorText={handleColorText}
       />
       <div
         ref={editorRef}

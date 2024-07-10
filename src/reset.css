@@ -15,9 +15,9 @@ html {
 }
 
 /* Remove the default list styles */
-ol, ul {
+/* ol, ul {
     list-style: none;
-}
+} */
 
 /* Remove the default link styles */
 a {

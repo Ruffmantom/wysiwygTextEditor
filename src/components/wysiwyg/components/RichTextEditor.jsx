@@ -2,14 +2,198 @@ import React, { useRef, useState } from "react";
 import ToolBar from "./ToolBar";
 
 export default function RichTextEditor() {
+  const [inputBuffer, setInputBuffer] = useState('');
+  const [lastKeyWasEnter, setLastKeyWasEnter] = useState(false);
   const editorRef = useRef(null);
-  const [content, setContent] = useState("<p><br></p>");
+  const timeoutRef = useRef(null); // Use ref to store the timeout ID
+  const [content, setContent] = useState(`<p class="align_left"><br></p>`);
 
-  const handleKeyDown = (e) => {
-    console.log(e.key)
-    handleEnterKey(e)
-    handleExitCurrentElement(e)
+
+  // util functions
+  const createNewParagraph = () => {
+    const newParagraph = document.createElement("p");
+    newParagraph.classList.add("align_left");
+    newParagraph.innerHTML = "<br>";
+    return newParagraph;
   };
+
+
+  // handle functions
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleEnterKey(e);
+    } else {
+      handlePressEscape(e)
+      handleNumberListTrigger(e);
+      handleUnorderedListTrigger(e);
+      setLastKeyWasEnter(false); // Reset the Enter flag for other keys
+    }
+  };
+
+  const handleNumberListTrigger = (e) => {
+    console.log("handle Number List Trigger Hit!")
+    const currentInput = inputBuffer + e.key;
+    console.log(currentInput)
+    // includes works faster every time but could cause problems later down the road
+    if (currentInput.includes('1.')) {
+      e.preventDefault();
+      triggerNumberList();
+    } else {
+      setInputBuffer(currentInput);
+    }
+
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    // Clear buffer after a timeout to avoid infinite accumulation of input
+    timeoutRef.current = setTimeout(() => {
+      console.log("Clear buffer");
+      setInputBuffer('');
+    }, 3000);
+  };
+
+  const handleUnorderedListTrigger = (e) => {
+    console.log("handle Unordered List Trigger Hit!")
+    const currentInput = inputBuffer + e.key;
+    console.log(currentInput)
+    // includes works faster every time but could cause problems later down the road
+    if (currentInput.startsWith('- ')) {
+      e.preventDefault();
+      triggerUnOrderedList();
+    } else {
+      setInputBuffer(currentInput);
+    }
+
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    // Clear buffer after a timeout to avoid infinite accumulation of input
+    timeoutRef.current = setTimeout(() => {
+      console.log("Clear buffer");
+      setInputBuffer('');
+    }, 500);
+  };
+
+  const triggerNumberList = () => {
+    console.log("triggerNumberList Hit!")
+    const selection = window.getSelection();
+    const range = selection.getRangeAt(0);
+    const startNode = range.startContainer;
+
+    // Find the paragraph or text node where the "1. " was typed
+    let parentElement = startNode.nodeType === Node.TEXT_NODE ? startNode.parentNode : startNode;
+    console.log("Inside the triggerNumberList: ", parentElement)
+
+
+    // Create a new ordered list
+    const ol = document.createElement('ol');
+    ol.classList.add('formatted_ol');
+    const li = document.createElement('li');
+    li.classList.add('formatted_li');
+    li.innerHTML = '<br>'; // Add a placeholder for the list item
+    ol.appendChild(li);
+
+    // Insert the ordered list before the current parent element
+    parentElement.parentNode.insertBefore(ol, parentElement.nextSibling);
+    // after inserting the sibling
+    // Remove the "1. " parent
+    // console.log(parentElement.nodeName)
+    if (parentElement.nodeName === "P" && parentElement.textContent.includes("1")) {
+      parentElement.remove()
+    }
+
+    // Move the caret to the new list item
+    const newRange = document.createRange();
+    newRange.setStart(li, 0);
+    newRange.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(newRange);
+
+    // Remove the parent element if it's now empty
+    if (parentElement.textContent.trim() === '') {
+      parentElement.parentNode.removeChild(parentElement);
+    }
+
+    // Ensure focus returns to the editor
+    editorRef.current.focus();
+  };
+
+  const triggerUnOrderedList = () => {
+    console.log("triggerNumberList Hit!")
+    const selection = window.getSelection();
+    const range = selection.getRangeAt(0);
+    const startNode = range.startContainer;
+
+    // Find the paragraph or text node where the "1. " was typed
+    let parentElement = startNode.nodeType === Node.TEXT_NODE ? startNode.parentNode : startNode;
+    console.log("Inside the triggerNumberList: ", parentElement)
+
+
+    // Create a new ordered list
+    const ol = document.createElement('ul');
+    ol.classList.add('formatted_ul');
+    const li = document.createElement('li');
+    li.classList.add('formatted_li');
+    li.innerHTML = '<br>'; // Add a placeholder for the list item
+    ol.appendChild(li);
+
+    // Insert the ordered list before the current parent element
+    parentElement.parentNode.insertBefore(ol, parentElement.nextSibling);
+    // after inserting the sibling
+    // Remove the "1. " parent
+    // console.log(parentElement.nodeName)
+    if (parentElement.nodeName === "P" && parentElement.textContent.includes("-")) {
+      parentElement.remove()
+    }
+
+    // Move the caret to the new list item
+    const newRange = document.createRange();
+    newRange.setStart(li, 0);
+    newRange.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(newRange);
+
+    // Remove the parent element if it's now empty
+    if (parentElement.textContent.trim() === '') {
+      parentElement.parentNode.removeChild(parentElement);
+    }
+
+    // Ensure focus returns to the editor
+    editorRef.current.focus();
+  };
+
+  const handlePressEscape = (e) => {
+    if (e.key === "Escape") {
+      const selection = window.getSelection();
+      const range = selection.getRangeAt(0);
+      const startNode = range.startContainer;
+      // If the selection is not inside a text node, or is at the end of the text node, handle nested elements
+      const parentElement = startNode.nodeType === Node.TEXT_NODE ? startNode.parentNode : startNode;
+
+      if (parentElement.tagName === "LI") {
+        console.log("Hit the escape key inside LI")
+        const newParagraph = createNewParagraph()
+        if (startNode.parentNode === editorRef.current) {
+          editorRef.current.insertBefore(newParagraph, startNode.nextSibling);
+        } else {
+          editorRef.current.appendChild(newParagraph);
+        }
+
+        const newRange = document.createRange();
+        newRange.setStart(newParagraph, 0);
+        newRange.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(newRange);
+        // Ensure focus returns to the editor
+        editorRef.current.focus();
+      }
+    }
+  }
+
 
   const handleEnterKey = (e) => {
     if (e.key === "Enter") {
@@ -18,111 +202,172 @@ export default function RichTextEditor() {
       const selection = window.getSelection();
       const range = selection.getRangeAt(0);
       const startNode = range.startContainer;
+      const startOffset = range.startOffset;
 
-      const newParagraph = document.createElement("p");
-      newParagraph.innerHTML = "<br>";
+      const isCursorAtEnd = (node, offset) => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          return offset === node.textContent.length;
+        } else {
+          return offset === node.childNodes.length;
+        }
+      };
 
-      if (startNode && startNode.parentNode === editorRef.current) {
-        editorRef.current.insertBefore(newParagraph, startNode.nextSibling);
-      } else {
-        editorRef.current.appendChild(newParagraph);
-      }
+      const isCursorAtStart = (node, offset) => {
+        return offset === 0;
+      };
 
-      const newRange = document.createRange();
-      newRange.setStart(newParagraph, 0);
-      newRange.collapse(true);
-      selection.removeAllRanges();
-      selection.addRange(newRange);
-    }
-  }
 
-  const handleExitCurrentElement = (e) => {
-    if (e.keyCode === 32 && e.target === editorRef.current) {  // Check for spacebar using key code
-      if (editorRef.current._lastKey && editorRef.current._lastKey === 32) {
-        const selection = window.getSelection();
-        const range = selection.getRangeAt(0);
 
-        // Move the cursor outside the current element
-        const currentNode = range.endContainer;
-        const currentNodeParent = currentNode.parentNode;
+      const createNewListItem = (addBreak) => {
+        const newListItem = document.createElement("li");
+        if(addBreak) newListItem.innerHTML = "<br>"
+        newListItem.classList.add('formatted_li')
+        return newListItem;
+      };
 
-        // Check if currentNode is a text node and inside a span element
-        if (currentNode.nodeType === Node.TEXT_NODE && currentNodeParent !== editorRef.current) {
-          // Create a new range to move the cursor outside the span element
+      // Check if cursor is at the start of a node
+      if (startNode.nodeType === Node.TEXT_NODE && isCursorAtStart(startNode, startOffset)) {
+        console.log("Pressed Enter at start of a node")
+        const parentElement = startNode.parentNode;
+        const newParagraph = createNewParagraph();
+        parentElement.parentNode.insertBefore(newParagraph, parentElement);
+
+        // Move the caret to the new paragraph
+        const newRange = document.createRange();
+        newRange.setStart(newParagraph, 0);
+        newRange.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(newRange);
+      } else if (startNode.nodeType === Node.TEXT_NODE && !isCursorAtEnd(startNode, startOffset)) {
+        console.log("Pressed Enter and about to Split text line")
+        const parentElement = startNode.parentNode;
+        const textNode = startNode;
+        const textContent = textNode.textContent;
+
+        // Split the text node at the caret position
+        const beforeText = textContent.slice(0, startOffset);
+        const afterText = textContent.slice(startOffset);
+
+        const beforeTextNode = document.createTextNode(beforeText);
+        const afterTextNode = document.createTextNode(afterText);
+        // const parentElement = beforeTextNode.parentNode;
+
+        // Replace the original text node with the split parts
+        textNode.parentNode.insertBefore(beforeTextNode, textNode);
+        textNode.parentNode.insertBefore(afterTextNode, textNode);
+        textNode.parentNode.removeChild(textNode);
+        // check if inside a li
+        if (parentElement.tagName === "LI") {
+          console.log("splitting text inside a LI")
+          console.log(beforeText)
+          console.log(afterText)
+
+          // create the new li under parent
+          const newListItem = createNewListItem(false);
+          newListItem.appendChild(afterTextNode)
+          parentElement.parentNode.insertBefore(newListItem, parentElement.nextSibling);
+          
+          // Move the caret to the new paragraph
           const newRange = document.createRange();
-
-          // Move the cursor after the current node parent
-          newRange.setStartAfter(currentNodeParent);
+          newRange.setStart(afterTextNode, 0);
           newRange.collapse(true);
+          selection.removeAllRanges();
+          selection.addRange(newRange);
+        } else {
+          // Create a new paragraph for the content after the caret
+          const newParagraph = createNewParagraph();
+          newParagraph.appendChild(afterTextNode);
 
-          // Insert a text node at the new range to start new text content
-          const textNode = document.createTextNode('');
-          newRange.insertNode(textNode);
+          // Move the rest of the nodes to the new paragraph
+          let nextNode = afterTextNode.nextSibling;
+          while (nextNode) {
+            const currentNode = nextNode;
+            nextNode = nextNode.nextSibling;
+            newParagraph.appendChild(currentNode);
+          }
+          // Determine the appropriate insertion point
+          // const parentElement = beforeTextNode.parentNode;
+          const grandParentElement = parentElement.parentNode;
 
-          // Adjust the range to place the cursor inside the new text node
-          newRange.setStart(textNode, 0);
+          if (parentElement === editorRef.current) {
+            editorRef.current.insertBefore(newParagraph, beforeTextNode.nextSibling);
+          } else if (grandParentElement === editorRef.current) {
+            grandParentElement.insertBefore(newParagraph, parentElement.nextSibling);
+          } else {
+            editorRef.current.appendChild(newParagraph);
+          }
+
+          // Move the caret to the new paragraph
+          const newRange = document.createRange();
+          newRange.setStart(afterTextNode, 0);
           newRange.collapse(true);
-
-          // Remove all ranges and add the new one
           selection.removeAllRanges();
           selection.addRange(newRange);
 
-          // Prevent default behavior of adding an additional space
-          e.preventDefault();
+        }
+
+
+      } else {
+        // If the selection is not inside a text node, or is at the end of the text node, handle nested elements
+        const parentElement = startNode.nodeType === Node.TEXT_NODE ? startNode.parentNode : startNode;
+        if (parentElement.tagName === "LI") {
+          // Handle Enter key within a list item
+          const newListItem = createNewListItem();
+          parentElement.parentNode.insertBefore(newListItem, parentElement.nextSibling);
+
+          const newRange = document.createRange();
+          newRange.setStart(newListItem, 0);
+          newRange.collapse(true);
+          selection.removeAllRanges();
+          selection.addRange(newRange);
+        } else if (parentElement.tagName === "BLOCKQUOTE") {
+          // Handle Enter key within a blockquote
+          const newParagraph = createNewParagraph();
+          parentElement.parentNode.insertBefore(newParagraph, parentElement.nextSibling);
+
+          const newRange = document.createRange();
+          newRange.setStart(newParagraph, 0);
+          newRange.collapse(true);
+          selection.removeAllRanges();
+          selection.addRange(newRange);
+        } else {
+          // Handle Enter key for regular paragraphs and other elements
+          const newParagraph = createNewParagraph();
+
+          if (startNode.parentNode === editorRef.current) {
+            editorRef.current.insertBefore(newParagraph, startNode.nextSibling);
+          } else {
+            editorRef.current.appendChild(newParagraph);
+          }
+
+          const newRange = document.createRange();
+          newRange.setStart(newParagraph, 0);
+          newRange.collapse(true);
+          selection.removeAllRanges();
+          selection.addRange(newRange);
         }
       }
-      editorRef.current._lastKey = 32;  // Store key code for spacebar
-    } else if (e.keyCode === 27 && e.target === editorRef.current) {  // Check for Escape key using key code
-      const selection = window.getSelection();
-      const range = selection.getRangeAt(0);
 
-      // Move the cursor outside the current element
-      const currentNode = range.endContainer;
-      const currentNodeParent = currentNode.parentNode;
-
-      // Check if currentNode is a text node and inside a span element
-      if (currentNode.nodeType === Node.TEXT_NODE && currentNodeParent !== editorRef.current) {
-        // Create a new range to move the cursor outside the span element
-        const newRange = document.createRange();
-
-        // Move the cursor after the current node parent
-        newRange.setStartAfter(currentNodeParent);
-        newRange.collapse(true);
-
-        // Insert a text node at the new range to start new text content
-        const textNode = document.createTextNode('');
-        newRange.insertNode(textNode);
-
-        // Adjust the range to place the cursor inside the new text node
-        newRange.setStart(textNode, 0);
-        newRange.collapse(true);
-
-        // Remove all ranges and add the new one
-        selection.removeAllRanges();
-        selection.addRange(newRange);
-
-        // Prevent default behavior
-        e.preventDefault();
-      }
-    } else {
-      editorRef.current._lastKey = e.keyCode;
+      // Ensure focus returns to the editor
+      editorRef.current.focus();
     }
   };
-// formatting functions
+
+  // formatting functions
   const handleTag = (tag) => {
     const selection = window.getSelection();
     if (!selection || selection.isCollapsed) return;
 
     if (selection && selection.anchorNode) {
       let parentNode = selection.anchorNode.parentNode;
-      let parentName = parentNode.tagName.toLowerCase()
+      let parentName = parentNode.tagName.toLowerCase();
       const range = selection.getRangeAt(0);
       if (parentName === tag) {
         // console.log(`True: ${parentName} === ${tag}`)
         // remove parent tag
-        let tagContent = parentNode.textContent
+        let tagContent = parentNode.textContent;
         // console.log(tagContent)
-        parentNode.replaceWith(tagContent)
+        parentNode.replaceWith(tagContent);
       } else {
         // console.log(`False: ${parentName} !== ${tag}`)
         // continue with format
@@ -137,16 +382,81 @@ export default function RichTextEditor() {
     editorRef.current.focus();
   };
 
+  const handleAlignFormat = (e, alignment) => {
+    e.preventDefault();
+    console.log("hit handleAlignFormat");
+    editorRef.current.focus();
+    const selection = window.getSelection();
+
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      const newClassName = `align_${alignment}`;
+      const defaultClassName = "align_left";
+
+      const applyAlignmentClass = (element) => {
+        if (element.nodeType === Node.TEXT_NODE) {
+          element = element.parentNode;
+        }
+        if (element.classList.contains(newClassName)) {
+          element.classList.replace(newClassName, defaultClassName);
+        } else {
+          element.classList.remove(
+            ...Array.from(element.classList).filter((className) =>
+              className.startsWith("align_")
+            )
+          );
+          element.classList.add(newClassName);
+        }
+      };
+
+      if (range.startContainer === range.endContainer) {
+        // Single line selection
+        let startNode = range.startContainer;
+        if (startNode.nodeType === Node.TEXT_NODE) {
+          startNode = startNode.parentNode;
+        }
+        applyAlignmentClass(startNode);
+      } else {
+        // Multi-line selection
+        const selectedElements = [];
+        const treeWalker = document.createTreeWalker(
+          range.commonAncestorContainer,
+          NodeFilter.SHOW_ELEMENT,
+          {
+            acceptNode: (node) => {
+              if (range.intersectsNode(node)) {
+                return NodeFilter.FILTER_ACCEPT;
+              }
+              return NodeFilter.FILTER_REJECT;
+            },
+          }
+        );
+
+        while (treeWalker.nextNode()) {
+          selectedElements.push(treeWalker.currentNode);
+        }
+
+        selectedElements.forEach((element) => {
+          applyAlignmentClass(element);
+        });
+      }
+
+      console.log("After applying classes");
+
+      editorRef.current.focus(); // Focus once after modifications
+    }
+  };
+
   const handleColorText = (color) => {
     // Ensure focus returns to the editor
     editorRef.current.focus();
     const selection = window.getSelection();
     const range = selection.getRangeAt(0);
-    let chosenColor = color.replace("#", "").toLowerCase()
+    let chosenColor = color.replace("#", "").toLowerCase();
 
     if (!selection || selection.isCollapsed) {
       // Create a new colored span element at the current cursor position
-      const colorSpan = document.createElement('span');
+      const colorSpan = document.createElement("span");
       // Add class
       colorSpan.classList.add(`text_${chosenColor}`);
 
@@ -166,39 +476,105 @@ export default function RichTextEditor() {
       // check if selected text is already colored. else color it
       let parentNode = selection.anchorNode.parentNode;
       const range = selection.getRangeAt(0);
-      let parentClassName = parentNode.classList.value
-      let tagClass = `text_${chosenColor}`
+      let parentClassName = parentNode.classList.value;
+      let tagClass = `text_${chosenColor}`;
 
       if (parentClassName === tagClass) {
-        console.log(`True: ${parentClassName} === ${tagClass}`)
+        console.log(`True: ${parentClassName} === ${tagClass}`);
         // remove parent tag
-        let tagContent = parentNode.textContent
-        console.log(tagContent)
-        parentNode.replaceWith(tagContent)
-
+        let tagContent = parentNode.textContent;
+        console.log(tagContent);
+        parentNode.replaceWith(tagContent);
       } else {
-        console.log(`False: ${parentClassName} !== ${tagClass}`)
+        console.log(`False: ${parentClassName} !== ${tagClass}`);
         // continue with format
         // check if the text already is colored
 
-        console.log("This text is already colored?: " + parentClassName.includes('text_'))
-        if (parentClassName.includes('text_')) {
+        console.log(
+          "This text is already colored?: " + parentClassName.includes("text_")
+        );
+        if (parentClassName.includes("text_")) {
           // replace existing classname with new one
-          parentNode.classList.replace(parentClassName, tagClass)
+          parentNode.classList.replace(parentClassName, tagClass);
         } else {
           // Wrap the selected content with the new tag element
           // Create a new colored span element at the current cursor position
-          const newElement = document.createElement('span');
+          const newElement = document.createElement("span");
           // Add class
           newElement.classList.add(tagClass);
           newElement.appendChild(range.extractContents());
           range.insertNode(newElement);
         }
-
       }
-
     }
-  }
+  };
+
+  const handleHighlightText = (color) => {
+    // Ensure focus returns to the editor
+    editorRef.current.focus();
+    const selection = window.getSelection();
+    const range = selection.getRangeAt(0);
+    let chosenColor = color.replace("#", "").toLowerCase();
+    let parentNode = selection.anchorNode.parentNode;
+    // if color is none auto remove bkg span
+    if (color === "none") {
+      let tagContent = parentNode.textContent;
+      parentNode.replaceWith(tagContent);
+      return;
+    }
+    if (!selection || selection.isCollapsed) {
+      // Create a new colored span element at the current cursor position
+      const highlightBkg = document.createElement("span");
+      // Add class
+      highlightBkg.classList.add(`highlight_${chosenColor}`);
+
+      // Create an empty text node inside the highlightBkg
+      const textNode = document.createTextNode("\u200B"); // Zero-width space character
+
+      highlightBkg.appendChild(textNode);
+      range.insertNode(highlightBkg);
+
+      // Adjust the range to place the cursor inside the new highlightBkg
+      const newRange = document.createRange();
+      newRange.setStart(textNode, 1);
+      newRange.collapse(true);
+      selection.removeAllRanges();
+      selection.addRange(newRange);
+    } else {
+      // check if selected text is already colored. else color it
+      let parentClassName = parentNode.classList.value;
+      let tagClass = `highlight_${chosenColor}`;
+
+      if (parentClassName === tagClass) {
+        console.log(`True: ${parentClassName} === ${tagClass}`);
+        // remove parent tag
+        let tagContent = parentNode.textContent;
+        console.log(tagContent);
+        parentNode.replaceWith(tagContent);
+      } else {
+        console.log(`False: ${parentClassName} !== ${tagClass}`);
+        // continue with format
+        // check if the text already is colored
+
+        console.log(
+          "This text is already colored?: " +
+          parentClassName.includes("highlight_")
+        );
+        if (parentClassName.includes("highlight_")) {
+          // replace existing classname with new one
+          parentNode.classList.replace(parentClassName, tagClass);
+        } else {
+          // Wrap the selected content with the new tag element
+          // Create a new colored span element at the current cursor position
+          const newElement = document.createElement("span");
+          // Add class
+          newElement.classList.add(tagClass);
+          newElement.appendChild(range.extractContents());
+          range.insertNode(newElement);
+        }
+      }
+    }
+  };
 
   const handleHeading = (level) => {
     // Ensure focus returns to the editor
@@ -248,14 +624,14 @@ export default function RichTextEditor() {
     editorRef.current.focus();
   };
 
-
-
   return (
     <div className="rich_text_editor">
       <ToolBar
         handleTag={handleTag}
+        handleAlignFormat={handleAlignFormat}
         handleHeading={handleHeading}
         handleColorText={handleColorText}
+        handleHighlightText={handleHighlightText}
       />
       <div
         ref={editorRef}

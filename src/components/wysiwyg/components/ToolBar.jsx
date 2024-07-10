@@ -44,8 +44,10 @@ const deepFontColors = [
 
 const ToolBar = ({
   handleTag,
+  handleAlignFormat,
   handleHeading,
   handleColorText,
+  handleHighlightText,
 }) => {
   // const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
   const isMac = navigator.userAgent.toLowerCase().includes("macintosh");
@@ -105,12 +107,15 @@ const ToolBar = ({
 
   const handleHighlightClick = (e, color) => {
     e.preventDefault();
-    console.log("clicked color: " + color);
+    // console.log("clicked color: " + color);
+    handleHighlightText(color)
+    // close drop down
+    setHighlightDdClose()
   };
   
   const handleTxtColorClick = (e, color) => {
     e.preventDefault();
-    console.log("clicked color: " + color);
+    // console.log("clicked color: " + color);
     handleColorText(color)
     // close drop down
     setColorDdClose()
@@ -170,7 +175,7 @@ const ToolBar = ({
             ))}
           </div>
           <div className="tool_bar_dd_item p center">
-            <span>None</span>
+            <button onClick={(e) => handleHighlightClick(e, "none")}>None</button>
           </div>
         </div>
       </div>
@@ -268,7 +273,7 @@ const ToolBar = ({
             </span>
           </button>
 
-          <button className="icon_button tool_bar">
+          <button className="icon_button tool_bar" onClick={() => handleTag("s")}>
             <StrikeIcon />
             <span className="wysiwyg_tool_tip">
               Strike Through{" "}
@@ -278,24 +283,24 @@ const ToolBar = ({
             </span>
           </button>
 
-          <button className="icon_button tool_bar heading">
+          <button className="icon_button tool_bar heading" onClick={(e) => handleAlignFormat(e,"left")}>
             <AlignLIcon />
-            <span className="wysiwyg_tool_tip">Align Left</span>
+            <span className="wysiwyg_tool_tip" >Align Left</span>
           </button>
 
-          <button className="icon_button tool_bar heading">
+          <button className="icon_button tool_bar heading" onClick={(e) => handleAlignFormat(e,"center")}>
             <AlignCIcon />
             <span className="wysiwyg_tool_tip">Align Center</span>
           </button>
 
-          <button className="icon_button tool_bar heading">
+          <button className="icon_button tool_bar heading" onClick={(e) => handleAlignFormat(e,"right")}>
             <AlignRIcon />
             <span className="wysiwyg_tool_tip">Align Right</span>
           </button>
 
-          <button className="icon_button tool_bar heading">
+          <button className="icon_button tool_bar heading" onClick={(e) => handleAlignFormat(e,"justify")}>
             <JustifyIcon />
-            <span className="wysiwyg_tool_tip">Justify Text</span>
+            <span className="wysiwyg_tool_tip" >Justify Text</span>
           </button>
         </div>
       </div>
@@ -315,10 +320,10 @@ const ToolBar = ({
         <span className="wysiwyg_tool_tip">Code Block</span>
       </div>
 
-      <div className="icon_button tool_bar heading">
+      <button className="icon_button tool_bar heading" onClick={()=>handleTag('blockquote')} >
         <QuoteIcon />
         <span className="wysiwyg_tool_tip">Quote</span>
-      </div>
+      </button>
 
       <div className="icon_button tool_bar heading">
         <DividerIcon />

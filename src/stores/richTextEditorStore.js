@@ -8,6 +8,7 @@ export const richTextEditorStore = create((set) => ({
   linkModalOpen: false,
   codeModalOpen: false,
   textSelection: '',
+  richTextEditorContent: '',
   setParaDdOpen: () => {
     set({ paragraphDdOpen: true });
   },
@@ -37,5 +38,8 @@ export const richTextEditorStore = create((set) => ({
   },
   setTextSelection: (payload) => {
     set({ textSelection: payload });
+  },
+  setRichTextEditorContent: (payload) => {
+    set({ richTextEditorContent: payload });
   },
 }));

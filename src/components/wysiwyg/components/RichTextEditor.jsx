@@ -1,13 +1,16 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import ToolBar from "./ToolBar";
+import AddCode from "./AddCode";
+import AddLink from "./AddLink";
+import { richTextEditorStore } from "../../../stores/richTextEditorStore";
 
 export default function RichTextEditor() {
   const [inputBuffer, setInputBuffer] = useState('');
   const [lastKeyWasEnter, setLastKeyWasEnter] = useState(false);
   const editorRef = useRef(null);
   const timeoutRef = useRef(null); // Use ref to store the timeout ID
-  const [content, setContent] = useState(`<p class="align_left"><br></p>`);
-
+  // state
+  const { codeModalOpen, linkModalOpen, setRichTextEditorContent } = richTextEditorStore();
 
   // util functions
   const createNewParagraph = () => {
@@ -26,9 +29,70 @@ export default function RichTextEditor() {
       handlePressEscape(e)
       handleNumberListTrigger(e);
       handleUnorderedListTrigger(e);
+      handleBackspace(e);
       setLastKeyWasEnter(false); // Reset the Enter flag for other keys
     }
+    // save to state with every key down
+    setRichTextEditorContent(editorRef.current.innerHTML)
   };
+
+  useEffect(() => {
+    // Add focus event listener to the editor
+    const handleFocus = () => {
+      if (editorRef.current.innerHTML.trim() === "") {
+        console.log("Editor is empty on focus, adding a new paragraph");
+        const newParagraph = createNewParagraph()
+        editorRef.current.appendChild(newParagraph);
+
+        const selection = window.getSelection();
+        const newRange = document.createRange();
+        newRange.setStart(newParagraph, 0);
+        newRange.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(newRange);
+
+        // Ensure focus returns to the editor
+        editorRef.current.focus();
+      }
+    };
+
+    const editor = editorRef.current;
+    editor.addEventListener('focus', handleFocus);
+
+    return () => {
+      editor.removeEventListener('focus', handleFocus);
+    };
+  }, []);
+
+
+  // need to handle backspace when there is no content inside the content editable
+  const handleBackspace = (e) => {
+    if (e.key === "Backspace") {
+      const selection = window.getSelection();
+      const range = selection.getRangeAt(0);
+      const startNode = range.startContainer;
+      let parentElement = startNode.nodeType === Node.TEXT_NODE ? startNode.parentNode : startNode;
+
+      // Check if the editor is empty or the current parent element is empty
+      if (editorRef.current.innerHTML.trim() === "" || parentElement.innerHTML.trim() === "") {
+        e.preventDefault();
+        console.log('About to add a new paragraph');
+
+        // Create a new paragraph and place the cursor inside it
+        const newParagraph = createNewParagraph()
+        editorRef.current.appendChild(newParagraph);
+
+        const newRange = document.createRange();
+        newRange.setStart(newParagraph, 0);
+        newRange.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(newRange);
+
+        // Ensure focus returns to the editor
+        editorRef.current.focus();
+      }
+    }
+  }
 
   const handleNumberListTrigger = (e) => {
     console.log("handle Number List Trigger Hit!")
@@ -220,7 +284,7 @@ export default function RichTextEditor() {
 
       const createNewListItem = (addBreak) => {
         const newListItem = document.createElement("li");
-        if(addBreak) newListItem.innerHTML = "<br>"
+        if (addBreak) newListItem.innerHTML = "<br>"
         newListItem.classList.add('formatted_li')
         return newListItem;
       };
@@ -624,8 +688,13 @@ export default function RichTextEditor() {
     editorRef.current.focus();
   };
 
+
+
+
   return (
     <div className="rich_text_editor">
+      {codeModalOpen ? <AddCode /> : ""}
+      {linkModalOpen ? <AddLink /> : ""}
       <ToolBar
         handleTag={handleTag}
         handleAlignFormat={handleAlignFormat}
@@ -637,9 +706,10 @@ export default function RichTextEditor() {
         ref={editorRef}
         className="editable_container"
         contentEditable
-        dangerouslySetInnerHTML={{ __html: content }}
+        // dangerouslySetInnerHTML={{ __html: content }}
         onKeyDown={handleKeyDown}
-      />
+      >
+      </div>
     </div>
   );
 }

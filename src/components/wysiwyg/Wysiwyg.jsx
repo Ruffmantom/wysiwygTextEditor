@@ -1,27 +1,22 @@
 import React, { useState, useEffect } from "react";
-import sanitizeHtml from "sanitize-html";
 import "./style.css";
 import RichTextEditor from "./components/RichTextEditor";
-import AddCode from "./components/AddCode";
-import AddLink from "./components/AddLink";
 import { richTextEditorStore } from "../../stores/richTextEditorStore";
 
 const Wysiwyg = () => {
   const [fullContent, setFullContent] = useState("");
+  const {  richTextEditorContent } = richTextEditorStore();
 
-  const { codeModalOpen, linkModalOpen } = richTextEditorStore();
+  useEffect(()=>{
 
+  },[richTextEditorContent])
   return (
     <div className="editable_container_cont">
-      {codeModalOpen ? <AddCode /> : ""}
-      {linkModalOpen ? <AddLink /> : ""}
-
-      <RichTextEditor
-        value={fullContent}
-        onChange={(updatedContent) => {
-          setFullContent(updatedContent);
-        }}
-      />
+      <RichTextEditor />
+      <div className="output">
+        <h3>HTML Output:</h3>
+        {richTextEditorContent}
+      </div>
     </div>
   );
 };

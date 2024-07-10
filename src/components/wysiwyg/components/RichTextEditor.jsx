@@ -51,7 +51,7 @@ export default function RichTextEditor() {
     timeoutRef.current = setTimeout(() => {
       console.log("Clear buffer");
       setInputBuffer('');
-    }, 3000);
+    }, 500);
   };
 
   const handleUnorderedListTrigger = (e) => {
@@ -266,7 +266,7 @@ export default function RichTextEditor() {
           const newListItem = createNewListItem(false);
           newListItem.appendChild(afterTextNode)
           parentElement.parentNode.insertBefore(newListItem, parentElement.nextSibling);
-          
+
           // Move the caret to the new paragraph
           const newRange = document.createRange();
           newRange.setStart(afterTextNode, 0);

@@ -102,6 +102,12 @@
     font-weight: bold;
   }
 }
+.formatted_divider{
+  height: 4px;
+  background-color:var(--shade-2);
+  border:none;
+  border-radius:10px;
+}
 blockquote{
   padding-left: 10px;
   border-left:3px solid var(--black-3) ;

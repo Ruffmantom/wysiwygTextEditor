@@ -48,6 +48,7 @@ const ToolBar = ({
   handleHeading,
   handleColorText,
   handleHighlightText,
+  handleAddDivider,
 }) => {
   // const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
   const isMac = navigator.userAgent.toLowerCase().includes("macintosh");
@@ -112,7 +113,7 @@ const ToolBar = ({
     // close drop down
     setHighlightDdClose()
   };
-  
+
   const handleTxtColorClick = (e, color) => {
     e.preventDefault();
     // console.log("clicked color: " + color);
@@ -146,7 +147,7 @@ const ToolBar = ({
         </span>
       </button>
 
-      <div className="wysiwyg_tool_bar_divider"></div>
+      <div className="wysiwyg_tool_bar_divider" ></div>
 
       <div className="icon_button tool_bar tool_bar_dd">
         <button
@@ -159,9 +160,8 @@ const ToolBar = ({
         <span className="wysiwyg_tool_tip">Highlight Color</span>
         {/* drop down content */}
         <div
-          className={`tool_bar_dd_content color_dd ${
-            highlightDdOpen ? "active" : ""
-          }`}
+          className={`tool_bar_dd_content color_dd ${highlightDdOpen ? "active" : ""
+            }`}
           ref={highlightColorDropDownRef}
         >
           <div className="highlight_colors">
@@ -186,9 +186,8 @@ const ToolBar = ({
         <span className="wysiwyg_tool_tip">Font Color</span>
         {/* drop down content */}
         <div
-          className={`tool_bar_dd_content color_dd ${
-            colorDdOpen ? "active" : ""
-          }`}
+          className={`tool_bar_dd_content color_dd ${colorDdOpen ? "active" : ""
+            }`}
           ref={colorDropDownRef}
         >
           <div className="highlight_colors">
@@ -258,9 +257,8 @@ const ToolBar = ({
           <span className="wysiwyg_tool_tip">More</span>
         </div>
         <div
-          className={`tool_bar_dd_content icons ${
-            textAlignDdOpen ? "active" : ""
-          }`}
+          className={`tool_bar_dd_content icons ${textAlignDdOpen ? "active" : ""
+            }`}
           ref={txtAlignDropDownRef}
         >
           <button className="icon_button tool_bar" onClick={() => handleTag("u")}>
@@ -283,22 +281,22 @@ const ToolBar = ({
             </span>
           </button>
 
-          <button className="icon_button tool_bar heading" onClick={(e) => handleAlignFormat(e,"left")}>
+          <button className="icon_button tool_bar heading" onClick={(e) => handleAlignFormat(e, "left")}>
             <AlignLIcon />
             <span className="wysiwyg_tool_tip" >Align Left</span>
           </button>
 
-          <button className="icon_button tool_bar heading" onClick={(e) => handleAlignFormat(e,"center")}>
+          <button className="icon_button tool_bar heading" onClick={(e) => handleAlignFormat(e, "center")}>
             <AlignCIcon />
             <span className="wysiwyg_tool_tip">Align Center</span>
           </button>
 
-          <button className="icon_button tool_bar heading" onClick={(e) => handleAlignFormat(e,"right")}>
+          <button className="icon_button tool_bar heading" onClick={(e) => handleAlignFormat(e, "right")}>
             <AlignRIcon />
             <span className="wysiwyg_tool_tip">Align Right</span>
           </button>
 
-          <button className="icon_button tool_bar heading" onClick={(e) => handleAlignFormat(e,"justify")}>
+          <button className="icon_button tool_bar heading" onClick={(e) => handleAlignFormat(e, "justify")}>
             <JustifyIcon />
             <span className="wysiwyg_tool_tip" >Justify Text</span>
           </button>
@@ -320,15 +318,15 @@ const ToolBar = ({
         <span className="wysiwyg_tool_tip">Code Block</span>
       </div>
 
-      <button className="icon_button tool_bar heading" onClick={()=>handleTag('blockquote')} >
+      <button className="icon_button tool_bar heading" onClick={() => handleTag('blockquote')} >
         <QuoteIcon />
         <span className="wysiwyg_tool_tip">Quote</span>
       </button>
 
-      <div className="icon_button tool_bar heading">
+      <button className="icon_button tool_bar heading" onClick={() => handleAddDivider()}>
         <DividerIcon />
         <span className="wysiwyg_tool_tip">Divider</span>
-      </div>
+      </button>
     </div>
   );
 };

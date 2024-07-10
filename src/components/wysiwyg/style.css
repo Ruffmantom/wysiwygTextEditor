@@ -74,6 +74,7 @@
 
 .editable_container {
   flex-grow: 1;
+  overflow-y: auto;
 }
 
 .wysiwyg_tool_bar {

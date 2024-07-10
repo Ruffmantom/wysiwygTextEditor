@@ -18,6 +18,31 @@
   --highlight-color: #eb361e;
 }
 
+.highlight_ffeb3b {
+  background-color: #ffeb3b;
+}
+.highlight_ff5722 {
+  background-color: #ff5722;
+}
+.highlight_4caf50 {
+  background-color: #4caf50;
+}
+.highlight_2196f3 {
+  background-color: #2196f3;
+}
+.highlight_9c27b0 {
+  background-color: #9c27b0;
+}
+.highlight_ff9800 {
+  background-color: #ff9800;
+}
+.highlight_00bcd4 {
+  background-color: #00bcd4;
+}
+.highlight_eb361e {
+  background-color: #eb361e;
+}
+
 .text_d0c031 {
   color: #d0c031 !important;
 }
@@ -36,7 +61,6 @@
 
 .text_4a148c {
   color: #4a148c !important;
-
 }
 
 .text_d07c00 {
@@ -53,7 +77,24 @@
 .text_auto {
   color: var(--black) !important;
 }
-
+.align_justify {
+  text-align: justify;
+}
+.align_center {
+  text-align: center;
+}
+.align_left {
+  text-align: left;
+}
+.align_right {
+  text-align: right;
+}
+blockquote{
+  padding-left: 10px;
+  border-left:3px solid var(--black-3) ;
+  font-style: italic;
+  font-size: smaller;
+}
 .rich_text_editor {
   display: flex;
   flex-direction: column;
@@ -74,6 +115,7 @@
 
 .editable_container {
   flex-grow: 1;
+  background-color: #d7d7d7 !important ;
 }
 
 .wysiwyg_tool_bar {
@@ -96,14 +138,14 @@
     }
   }
 
-  .icon_button>svg {
+  .icon_button > svg {
     height: 10px;
     width: unset;
     max-height: unset;
     max-width: 18px;
   }
 
-  .icon_button:not(.heading)>svg {
+  .icon_button:not(.heading) > svg {
     height: 14px;
   }
 }
@@ -118,7 +160,7 @@
   background-color: var(--shade-0);
 }
 
-.add_code>textarea {
+.add_code > textarea {
   max-width: 100%;
   max-height: 400px;
 }
@@ -168,7 +210,7 @@
   }
 }
 
-.icon_button:hover>.wysiwyg_tool_tip {
+.icon_button:hover > .wysiwyg_tool_tip {
   width: max-content;
   height: unset;
   overflow: unset;

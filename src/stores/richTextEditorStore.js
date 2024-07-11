@@ -8,8 +8,9 @@ export const richTextEditorStore = create((set) => ({
   linkModalOpen: false,
   codeModalOpen: false,
   textSelection: '',
-  linkLabel: '',
-  linkHref: '',
+  currentSelectPosition: '',
+  currentSelectStartPosition: '',
+  currentSelectEndPosition: '',
   richTextEditorContent: '',
   setParaDdOpen: () => {
     set({ paragraphDdOpen: true });
@@ -44,10 +45,12 @@ export const richTextEditorStore = create((set) => ({
   setRichTextEditorContent: (payload) => {
     set({ richTextEditorContent: payload });
   },
-  setLinkContent: (payload) => {
-    set({
-      linkLabel: payload.label,
-      linkHref: payload.href
-    });
+  setCurrentSelectPosition: (payload) => {
+    set({ currentSelectPosition: payload });
   },
+  setCurrentStartAndEndPosition: (payload) => {
+    set({ currentSelectStartPosition: payload.start });
+    set({ currentSelectEndPosition: payload.end });
+  },
+
 }));

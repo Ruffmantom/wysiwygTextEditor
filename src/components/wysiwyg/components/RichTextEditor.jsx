@@ -6,19 +6,52 @@ import { richTextEditorStore } from "../../../stores/richTextEditorStore";
 
 export default function RichTextEditor() {
   const [inputBuffer, setInputBuffer] = useState('');
+  const [selectedText, setSelectedText] = useState('');
   const [lastKeyWasEnter, setLastKeyWasEnter] = useState(false);
   const editorRef = useRef(null);
   const timeoutRef = useRef(null); // Use ref to store the timeout ID
+  const createId = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
+    let id = ""
+    for (var i = 0; i <= 7; i++) {
+      id += chars[Math.floor(Math.random() * chars.length)]
+    }
+    return id
+  }
+
   // state
-  const { codeModalOpen, linkModalOpen, setRichTextEditorContent } = richTextEditorStore();
+  const {
+    codeModalOpen,
+    linkModalOpen,
+    setRichTextEditorContent,
+    setLinkModal,
+    setCurrentSelectPosition,
+    currentSelectPosition,
+    currentSelectStartPosition,
+    currentSelectEndPosition,
+    setCurrentStartAndEndPosition,
+  } = richTextEditorStore();
 
   // util functions
+  // create a new paragraph element
   const createNewParagraph = () => {
     const newParagraph = document.createElement("p");
     newParagraph.classList.add("align_left");
+    newParagraph.dataset.id = createId();
     newParagraph.innerHTML = "<br>";
     return newParagraph;
   };
+  // create a link element
+  const createLinkElement = (linkData) => {
+    const linkElement = document.createElement("a");
+    linkElement.href = linkData.href;
+    linkElement.textContent = linkData.label;
+    linkElement.classList.add("formatted_link");
+    linkElement.dataset.id = createId();
+    linkElement.target = "_blank";
+
+    return linkElement
+  }
 
   const createParagraphAndSetCursor = () => {
     const newParagraph = createNewParagraph()
@@ -109,9 +142,9 @@ export default function RichTextEditor() {
   }
 
   const handleNumberListTrigger = (e) => {
-    console.log("handle Number List Trigger Hit!")
+    // console.log("handle Number List Trigger Hit!")
     const currentInput = inputBuffer + e.key;
-    console.log(currentInput)
+    // console.log(currentInput)
     // includes works faster every time but could cause problems later down the road
     if (currentInput.includes('1.')) {
       e.preventDefault();
@@ -127,7 +160,7 @@ export default function RichTextEditor() {
 
     // Clear buffer after a timeout to avoid infinite accumulation of input
     timeoutRef.current = setTimeout(() => {
-      console.log("Clear buffer");
+      // console.log("Clear buffer");
       setInputBuffer('');
     }, 500);
   };
@@ -138,10 +171,10 @@ export default function RichTextEditor() {
     const range = selection.getRangeAt(0);
     const startNode = range.startContainer;
     // create a new element
-    if (selection && selection.rangeCount > 0) {  
+    if (selection && selection.rangeCount > 0) {
       // Find the paragraph or text node where the "1. " was typed
       let parentElement = startNode.nodeType === Node.TEXT_NODE ? startNode.parentNode : startNode;
-    
+
       // append divider below current position
       let divider = document.createElement('hr')
       divider.classList.add("formatted_divider")
@@ -154,9 +187,9 @@ export default function RichTextEditor() {
   }
 
   const handleUnorderedListTrigger = (e) => {
-    console.log("handle Unordered List Trigger Hit!")
+    // console.log("handle Unordered List Trigger Hit!")
     const currentInput = inputBuffer + e.key;
-    console.log(currentInput)
+    // console.log(currentInput)
     // includes works faster every time but could cause problems later down the road
     if (currentInput.startsWith('- ')) {
       e.preventDefault();
@@ -172,7 +205,7 @@ export default function RichTextEditor() {
 
     // Clear buffer after a timeout to avoid infinite accumulation of input
     timeoutRef.current = setTimeout(() => {
-      console.log("Clear buffer");
+      // console.log("Clear buffer");
       setInputBuffer('');
     }, 500);
   };
@@ -461,17 +494,19 @@ export default function RichTextEditor() {
       let parentNode = selection.anchorNode.parentNode;
       let parentName = parentNode.tagName.toLowerCase();
       const range = selection.getRangeAt(0);
+
       if (parentName === tag) {
-        // console.log(`True: ${parentName} === ${tag}`)
-        // remove parent tag
-        let tagContent = parentNode.textContent;
-        // console.log(tagContent)
+        // Remove parent tag and keep its content
+        let tagContent = document.createDocumentFragment();
+        while (parentNode.firstChild) {
+          tagContent.appendChild(parentNode.firstChild);
+        }
         parentNode.replaceWith(tagContent);
       } else {
-        // console.log(`False: ${parentName} !== ${tag}`)
-        // continue with format
         // Wrap the selected content with the new tag element
         const newElement = document.createElement(tag);
+        newElement.dataset.id = createId();
+
         newElement.appendChild(range.extractContents());
         range.insertNode(newElement);
       }
@@ -558,6 +593,7 @@ export default function RichTextEditor() {
       const colorSpan = document.createElement("span");
       // Add class
       colorSpan.classList.add(`text_${chosenColor}`);
+      colorSpan.dataset.id = createId();
 
       // Create an empty text node inside the colorSpan
       const textNode = document.createTextNode("\u200B"); // Zero-width space character
@@ -601,6 +637,8 @@ export default function RichTextEditor() {
           const newElement = document.createElement("span");
           // Add class
           newElement.classList.add(tagClass);
+          newElement.dataset.id = createId();
+
           newElement.appendChild(range.extractContents());
           range.insertNode(newElement);
         }
@@ -626,6 +664,7 @@ export default function RichTextEditor() {
       const highlightBkg = document.createElement("span");
       // Add class
       highlightBkg.classList.add(`highlight_${chosenColor}`);
+      highlightBkg.dataset.id = createId();
 
       // Create an empty text node inside the highlightBkg
       const textNode = document.createTextNode("\u200B"); // Zero-width space character
@@ -668,6 +707,7 @@ export default function RichTextEditor() {
           const newElement = document.createElement("span");
           // Add class
           newElement.classList.add(tagClass);
+          newElement.dataset.id = createId();
           newElement.appendChild(range.extractContents());
           range.insertNode(newElement);
         }
@@ -723,13 +763,102 @@ export default function RichTextEditor() {
     editorRef.current.focus();
   };
 
+  const handleTriggerAddLink = () => {
+
+    const selection = window.getSelection();
+    console.log("Original Selection: ", selection)
+    const range = selection.getRangeAt(0);
+    // set modal open
+    setLinkModal(true)
+    // if there is selected text then send it as the label
+    if (selection && selection.rangeCount > 0) {
+      // console.log(range)
+      let startSelection = range.startOffset
+      let endSelection = range.endOffset
+      let sel = selection.anchorNode.data.slice(startSelection, endSelection)
+      setSelectedText(sel)
+    }
+    // set location
+    setCurrentSelectPosition(selection.anchorNode.parentElement.dataset.id)
+
+    setCurrentStartAndEndPosition({ start: range.startOffset, end: range.endOffset })
+  }
+
+
+
+  // after submitting the link the focus on the editor goes away
+  // we need a way to add the link where the focus was originally before submitting the link
+  const createLink = (linkData) => {
+    // Ensure focus returns to the editor
+    editorRef.current.focus();
+    const selection = window.getSelection();
+    console.log(linkData);
+    console.log(currentSelectPosition);
+    console.log(currentSelectStartPosition);
+    console.log(currentSelectEndPosition);
+
+    // Find the parent element with the dataset.id
+    let foundNode = null;
+    editorRef.current.childNodes.forEach(n => {
+      if (n.dataset && n.dataset.id === currentSelectPosition) {
+        foundNode = n;
+      }
+    });
+
+    if (!foundNode) {
+      console.error("Node with dataset.id not found");
+      return;
+    }
+
+    console.log(foundNode);
+
+    // Create the link element
+    const linkElement = createLinkElement(linkData)
+
+    // Create a new range
+    const newRange = document.createRange();
+
+    try {
+      // Ensure the offset is within bounds
+      const startOffset = Math.max(0, Math.min(foundNode.textContent.length, parseInt(currentSelectStartPosition)));
+      const endOffset = Math.max(0, Math.min(foundNode.textContent.length, parseInt(currentSelectEndPosition)));
+
+      newRange.setStart(foundNode.firstChild || foundNode, startOffset);
+      newRange.setEnd(foundNode.firstChild || foundNode, endOffset);
+
+      console.log(newRange);
+
+      // Remove the selected content and insert the link element
+      newRange.deleteContents();
+      newRange.insertNode(linkElement);
+
+      // Ensure the cursor is placed after the inserted link
+      const rangeAfterLink = document.createRange();
+      rangeAfterLink.setStartAfter(linkElement);
+      rangeAfterLink.collapse(true);
+      selection.removeAllRanges();
+      selection.addRange(rangeAfterLink);
+    } catch (error) {
+      console.error("Error setting range:", error);
+    }
+
+    // reset state back to default
+    setSelectedText('')
+    setCurrentSelectPosition('')
+    setCurrentStartAndEndPosition({ start: '', end: '' })
+
+    // Ensure focus returns to the editor
+    editorRef.current.focus();
+  };
+
+
 
 
 
   return (
     <div className="rich_text_editor">
       {codeModalOpen ? <AddCode /> : ""}
-      {linkModalOpen ? <AddLink /> : ""}
+      {linkModalOpen ? <AddLink selectedText={selectedText} createLink={createLink} /> : ""}
       <ToolBar
         handleTag={handleTag}
         handleAlignFormat={handleAlignFormat}
@@ -737,6 +866,7 @@ export default function RichTextEditor() {
         handleColorText={handleColorText}
         handleHighlightText={handleHighlightText}
         handleAddDivider={handleAddDivider}
+        handleTriggerAddLink={handleTriggerAddLink}
       />
       <div
         ref={editorRef}

@@ -49,6 +49,7 @@ const ToolBar = ({
   handleColorText,
   handleHighlightText,
   handleAddDivider,
+  handleTriggerAddLink,
 }) => {
   // const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
   const isMac = navigator.userAgent.toLowerCase().includes("macintosh");
@@ -303,20 +304,20 @@ const ToolBar = ({
         </div>
       </div>
       <div className="wysiwyg_tool_bar_divider"></div>
-      <div
+      <button
         className="icon_button tool_bar heading"
-        onClick={() => setLinkModal(true)}
+        onClick={() => handleTriggerAddLink()}
       >
         <LinkIcon />
         <span className="wysiwyg_tool_tip">Link</span>
-      </div>
-      <div
+      </button>
+      <button
         className="icon_button tool_bar heading"
         onClick={() => setCodeModal(true)}
       >
         <CodeIcon />
         <span className="wysiwyg_tool_tip">Code Block</span>
-      </div>
+      </button>
 
       <button className="icon_button tool_bar heading" onClick={() => handleTag('blockquote')} >
         <QuoteIcon />

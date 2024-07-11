@@ -89,7 +89,11 @@
 .align_right {
   text-align: right;
 }
-
+.formatted_link{
+  color: var(--blue);
+  text-decoration: underline;
+  cursor: pointer;
+}
 .formatted_ol{
   padding-left: 20px;
 }

@@ -872,6 +872,9 @@ export default function RichTextEditor() {
         ref={editorRef}
         className="editable_container"
         contentEditable
+        aria-multiline="true"
+        spellcheck="true"
+        role="textbox"
         // dangerouslySetInnerHTML={{ __html: content }}
         onKeyDown={handleKeyDown}
       >

@@ -3,6 +3,9 @@ import ToolBar from "./ToolBar";
 import AddCode from "./AddCode";
 import AddLink from "./AddLink";
 import { richTextEditorStore } from "../../../stores/richTextEditorStore";
+import CodeSnippet from "./CodeSnippet";
+import hljs from 'highlight.js';
+import 'highlight.js/styles/github.css';
 
 export default function RichTextEditor() {
   const [inputBuffer, setInputBuffer] = useState('');
@@ -854,10 +857,91 @@ export default function RichTextEditor() {
 
 
 
+  const [codeSnippet, setCodeSnippet] = useState({
+    language: 'javascript',
+    code: ''
+  });
+
+  const handleAddCode = (language, code) => {
+    setCodeSnippet({ language, code });
+  };
+
+
+  const createCodeBlockElement = (language, code) => {
+    const preElement = document.createElement('pre');
+    const codeElement = document.createElement('code');
+
+    codeElement.textContent = code;
+    codeElement.className = `language-${language}`;
+
+    preElement.appendChild(codeElement);
+
+    // Apply syntax highlighting
+    if (hljs) {
+      hljs.highlightElement(codeElement);
+    }
+
+    return preElement;
+  };
+
+  const createCodeBlock = (language, codeContent) => {
+    // Ensure focus returns to the editor
+    editorRef.current.focus();
+    const selection = window.getSelection();
+  
+    // Find the parent element with the dataset.id
+    let foundNode = null;
+    editorRef.current.childNodes.forEach(n => {
+      if (n.dataset && n.dataset.id === currentSelectPosition) {
+        foundNode = n;
+      }
+    });
+  
+    if (!foundNode) {
+      console.error("Node with dataset.id not found");
+      return;
+    }
+  
+    // Create the code block element
+    const codeBlockElement = createCodeBlockElement(language, codeContent);
+  
+    // Create a new range
+    const newRange = document.createRange();
+  
+    try {
+      // Ensure the offset is within bounds
+      const startOffset = Math.max(0, Math.min(foundNode.textContent.length, parseInt(currentSelectStartPosition)));
+      const endOffset = Math.max(0, Math.min(foundNode.textContent.length, parseInt(currentSelectEndPosition)));
+  
+      newRange.setStart(foundNode.firstChild || foundNode, startOffset);
+      newRange.setEnd(foundNode.firstChild || foundNode, endOffset);
+  
+      // Remove the selected content and insert the code block element
+      newRange.deleteContents();
+      newRange.insertNode(codeBlockElement);
+  
+      // Ensure the cursor is placed after the inserted code block
+      const rangeAfterCodeBlock = document.createRange();
+      rangeAfterCodeBlock.setStartAfter(codeBlockElement);
+      rangeAfterCodeBlock.collapse(true);
+      selection.removeAllRanges();
+      selection.addRange(rangeAfterCodeBlock);
+    } catch (error) {
+      console.error("Error setting range:", error);
+    }
+  
+    // Reset state back to default
+    setSelectedText('');
+    setCurrentSelectPosition('');
+    setCurrentStartAndEndPosition({ start: '', end: '' });
+  
+    // Ensure focus returns to the editor
+    editorRef.current.focus();
+  };
 
   return (
     <div className="rich_text_editor">
-      {codeModalOpen ? <AddCode /> : ""}
+      {codeModalOpen ? <AddCode onAddCode={createCodeBlock} /> : ""}
       {linkModalOpen ? <AddLink selectedText={selectedText} createLink={createLink} /> : ""}
       <ToolBar
         handleTag={handleTag}
@@ -878,6 +962,7 @@ export default function RichTextEditor() {
         // dangerouslySetInnerHTML={{ __html: content }}
         onKeyDown={handleKeyDown}
       >
+        <CodeSnippet onAddCode={handleAddCode} />
       </div>
     </div>
   );

@@ -28,6 +28,7 @@ export default function RichTextEditor() {
     linkModalOpen,
     setRichTextEditorContent,
     setLinkModal,
+    setCodeModal,
     setCurrentSelectPosition,
     currentSelectPosition,
     currentSelectStartPosition,
@@ -854,18 +855,38 @@ export default function RichTextEditor() {
     editorRef.current.focus();
   };
 
+  const handleTriggerAddCode = () => {
+    // Ensure focus returns to the editor
+    editorRef.current.focus();
+    const selection = window.getSelection();
+    if (selection) {
 
 
+      // console.log("Original Selection: ", selection)
+      const range = selection.getRangeAt(0);
+      // set modal open
+      setCodeModal(true)
+      // if there is selected text then send it as the label
+      if (selection && selection.rangeCount > 0) {
+        // console.log(range)
+        let startSelection = range.startOffset
+        console.log(startSelection)
+        let endSelection = range.endOffset
+        console.log(endSelection)
+        let sel = ""
+        if (selection.rangeCount > 0 && startSelection > 0 &&
+          endSelection > 0) {
+          sel = selection.anchorNode.data.slice(startSelection, endSelection)
+        }
 
-  const [codeSnippet, setCodeSnippet] = useState({
-    language: 'javascript',
-    code: ''
-  });
+        setSelectedText(sel)
+      }
+      // set location
+      setCurrentSelectPosition(selection.anchorNode.dataset.id)
 
-  const handleAddCode = (language, code) => {
-    setCodeSnippet({ language, code });
-  };
-
+      setCurrentStartAndEndPosition({ start: range.startOffset, end: range.endOffset })
+    }
+  }
 
   const createCodeBlockElement = (language, code) => {
     const preElement = document.createElement('pre');
@@ -873,7 +894,6 @@ export default function RichTextEditor() {
 
     codeElement.textContent = code;
     codeElement.className = `language-${language}`;
-
     preElement.appendChild(codeElement);
 
     // Apply syntax highlighting
@@ -888,7 +908,7 @@ export default function RichTextEditor() {
     // Ensure focus returns to the editor
     editorRef.current.focus();
     const selection = window.getSelection();
-  
+
     // Find the parent element with the dataset.id
     let foundNode = null;
     editorRef.current.childNodes.forEach(n => {
@@ -896,30 +916,29 @@ export default function RichTextEditor() {
         foundNode = n;
       }
     });
-  
+
     if (!foundNode) {
       console.error("Node with dataset.id not found");
       return;
     }
-  
+
     // Create the code block element
     const codeBlockElement = createCodeBlockElement(language, codeContent);
-  
     // Create a new range
     const newRange = document.createRange();
-  
+
     try {
       // Ensure the offset is within bounds
       const startOffset = Math.max(0, Math.min(foundNode.textContent.length, parseInt(currentSelectStartPosition)));
       const endOffset = Math.max(0, Math.min(foundNode.textContent.length, parseInt(currentSelectEndPosition)));
-  
+
       newRange.setStart(foundNode.firstChild || foundNode, startOffset);
       newRange.setEnd(foundNode.firstChild || foundNode, endOffset);
-  
+
       // Remove the selected content and insert the code block element
       newRange.deleteContents();
       newRange.insertNode(codeBlockElement);
-  
+
       // Ensure the cursor is placed after the inserted code block
       const rangeAfterCodeBlock = document.createRange();
       rangeAfterCodeBlock.setStartAfter(codeBlockElement);
@@ -929,19 +948,19 @@ export default function RichTextEditor() {
     } catch (error) {
       console.error("Error setting range:", error);
     }
-  
+
     // Reset state back to default
     setSelectedText('');
     setCurrentSelectPosition('');
     setCurrentStartAndEndPosition({ start: '', end: '' });
-  
+
     // Ensure focus returns to the editor
     editorRef.current.focus();
   };
 
   return (
     <div className="rich_text_editor">
-      {codeModalOpen ? <AddCode onAddCode={createCodeBlock} /> : ""}
+      {codeModalOpen ? <AddCode createCodeBlock={createCodeBlock} /> : ""}
       {linkModalOpen ? <AddLink selectedText={selectedText} createLink={createLink} /> : ""}
       <ToolBar
         handleTag={handleTag}
@@ -951,6 +970,7 @@ export default function RichTextEditor() {
         handleHighlightText={handleHighlightText}
         handleAddDivider={handleAddDivider}
         handleTriggerAddLink={handleTriggerAddLink}
+        handleTriggerAddCode={handleTriggerAddCode}
       />
       <div
         ref={editorRef}
@@ -962,7 +982,7 @@ export default function RichTextEditor() {
         // dangerouslySetInnerHTML={{ __html: content }}
         onKeyDown={handleKeyDown}
       >
-        <CodeSnippet onAddCode={handleAddCode} />
+
       </div>
     </div>
   );

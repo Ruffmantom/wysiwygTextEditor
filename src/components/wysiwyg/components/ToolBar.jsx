@@ -50,6 +50,7 @@ const ToolBar = ({
   handleHighlightText,
   handleAddDivider,
   handleTriggerAddLink,
+  handleTriggerAddCode,
 }) => {
   // const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
   const isMac = navigator.userAgent.toLowerCase().includes("macintosh");
@@ -313,7 +314,7 @@ const ToolBar = ({
       </button>
       <button
         className="icon_button tool_bar heading"
-        onClick={() => setCodeModal(true)}
+        onClick={() => handleTriggerAddCode()}
       >
         <CodeIcon />
         <span className="wysiwyg_tool_tip">Code Block</span>

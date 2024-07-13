@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { ReactComponent as BoldIcon } from "../../../assets/icons/bold.svg";
 import { ReactComponent as ItalicIcon } from "../../../assets/icons/italic.svg";
 import { ReactComponent as H1Icon } from "../../../assets/icons/h1.svg";
@@ -20,6 +20,7 @@ import { ReactComponent as JustifyIcon } from "../../../assets/icons/justify.svg
 import { ReactComponent as MoreIcon } from "../../../assets/icons/more-v.svg";
 // state
 import { richTextEditorStore } from "../../../stores/richTextEditorStore";
+
 const highlightColors = [
   "#FFEB3B",
   "#FF5722",
@@ -43,14 +44,14 @@ const deepFontColors = [
 ];
 
 const ToolBar = ({
-  handleTag,
   handleAlignFormat,
-  handleHeading,
-  handleColorText,
-  handleHighlightText,
-  handleAddDivider,
-  handleTriggerAddLink,
+  createHeadings,
+  createColor,
+  createHighlight,
+  createDivider,
   handleTriggerAddCode,
+  handleCreateNewTag,
+  handleTriggerAddLink,
 }) => {
   // const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
   const isMac = navigator.userAgent.toLowerCase().includes("macintosh");
@@ -111,17 +112,17 @@ const ToolBar = ({
   const handleHighlightClick = (e, color) => {
     e.preventDefault();
     // console.log("clicked color: " + color);
-    handleHighlightText(color)
+    createHighlight(color);
     // close drop down
-    setHighlightDdClose()
+    setHighlightDdClose();
   };
 
   const handleTxtColorClick = (e, color) => {
     e.preventDefault();
     // console.log("clicked color: " + color);
-    handleColorText(color)
+    createColor(color);
     // close drop down
-    setColorDdClose()
+    setColorDdClose();
   };
 
   // if click outside of dropdowns
@@ -134,14 +135,14 @@ const ToolBar = ({
 
   return (
     <div className="wysiwyg_tool_bar">
-      <button className="icon_button tool_bar" onClick={() => handleTag("b")}>
+      <button className="icon_button tool_bar" onClick={() => handleCreateNewTag("b")}>
         <BoldIcon />
         <span className="wysiwyg_tool_tip">
           Bold{" "}
           <span className="key_command">{isMac ? "cmd + b" : "ctrl + b"}</span>
         </span>
       </button>
-      <button className="icon_button tool_bar" onClick={() => handleTag("i")}>
+      <button className="icon_button tool_bar" onClick={() => handleCreateNewTag("i")}>
         <ItalicIcon />
         <span className="wysiwyg_tool_tip">
           Italic{" "}
@@ -149,7 +150,7 @@ const ToolBar = ({
         </span>
       </button>
 
-      <div className="wysiwyg_tool_bar_divider" ></div>
+      <div className="wysiwyg_tool_bar_divider"></div>
 
       <div className="icon_button tool_bar tool_bar_dd">
         <button
@@ -162,8 +163,9 @@ const ToolBar = ({
         <span className="wysiwyg_tool_tip">Highlight Color</span>
         {/* drop down content */}
         <div
-          className={`tool_bar_dd_content color_dd ${highlightDdOpen ? "active" : ""
-            }`}
+          className={`tool_bar_dd_content color_dd ${
+            highlightDdOpen ? "active" : ""
+          }`}
           ref={highlightColorDropDownRef}
         >
           <div className="highlight_colors">
@@ -177,19 +179,25 @@ const ToolBar = ({
             ))}
           </div>
           <div className="tool_bar_dd_item p center">
-            <button onClick={(e) => handleHighlightClick(e, "none")}>None</button>
+            <button onClick={(e) => handleHighlightClick(e, "none")}>
+              None
+            </button>
           </div>
         </div>
       </div>
 
       <div className="icon_button tool_bar tool_bar_dd">
-        <button className="btn_overlay" onClick={() => setColorDdOpen()}></button>
+        <button
+          className="btn_overlay"
+          onClick={() => setColorDdOpen()}
+        ></button>
         <FontcolorIcon />
         <span className="wysiwyg_tool_tip">Font Color</span>
         {/* drop down content */}
         <div
-          className={`tool_bar_dd_content color_dd ${colorDdOpen ? "active" : ""
-            }`}
+          className={`tool_bar_dd_content color_dd ${
+            colorDdOpen ? "active" : ""
+          }`}
           ref={colorDropDownRef}
         >
           <div className="highlight_colors">
@@ -203,13 +211,18 @@ const ToolBar = ({
             ))}
           </div>
           <div className="tool_bar_dd_item p center">
-            <button onClick={(e) => handleTxtColorClick(e, "auto")}>Automatic</button>
+            <button onClick={(e) => handleTxtColorClick(e, "auto")}>
+              Automatic
+            </button>
           </div>
         </div>
       </div>
 
       <div className="icon_button tool_bar tool_bar_dd">
-        <button className="btn_overlay" onClick={() => setParaDdOpen()}></button>
+        <button
+          className="btn_overlay"
+          onClick={() => setParaDdOpen()}
+        ></button>
         <p>Paragraph</p>
         <div
           className={`tool_bar_dd_content ${paragraphDdOpen ? "active" : ""}`}
@@ -217,35 +230,35 @@ const ToolBar = ({
         >
           <button
             className="tool_bar_dd_item h1"
-            onClick={() => handleHeading("h1")}
+            onClick={() => createHeadings("h1")}
           >
             <span>Heading 1</span>
             <H1Icon />
           </button>
           <button
             className="tool_bar_dd_item h2"
-            onClick={() => handleHeading("h2")}
+            onClick={() => createHeadings("h2")}
           >
             <span>Heading 2</span>
             <H2Icon />
           </button>
           <button
             className="tool_bar_dd_item h3"
-            onClick={() => handleHeading("h3")}
+            onClick={() => createHeadings("h3")}
           >
             <span>Heading 3</span>
             <H3Icon />
           </button>
           <button
             className="tool_bar_dd_item h4"
-            onClick={() => handleHeading("h4")}
+            onClick={() => createHeadings("h4")}
           >
             <span>Heading 4</span>
             <H4Icon />
           </button>
           <button
             className="tool_bar_dd_item p"
-            onClick={() => handleHeading("p")}
+            onClick={() => createHeadings("p")}
           >
             <span>Paragraph</span>P
           </button>
@@ -253,17 +266,24 @@ const ToolBar = ({
       </div>
 
       <div className="icon_button tool_bar tool_bar_dd icon">
-        <button className="btn_overlay" onClick={() => setTxtAlignDd(true)}></button>
+        <button
+          className="btn_overlay"
+          onClick={() => setTxtAlignDd(true)}
+        ></button>
         <div className="icon_button tool_bar heading">
           <MoreIcon />
           <span className="wysiwyg_tool_tip">More</span>
         </div>
         <div
-          className={`tool_bar_dd_content icons ${textAlignDdOpen ? "active" : ""
-            }`}
+          className={`tool_bar_dd_content icons ${
+            textAlignDdOpen ? "active" : ""
+          }`}
           ref={txtAlignDropDownRef}
         >
-          <button className="icon_button tool_bar" onClick={() => handleTag("u")}>
+          <button
+            className="icon_button tool_bar"
+            onClick={() => handleCreateNewTag("u")}
+          >
             <UnderlineIcon />
             <span className="wysiwyg_tool_tip">
               Underline{" "}
@@ -273,7 +293,10 @@ const ToolBar = ({
             </span>
           </button>
 
-          <button className="icon_button tool_bar" onClick={() => handleTag("s")}>
+          <button
+            className="icon_button tool_bar"
+            onClick={() => handleCreateNewTag("s")}
+          >
             <StrikeIcon />
             <span className="wysiwyg_tool_tip">
               Strike Through{" "}
@@ -283,24 +306,36 @@ const ToolBar = ({
             </span>
           </button>
 
-          <button className="icon_button tool_bar heading" onClick={(e) => handleAlignFormat(e, "left")}>
+          <button
+            className="icon_button tool_bar heading"
+            onClick={(e) => handleAlignFormat(e, "left")}
+          >
             <AlignLIcon />
-            <span className="wysiwyg_tool_tip" >Align Left</span>
+            <span className="wysiwyg_tool_tip">Align Left</span>
           </button>
 
-          <button className="icon_button tool_bar heading" onClick={(e) => handleAlignFormat(e, "center")}>
+          <button
+            className="icon_button tool_bar heading"
+            onClick={(e) => handleAlignFormat(e, "center")}
+          >
             <AlignCIcon />
             <span className="wysiwyg_tool_tip">Align Center</span>
           </button>
 
-          <button className="icon_button tool_bar heading" onClick={(e) => handleAlignFormat(e, "right")}>
+          <button
+            className="icon_button tool_bar heading"
+            onClick={(e) => handleAlignFormat(e, "right")}
+          >
             <AlignRIcon />
             <span className="wysiwyg_tool_tip">Align Right</span>
           </button>
 
-          <button className="icon_button tool_bar heading" onClick={(e) => handleAlignFormat(e, "justify")}>
+          <button
+            className="icon_button tool_bar heading"
+            onClick={(e) => handleAlignFormat(e, "justify")}
+          >
             <JustifyIcon />
-            <span className="wysiwyg_tool_tip" >Justify Text</span>
+            <span className="wysiwyg_tool_tip">Justify Text</span>
           </button>
         </div>
       </div>
@@ -320,12 +355,18 @@ const ToolBar = ({
         <span className="wysiwyg_tool_tip">Code Block</span>
       </button>
 
-      <button className="icon_button tool_bar heading" onClick={() => handleTag('blockquote')} >
+      <button
+        className="icon_button tool_bar heading"
+        onClick={() => handleCreateNewTag("blockquote")}
+      >
         <QuoteIcon />
         <span className="wysiwyg_tool_tip">Quote</span>
       </button>
 
-      <button className="icon_button tool_bar heading" onClick={() => handleAddDivider()}>
+      <button
+        className="icon_button tool_bar heading"
+        onClick={() => createDivider()}
+      >
         <DividerIcon />
         <span className="wysiwyg_tool_tip">Divider</span>
       </button>

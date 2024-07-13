@@ -4,7 +4,7 @@ import { richTextEditorStore } from "../../../stores/richTextEditorStore";
 
 const urlRegex = /^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?(#[a-z\d_]*)?$/i;
 
-const AddLink = ({ selectedText, createLink }) => {
+const AddLink = ({ selectedText, createLinks }) => {
   const { setLinkModal } = richTextEditorStore();
 
   const [linkData, setLinkData] = useState({
@@ -40,7 +40,7 @@ const AddLink = ({ selectedText, createLink }) => {
       return;
     }
 
-    createLink({ label, href });
+    createLinks({ label, href });
 
     // close modal
     setLinkModal(false);

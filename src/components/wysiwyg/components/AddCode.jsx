@@ -5,7 +5,7 @@ import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 import { python } from '@codemirror/lang-python';
 
-const AddCode = ({ createCodeBlock }) => {
+const AddCode = ({ createCodeBlocks }) => {
   const { setCodeModal } = richTextEditorStore();
   const [codeContent, setCodeContent] = useState('');
   const [language, setLanguage] = useState('javascript');
@@ -35,7 +35,7 @@ const AddCode = ({ createCodeBlock }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log({ language, codeContent })
-    createCodeBlock(language, codeContent);
+    createCodeBlocks(language, codeContent);
     handleClose(e);
   };
 

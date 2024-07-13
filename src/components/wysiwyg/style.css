@@ -100,6 +100,9 @@
 .formatted_ul{
   padding-left: 20px;
 }
+code{
+  border-radius: 5px;
+}
 .formatted_li{
   font-weight: normal;
   &&::marker{

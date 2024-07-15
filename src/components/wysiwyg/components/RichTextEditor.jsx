@@ -3,11 +3,9 @@ import ToolBar from "./ToolBar";
 import AddCode from "./AddCode";
 import AddLink from "./AddLink";
 import { richTextEditorStore } from "../../../stores/richTextEditorStore";
-import hljs from "highlight.js";
 import "highlight.js/styles/github.css";
 // helpers
 import {
-  createCodeBlockElement,
   createNewParagraph,
   setCursorInsideNewElement,
 } from "../helpers/helpers";
@@ -20,9 +18,8 @@ import { handleHighlightText } from "../helpers/highlightColor";
 import { handleNumberListTrigger } from "../helpers/numberList";
 import { handleUnorderedListTrigger } from "../helpers/unorderedList";
 import { handlePressEscape } from "../helpers/escapeActions";
-import { handleEnterKey } from "../helpers/enterActions";
 import { handleHeading } from "../helpers/formatText";
-import { createLink, handleTriggerAddLink } from "../helpers/createLink";
+import { createLink } from "../helpers/createLink";
 import { createCodeBlock } from "../helpers/createCodeBlock";
 import { handleTab } from '../helpers/handleTab'
 export default function RichTextEditor() {
@@ -47,9 +44,6 @@ export default function RichTextEditor() {
 
   // handle key down functions
   const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      handleEnterKey(e, editorRef);
-    }
     if (e.key === "Escape") {
       handlePressEscape(editorRef);
     } else {

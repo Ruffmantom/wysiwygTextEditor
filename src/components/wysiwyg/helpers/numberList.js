@@ -1,9 +1,27 @@
-import { createId } from "./helpers";
+import { createId, setCursorInsideElement } from "./helpers";
+
+export const createNewListItem = (addBreak) => {
+  const newListItem = document.createElement("li");
+  newListItem.dataset.id = createId();
+  if (addBreak) newListItem.innerHTML = "<br>";
+  newListItem.classList.add("formatted_li");
+  return newListItem;
+};
+
+export const createNewNumberedList = (type, className, addBreak) => {
+  const ol = document.createElement("ol");
+  ol.classList.add("formatted_ol");
+  if (className) ol.classList.add(className);
+  ol.setAttribute('type', type);
+  ol.dataset.id = createId();
+  let listItem = createNewListItem(addBreak)
+  // append list item
+  ol.appendChild(listItem);
+  return ol
+}
 
 export const handleNumberListTrigger = (e, timeoutRef, setInputBuffer, inputBuffer) => {
-  // console.log("handle Number List Trigger Hit!")
   const currentInput = inputBuffer + e.key;
-  // console.log(currentInput)
   // includes works faster every time but could cause problems later down the road
   if (currentInput.includes("1.")) {
     e.preventDefault();
@@ -11,15 +29,12 @@ export const handleNumberListTrigger = (e, timeoutRef, setInputBuffer, inputBuff
   } else {
     setInputBuffer(currentInput);
   }
-
   // Clear any existing timeout
   if (timeoutRef.current) {
     clearTimeout(timeoutRef.current);
   }
-
   // Clear buffer after a timeout to avoid infinite accumulation of input
   timeoutRef.current = setTimeout(() => {
-    // console.log("Clear buffer");
     setInputBuffer("");
   }, 500);
 };
@@ -29,45 +44,26 @@ export const triggerNumberList = () => {
   const selection = window.getSelection();
   const range = selection.getRangeAt(0);
   const startNode = range.startContainer;
-
   // Find the paragraph or text node where the "1. " was typed
   let parentElement =
     startNode.nodeType === Node.TEXT_NODE ? startNode.parentNode : startNode;
   console.log("Inside the triggerNumberList: ", parentElement);
-
   // Create a new ordered list
-  const ol = document.createElement("ol");
-  ol.classList.add("formatted_ol");
-  ol.dataset.id = createId();
-  const li = document.createElement("li");
-  li.classList.add("formatted_li");
-  li.dataset.id = createId();
-  li.innerHTML = "<br>"; // Add a placeholder for the list item
-  ol.appendChild(li);
-
+  const newNumberList = createNewNumberedList()
   // Insert the ordered list before the current parent element
-  parentElement.parentNode.insertBefore(ol, parentElement.nextSibling);
+  parentElement.parentNode.insertBefore(newNumberList, parentElement.nextSibling);
   // after inserting the sibling
   // Remove the "1. " parent
-  // console.log(parentElement.nodeName)
   if (
     parentElement.nodeName === "P" &&
     parentElement.textContent.includes("1")
   ) {
     parentElement.remove();
   }
-
   // Move the caret to the new list item
-  const newRange = document.createRange();
-  newRange.setStart(li, 0);
-  newRange.collapse(true);
-  selection.removeAllRanges();
-  selection.addRange(newRange);
-
+  setCursorInsideElement(newNumberList.firstChild)
   // Remove the parent element if it's now empty
   if (parentElement.textContent.trim() === "") {
     parentElement.parentNode.removeChild(parentElement);
   }
-
-
 };

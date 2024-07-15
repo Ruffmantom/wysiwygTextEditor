@@ -1,5 +1,5 @@
 import hljs from "highlight.js";
-export const formatHeading = (headingType, selectedText) => {};
+export const formatHeading = (headingType, selectedText) => { };
 export const formatItalic = (fullContent, selectedText) => {
   const italicHtml = `<i>${selectedText}</i>`;
   console.log("formatItalic - fullContent: " + fullContent);
@@ -90,11 +90,30 @@ export const setCursorInsideNewElement = (editorRef, newElement) => {
   selection.addRange(newRange);
 };
 
+export const setCursorInsideElement = (element) => {
+  const selection = window.getSelection();
+  const newRange = document.createRange();
+  newRange.setStart(element, 0);
+  newRange.collapse(true);
+  selection.removeAllRanges();
+  selection.addRange(newRange);
+};
+
 export const setCursorAfterElement = (elementNode) => {
   const selection = window.getSelection();
-  const rangeAfterCodeBlock = document.createRange();
-  rangeAfterCodeBlock.setStartAfter(elementNode);
-  rangeAfterCodeBlock.collapse(true);
+  console.log(elementNode)
+  console.log(selection)
+  const newRange = document.createRange();
+  newRange.setStartAfter(elementNode);
+  newRange.collapse(true);
   selection.removeAllRanges();
-  selection.addRange(rangeAfterCodeBlock);
+  selection.addRange(newRange);
 };
+
+export const createTabSpace = () => {
+  const newSpan = document.createElement("span");
+  newSpan.classList.add("formatted_tab_space");
+  newSpan.dataset.id = createId();
+  // newSpan.innerHTML = "<br>";
+  return newSpan;
+}

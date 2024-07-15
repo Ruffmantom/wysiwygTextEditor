@@ -1,9 +1,7 @@
 import { createId } from "./helpers";
 
 export const handleUnorderedListTrigger = (e, timeoutRef, setInputBuffer, inputBuffer) => {
-  // console.log("handle Unordered List Trigger Hit!")
   const currentInput = inputBuffer + e.key;
-  // console.log(currentInput)
   // includes works faster every time but could cause problems later down the road
   if (currentInput.startsWith("- ")) {
     e.preventDefault();
@@ -11,12 +9,10 @@ export const handleUnorderedListTrigger = (e, timeoutRef, setInputBuffer, inputB
   } else {
     setInputBuffer(currentInput);
   }
-
   // Clear any existing timeout
   if (timeoutRef.current) {
     clearTimeout(timeoutRef.current);
   }
-
   // Clear buffer after a timeout to avoid infinite accumulation of input
   timeoutRef.current = setTimeout(() => {
     // console.log("Clear buffer");
@@ -24,8 +20,20 @@ export const handleUnorderedListTrigger = (e, timeoutRef, setInputBuffer, inputB
   }, 500);
 };
 
+export const createUnOrderedList = (className) => {
+  const ul = document.createElement("ul");
+  ul.dataset.id = createId();
+  ul.classList.add("formatted_ul");
+  if (className) ul.classList.add(className);
+  const li = document.createElement("li");
+  li.dataset.id = createId();
+  li.classList.add("formatted_li");
+  ul.appendChild(li);
+
+  return ul
+}
+
 export const triggerUnOrderedList = () => {
-  console.log("triggerNumberList Hit!");
   const selection = window.getSelection();
   const range = selection.getRangeAt(0);
   const startNode = range.startContainer;
@@ -33,20 +41,13 @@ export const triggerUnOrderedList = () => {
   // Find the paragraph or text node where the "1. " was typed
   let parentElement =
     startNode.nodeType === Node.TEXT_NODE ? startNode.parentNode : startNode;
-  console.log("Inside the triggerNumberList: ", parentElement);
+  console.log("Inside the triggerUnorderedList: ", parentElement);
 
   // Create a new ordered list
-  const ol = document.createElement("ul");
-  ol.dataset.id = createId();
-  ol.classList.add("formatted_ul");
-  const li = document.createElement("li");
-  li.dataset.id = createId();
-  li.classList.add("formatted_li");
-  li.innerHTML = "<br>"; // Add a placeholder for the list item
-  ol.appendChild(li);
+  const newUnOrderedList = createUnOrderedList()
 
   // Insert the ordered list before the current parent element
-  parentElement.parentNode.insertBefore(ol, parentElement.nextSibling);
+  parentElement.parentNode.insertBefore(newUnOrderedList, parentElement.nextSibling);
   // after inserting the sibling
   // Remove the "1. " parent
   // console.log(parentElement.nodeName)
@@ -59,7 +60,7 @@ export const triggerUnOrderedList = () => {
 
   // Move the caret to the new list item
   const newRange = document.createRange();
-  newRange.setStart(li, 0);
+  newRange.setStart(newUnOrderedList.firstChild, 0);
   newRange.collapse(true);
   selection.removeAllRanges();
   selection.addRange(newRange);

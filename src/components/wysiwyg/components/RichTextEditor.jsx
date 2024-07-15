@@ -5,6 +5,7 @@ import AddLink from "./AddLink";
 import { richTextEditorStore } from "../../../stores/richTextEditorStore";
 import hljs from "highlight.js";
 import "highlight.js/styles/github.css";
+// helpers
 import {
   createCodeBlockElement,
   createNewParagraph,
@@ -23,7 +24,7 @@ import { handleEnterKey } from "../helpers/enterActions";
 import { handleHeading } from "../helpers/formatText";
 import { createLink, handleTriggerAddLink } from "../helpers/createLink";
 import { createCodeBlock } from "../helpers/createCodeBlock";
-
+import { handleTab } from '../helpers/handleTab'
 export default function RichTextEditor() {
   const [inputBuffer, setInputBuffer] = useState("");
   const [selectedText, setSelectedText] = useState("");
@@ -62,6 +63,7 @@ export default function RichTextEditor() {
       // list triggers
       handleNumberListTrigger(e, timeoutRef, setInputBuffer, inputBuffer);
       handleUnorderedListTrigger(e, timeoutRef, setInputBuffer, inputBuffer);
+      handleTab(e)
     }
     // save to state with every key down
     setRichTextEditorContent(editorRef.current.innerHTML);
@@ -204,9 +206,9 @@ export default function RichTextEditor() {
       }
       console.log(selection)
       // set location
-      if(selection.anchorNode.dataset){
+      if (selection.anchorNode.dataset) {
         setCurrentSelectPosition(selection.anchorNode.dataset.id);
-      }else{
+      } else {
         setCurrentSelectPosition(selection.anchorNode.parentElement.dataset.id);
 
       }

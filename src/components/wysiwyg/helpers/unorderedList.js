@@ -1,3 +1,5 @@
+import { createId } from "./helpers";
+
 export const handleUnorderedListTrigger = (e, timeoutRef, setInputBuffer, inputBuffer) => {
   // console.log("handle Unordered List Trigger Hit!")
   const currentInput = inputBuffer + e.key;
@@ -35,8 +37,10 @@ export const triggerUnOrderedList = () => {
 
   // Create a new ordered list
   const ol = document.createElement("ul");
+  ol.dataset.id = createId();
   ol.classList.add("formatted_ul");
   const li = document.createElement("li");
+  li.dataset.id = createId();
   li.classList.add("formatted_li");
   li.innerHTML = "<br>"; // Add a placeholder for the list item
   ol.appendChild(li);

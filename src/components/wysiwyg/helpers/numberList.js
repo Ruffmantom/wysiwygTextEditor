@@ -1,3 +1,5 @@
+import { createId } from "./helpers";
+
 export const handleNumberListTrigger = (e, timeoutRef, setInputBuffer, inputBuffer) => {
   // console.log("handle Number List Trigger Hit!")
   const currentInput = inputBuffer + e.key;
@@ -36,8 +38,10 @@ export const triggerNumberList = () => {
   // Create a new ordered list
   const ol = document.createElement("ol");
   ol.classList.add("formatted_ol");
+  ol.dataset.id = createId();
   const li = document.createElement("li");
   li.classList.add("formatted_li");
+  li.dataset.id = createId();
   li.innerHTML = "<br>"; // Add a placeholder for the list item
   ol.appendChild(li);
 

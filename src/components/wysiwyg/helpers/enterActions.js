@@ -1,4 +1,4 @@
-import { createNewParagraph } from "./helpers";
+import { createId, createNewParagraph } from "./helpers";
 
 export const handleEnterKey = (e,editorRef) => {
     if (e.key === "Enter") {
@@ -23,6 +23,7 @@ export const handleEnterKey = (e,editorRef) => {
 
       const createNewListItem = (addBreak) => {
         const newListItem = document.createElement("li");
+        newListItem.dataset.id = createId();
         if (addBreak) newListItem.innerHTML = "<br>";
         newListItem.classList.add("formatted_li");
         return newListItem;

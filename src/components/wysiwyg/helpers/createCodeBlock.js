@@ -2,56 +2,38 @@ import { createCodeBlockElement, setCursorAfterElement } from "./helpers";
 
 export const createCodeBlock = (
     editorRef,
-    currentSelectPosition,
     language,
-    codeContent,
-    currentSelectStartPosition,
-    currentSelectEndPosition
+    codeContent
 ) => {
-  // Find the parent element with the dataset.id
-  let foundNode = null;
-  editorRef.current.childNodes.forEach((n) => {
-    if (n.dataset && n.dataset.id === currentSelectPosition) {
-      foundNode = n;
-    }
-  });
+  const selection = window.getSelection();
 
-  if (!foundNode) {
-    console.error("Node with dataset.id not found");
+  if (!selection.rangeCount) {
+    console.error("No selection range found");
+    return;
+  }
+
+  const range = selection.getRangeAt(0);
+  const startContainer = range.startContainer;
+  const endContainer = range.endContainer;
+
+  // Check if the selection is within the editor
+  if (!editorRef.current.contains(startContainer) || !editorRef.current.contains(endContainer)) {
+    console.error("Selection is outside the editor");
     return;
   }
 
   // Create the code block element
   const codeBlockElement = createCodeBlockElement(language, codeContent);
-  console.log("Created Code Block: ", codeBlockElement)
-  // Create a new range
-  const newRange = document.createRange();
+  console.log("Created Code Block: ", codeBlockElement);
 
   try {
-    // Ensure the offset is within bounds
-    const startOffset = Math.max(
-      0,
-      Math.min(
-        foundNode.textContent.length,
-        parseInt(currentSelectStartPosition)
-      )
-    );
-
-    const endOffset = Math.max(
-      0,
-      Math.min(foundNode.textContent.length, parseInt(currentSelectEndPosition))
-    );
-    console.log("Found Node: ",foundNode)
-    newRange.setStart(foundNode, startOffset);
-    newRange.setEnd(foundNode, endOffset);
-
-    // Remove the selected content and insert the code block element
-    newRange.deleteContents();
-    newRange.insertNode(codeBlockElement);
+    // Delete the selected content and insert the code block element
+    range.deleteContents();
+    range.insertNode(codeBlockElement);
 
     // Ensure the cursor is placed after the inserted code block
     setCursorAfterElement(codeBlockElement);
   } catch (error) {
-    console.error("Error setting range:", error);
+    console.error("Error manipulating range:", error);
   }
 };

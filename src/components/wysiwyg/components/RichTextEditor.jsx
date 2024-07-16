@@ -22,7 +22,8 @@ import { handleHeading } from "../helpers/formatText";
 import { createLink } from "../helpers/createLink";
 import { createCodeBlock } from "../helpers/createCodeBlock";
 import { handleTab } from "../helpers/handleTab";
-import {toolBarListener} from '../helpers/toolBarListener'
+import { toolBarListener } from '../helpers/toolBarListener'
+import { handleEnterKey } from '../helpers/enterActions'
 export default function RichTextEditor() {
   const [inputBuffer, setInputBuffer] = useState("");
   const [selectedText, setSelectedText] = useState("");
@@ -53,9 +54,11 @@ export default function RichTextEditor() {
 
   // handle key down functions
   const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleEnterKey()
+    }
     if (e.key === "Escape") {
       handlePressEscape(editorRef);
-    } else {
     }
     if (e.key === "Escape") {
       handlePressEscape(editorRef);
@@ -72,12 +75,12 @@ export default function RichTextEditor() {
     setRichTextEditorContent(editorRef.current.innerHTML);
     toolBarListener(
       setToolBarBoldActive,
-    setToolBarItalicActive,
-    setToolBarBkgColorActive,
-    setToolBarBkgColor,
-    setToolBarColorActive,
-    setToolBarColor,
-    setToolBarParagraph,
+      setToolBarItalicActive,
+      setToolBarBkgColorActive,
+      setToolBarBkgColor,
+      setToolBarColorActive,
+      setToolBarColor,
+      setToolBarParagraph,
     )
   };
 

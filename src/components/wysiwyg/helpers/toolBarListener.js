@@ -15,8 +15,8 @@ export const toolBarListener = (
 ) => {
   const selection = window.getSelection();
   const range = selection.getRangeAt(0);
-  console.log(range.startContainer.parentElement.nodeName === "SPAN");
-  console.log(range.startContainer.parentElement.classList);
+  // console.log(range.startContainer.parentElement.nodeName === "SPAN");
+  // console.log(range.startContainer.parentElement.classList);
   // **** mark colored text
   if (
     range.startContainer.parentElement.nodeName === "SPAN" &&

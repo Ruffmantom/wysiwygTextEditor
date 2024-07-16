@@ -71,6 +71,14 @@ const ToolBar = ({
     // modal actions
     setLinkModal,
     setCodeModal,
+    // toolbar state
+    toolBarBoldActive,
+    toolBarItalicActive,
+    toolBarBkgColorActive,
+    toolBarBkgColor,
+    toolBarColorActive,
+    toolBarColor,
+    toolBarParagraph,
   } = richTextEditorStore();
 
   const paragraphDropDownRef = useRef(null);
@@ -133,16 +141,27 @@ const ToolBar = ({
     };
   }, []);
 
+  
+  useEffect(() => {
+    console.log(toolBarColor);
+  }, [toolBarColor]);
+
   return (
     <div className="wysiwyg_tool_bar">
-      <button className="icon_button tool_bar" onClick={() => handleCreateNewTag("b")}>
+      <button
+        className="icon_button tool_bar"
+        onClick={() => handleCreateNewTag("b")}
+      >
         <BoldIcon />
         <span className="wysiwyg_tool_tip">
           Bold{" "}
           <span className="key_command">{isMac ? "cmd + b" : "ctrl + b"}</span>
         </span>
       </button>
-      <button className="icon_button tool_bar" onClick={() => handleCreateNewTag("i")}>
+      <button
+        className="icon_button tool_bar"
+        onClick={() => handleCreateNewTag("i")}
+      >
         <ItalicIcon />
         <span className="wysiwyg_tool_tip">
           Italic{" "}
@@ -189,6 +208,9 @@ const ToolBar = ({
       <div className="icon_button tool_bar tool_bar_dd">
         <button
           className="btn_overlay"
+          style={{
+            outline: toolBarColor !== "" ? `2px solid #${toolBarColor}` : "",
+          }}
           onClick={() => setColorDdOpen()}
         ></button>
         <FontcolorIcon />

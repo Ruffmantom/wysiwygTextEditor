@@ -2,19 +2,14 @@ import React, { useState } from "react";
 import { ReactComponent as CloseIcon } from "../../../assets/icons/close.svg";
 import { richTextEditorStore } from "../../../stores/richTextEditorStore";
 import CodeMirror from "@uiw/react-codemirror";
+import { vscodeDark } from '@uiw/codemirror-themes-all';
 import { javascript } from "@codemirror/lang-javascript";
 import { html } from "@codemirror/lang-html";
 import { css } from "@codemirror/lang-css";
 import { xml } from "@codemirror/lang-xml";
 import CustomSelect from "../../CustomSelect";
 
-const languageList = [
-  "HTML",
-  "XML",
-  "CSS",
-  "JavaScript",
-  "TypeScript",
-]
+const languageList = ["HTML", "XML", "CSS", "JavaScript", "TypeScript"];
 
 const AddCode = ({ createCodeBlocks }) => {
   const { setCodeModal } = richTextEditorStore();
@@ -71,14 +66,17 @@ const AddCode = ({ createCodeBlocks }) => {
           <div className="form_cont create">
             <div className="form_group">
               <label htmlFor="codelang">Code Language</label>
-              <CustomSelect options={languageList} setValue={handleLanguageChange}/>
+              <CustomSelect
+                options={languageList}
+                setValue={handleLanguageChange}
+              />
             </div>
             <div className="add_code form_group">
               <label htmlFor="code">Add Code</label>
               <CodeMirror
                 value={codeContent}
                 height="200px"
-                extensions={[getLanguageExtension(language)]}
+                extensions={[getLanguageExtension(language), vscodeDark]}
                 onChange={(value) => setCodeContent(value)}
               />
             </div>

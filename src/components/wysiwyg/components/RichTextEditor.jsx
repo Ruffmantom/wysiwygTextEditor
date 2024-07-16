@@ -22,6 +22,7 @@ import { handleHeading } from "../helpers/formatText";
 import { createLink } from "../helpers/createLink";
 import { createCodeBlock } from "../helpers/createCodeBlock";
 import { handleTab } from "../helpers/handleTab";
+import {toolBarListener} from '../helpers/toolBarListener'
 export default function RichTextEditor() {
   const [inputBuffer, setInputBuffer] = useState("");
   const [selectedText, setSelectedText] = useState("");
@@ -40,6 +41,14 @@ export default function RichTextEditor() {
     currentSelectStartPosition,
     currentSelectEndPosition,
     setCurrentStartAndEndPosition,
+
+    setToolBarBoldActive,
+    setToolBarItalicActive,
+    setToolBarBkgColorActive,
+    setToolBarBkgColor,
+    setToolBarColorActive,
+    setToolBarColor,
+    setToolBarParagraph,
   } = richTextEditorStore();
 
   // handle key down functions
@@ -61,6 +70,15 @@ export default function RichTextEditor() {
     }
     // save to state with every key down
     setRichTextEditorContent(editorRef.current.innerHTML);
+    toolBarListener(
+      setToolBarBoldActive,
+    setToolBarItalicActive,
+    setToolBarBkgColorActive,
+    setToolBarBkgColor,
+    setToolBarColorActive,
+    setToolBarColor,
+    setToolBarParagraph,
+    )
   };
 
   // on load

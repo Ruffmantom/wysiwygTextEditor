@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import hljs from 'highlight.js';
-import 'highlight.js/styles/github.css'; // You can choose a different theme
+import 'highlight.js/styles/github.css';
 
 
 export default function CodeSnippet({ language, code }) {

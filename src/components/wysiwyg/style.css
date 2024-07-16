@@ -136,7 +136,9 @@ code {
     font-weight: bold;
   }
 }
-
+.ͼ15{
+  background-color: #1e1e1e;
+}
 .formatted_divider {
   height: 4px;
   background-color: var(--shade-2);

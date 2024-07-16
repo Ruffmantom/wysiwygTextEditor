@@ -1,8 +1,7 @@
-import { createId, setCursorInsideElement } from "./helpers";
+import { setCursorInsideElement } from "./helpers";
 
 export const createNewListItem = (addBreak) => {
   const newListItem = document.createElement("li");
-  newListItem.dataset.id = createId();
   if (addBreak) newListItem.innerHTML = "<br>";
   newListItem.classList.add("formatted_li");
   return newListItem;
@@ -13,7 +12,6 @@ export const createNewNumberedList = (type, className, addBreak) => {
   ol.classList.add("formatted_ol");
   if (className) ol.classList.add(className);
   ol.setAttribute('type', type);
-  ol.dataset.id = createId();
   let listItem = createNewListItem(addBreak)
   // append list item
   ol.appendChild(listItem);

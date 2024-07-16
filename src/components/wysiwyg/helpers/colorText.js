@@ -1,5 +1,3 @@
-import { createId } from "./helpers";
-
 export const handleColorText = (color) => {
     const selection = window.getSelection();
     const range = selection.getRangeAt(0);
@@ -10,7 +8,6 @@ export const handleColorText = (color) => {
       const colorSpan = document.createElement("span");
       // Add class
       colorSpan.classList.add(`text_${chosenColor}`);
-      colorSpan.dataset.id = createId();
 
       // Create an empty text node inside the colorSpan
       const textNode = document.createTextNode("\u200B"); // Zero-width space character
@@ -54,7 +51,6 @@ export const handleColorText = (color) => {
           const newElement = document.createElement("span");
           // Add class
           newElement.classList.add(tagClass);
-          newElement.dataset.id = createId();
 
           newElement.appendChild(range.extractContents());
           range.insertNode(newElement);

@@ -1,5 +1,3 @@
-import { createId } from "./helpers";
-
 export const handleUnorderedListTrigger = (e, timeoutRef, setInputBuffer, inputBuffer) => {
   const currentInput = inputBuffer + e.key;
   // includes works faster every time but could cause problems later down the road
@@ -22,11 +20,9 @@ export const handleUnorderedListTrigger = (e, timeoutRef, setInputBuffer, inputB
 
 export const createUnOrderedList = (className) => {
   const ul = document.createElement("ul");
-  ul.dataset.id = createId();
   ul.classList.add("formatted_ul");
   if (className) ul.classList.add(className);
   const li = document.createElement("li");
-  li.dataset.id = createId();
   li.classList.add("formatted_li");
   ul.appendChild(li);
 

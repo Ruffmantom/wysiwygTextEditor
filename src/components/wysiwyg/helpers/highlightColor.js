@@ -1,5 +1,3 @@
-import { createId } from "./helpers";
-
 export const handleHighlightText = (color) => {
   const selection = window.getSelection();
   const range = selection.getRangeAt(0);
@@ -16,7 +14,6 @@ export const handleHighlightText = (color) => {
     const highlightBkg = document.createElement("span");
     // Add class
     highlightBkg.classList.add(`highlight_${chosenColor}`);
-    highlightBkg.dataset.id = createId();
 
     // Create an empty text node inside the highlightBkg
     const textNode = document.createTextNode("\u200B"); // Zero-width space character
@@ -62,7 +59,6 @@ export const handleHighlightText = (color) => {
         const newElement = document.createElement("span");
         // Add class
         newElement.classList.add(tagClass);
-        newElement.dataset.id = createId();
         newElement.appendChild(range.extractContents());
         range.insertNode(newElement);
       }

@@ -9,17 +9,16 @@ import { ReactComponent as LinkIcon } from "../../../assets/icons/link.svg";
 import { ReactComponent as CodeIcon } from "../../../assets/icons/code.svg";
 import { ReactComponent as UnderlineIcon } from "../../../assets/icons/underline.svg";
 import { ReactComponent as StrikeIcon } from "../../../assets/icons/strike.svg";
+import { ReactComponent as ClearFormatIcon } from "../../../assets/icons/clearFormat.svg";
 import { ReactComponent as QuoteIcon } from "../../../assets/icons/quote.svg";
 import { ReactComponent as HighlightIcon } from "../../../assets/icons/highlight.svg";
 import { ReactComponent as FontcolorIcon } from "../../../assets/icons/fontcolor.svg";
 import { ReactComponent as DividerIcon } from "../../../assets/icons/divider.svg";
-import { ReactComponent as AlignRIcon } from "../../../assets/icons/align-r.svg";
-import { ReactComponent as AlignLIcon } from "../../../assets/icons/align-l.svg";
-import { ReactComponent as AlignCIcon } from "../../../assets/icons/align-c.svg";
-import { ReactComponent as JustifyIcon } from "../../../assets/icons/justify.svg";
 import { ReactComponent as MoreIcon } from "../../../assets/icons/more-v.svg";
 // state
 import { richTextEditorStore } from "../../../stores/richTextEditorStore";
+// helpers
+import { clearFormat } from '../helpers/clearFormat'
 
 const highlightColors = [
   "#FFEB3B",
@@ -141,16 +140,11 @@ const ToolBar = ({
     };
   }, []);
 
-  
-  useEffect(() => {
-    console.log(toolBarColor);
-  }, [toolBarColor]);
-
   return (
     <div className="wysiwyg_tool_bar">
       <button
         className="icon_button tool_bar"
-        onClick={() => handleCreateNewTag("b")}
+        onClick={() => handleCreateNewTag('b')}
       >
         <BoldIcon />
         <span className="wysiwyg_tool_tip">
@@ -327,38 +321,21 @@ const ToolBar = ({
               </span>
             </span>
           </button>
-
+          
           <button
-            className="icon_button tool_bar heading"
-            onClick={(e) => handleAlignFormat(e, "left")}
+            className="icon_button tool_bar"
+            onClick={() => clearFormat()}
           >
-            <AlignLIcon />
-            <span className="wysiwyg_tool_tip">Align Left</span>
+            <ClearFormatIcon />
+            <span className="wysiwyg_tool_tip">
+             Clear Format{" "}
+              <span className="key_command">
+                {isMac ? "cmd + \\" : "ctrl + \\"}
+              </span>
+            </span>
           </button>
 
-          <button
-            className="icon_button tool_bar heading"
-            onClick={(e) => handleAlignFormat(e, "center")}
-          >
-            <AlignCIcon />
-            <span className="wysiwyg_tool_tip">Align Center</span>
-          </button>
-
-          <button
-            className="icon_button tool_bar heading"
-            onClick={(e) => handleAlignFormat(e, "right")}
-          >
-            <AlignRIcon />
-            <span className="wysiwyg_tool_tip">Align Right</span>
-          </button>
-
-          <button
-            className="icon_button tool_bar heading"
-            onClick={(e) => handleAlignFormat(e, "justify")}
-          >
-            <JustifyIcon />
-            <span className="wysiwyg_tool_tip">Justify Text</span>
-          </button>
+          
         </div>
       </div>
       <div className="wysiwyg_tool_bar_divider"></div>

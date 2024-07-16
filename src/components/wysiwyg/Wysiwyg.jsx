@@ -13,10 +13,6 @@ const Wysiwyg = () => {
   return (
     <div className="editable_container_cont">
       <RichTextEditor />
-      {/* <div className="output">
-        <h3>HTML Output:</h3>
-        {richTextEditorContent}
-      </div> */}
     </div>
   );
 };

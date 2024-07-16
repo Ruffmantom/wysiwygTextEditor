@@ -31,18 +31,20 @@ export const createId = () => {
 // create a new paragraph element
 export const createNewParagraph = () => {
   const newParagraph = document.createElement("p");
-  newParagraph.classList.add("align_left");
-  newParagraph.dataset.id = createId();
   newParagraph.innerHTML = "<br>";
   return newParagraph;
 };
+export const createNewElement = (elm) => {
+  const newElement = document.createElement(elm);
+  return newElement;
+};
+
 // create a link element
 export const createLinkElement = (linkData) => {
   const linkElement = document.createElement("a");
   linkElement.href = linkData.href;
   linkElement.textContent = linkData.label;
   linkElement.classList.add("formatted_link");
-  linkElement.dataset.id = createId();
   linkElement.target = "_blank";
 
   return linkElement;
@@ -113,7 +115,5 @@ export const setCursorAfterElement = (elementNode) => {
 export const createTabSpace = () => {
   const newSpan = document.createElement("span");
   newSpan.classList.add("formatted_tab_space");
-  newSpan.dataset.id = createId();
-  // newSpan.innerHTML = "<br>";
   return newSpan;
 }

@@ -9,7 +9,6 @@ import {
   createNewParagraph,
   setCursorInsideNewElement,
 } from "../helpers/helpers";
-import { formatAlign } from "../helpers/formatAlign";
 import { handleBackspace } from "../helpers/handleBackspace";
 import { handleTag } from "../helpers/createTag";
 import { handleAddDivider } from "../helpers/addDivider";
@@ -24,11 +23,13 @@ import { createCodeBlock } from "../helpers/createCodeBlock";
 import { handleTab } from "../helpers/handleTab";
 import { toolBarListener } from '../helpers/toolBarListener'
 import { handleEnterKey } from '../helpers/enterActions'
+
 export default function RichTextEditor() {
   const [inputBuffer, setInputBuffer] = useState("");
   const [selectedText, setSelectedText] = useState("");
   const editorRef = useRef(null);
   const timeoutRef = useRef(null); // Use ref to store the timeout ID
+  const toolbarRef = useRef(null)
 
   // state
   const {
@@ -42,7 +43,6 @@ export default function RichTextEditor() {
     currentSelectStartPosition,
     currentSelectEndPosition,
     setCurrentStartAndEndPosition,
-
     setToolBarBoldActive,
     setToolBarItalicActive,
     setToolBarBkgColorActive,
@@ -71,8 +71,6 @@ export default function RichTextEditor() {
       handleUnorderedListTrigger(e, timeoutRef, setInputBuffer, inputBuffer);
       handleTab(e);
     }
-    // save to state with every key down
-    setRichTextEditorContent(editorRef.current.innerHTML);
     toolBarListener(
       setToolBarBoldActive,
       setToolBarItalicActive,
@@ -82,6 +80,8 @@ export default function RichTextEditor() {
       setToolBarColor,
       setToolBarParagraph,
     )
+    // save to state with every key down
+    setRichTextEditorContent(editorRef.current.innerHTML);
   };
 
   // on load
@@ -109,11 +109,11 @@ export default function RichTextEditor() {
   };
 
   // Action: align content
-  const handleAlignFormat = (e, align) => {
-    focusEditor();
-    formatAlign(e, align);
-    focusEditor();
-  };
+  // const handleAlignFormat = (e, align) => {
+  //   focusEditor();
+  //   formatAlign(e, align);
+  //   focusEditor();
+  // };
 
   // Action: Create a paragraph when editor is empty and backspacing
   const backspace = () => {
@@ -269,7 +269,7 @@ export default function RichTextEditor() {
       )}
       <ToolBar
         handleCreateNewTag={handleCreateNewTag}
-        handleAlignFormat={handleAlignFormat}
+        // handleAlignFormat={handleAlignFormat}
         createHeadings={createHeadings}
         createColor={createColor}
         createHighlight={createHighlight}
@@ -280,7 +280,7 @@ export default function RichTextEditor() {
       <div
         ref={editorRef}
         className="editable_container"
-        contentEditable
+        contentEditable="true"
         aria-multiline="true"
         spellCheck="true"
         role="textbox"

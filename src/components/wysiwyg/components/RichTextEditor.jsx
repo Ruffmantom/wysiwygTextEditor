@@ -21,7 +21,7 @@ import { handlePressEscape } from "../helpers/escapeActions";
 import { handleHeading } from "../helpers/formatText";
 import { createLink } from "../helpers/createLink";
 import { createCodeBlock } from "../helpers/createCodeBlock";
-import { handleTab } from '../helpers/handleTab'
+import { handleTab } from "../helpers/handleTab";
 export default function RichTextEditor() {
   const [inputBuffer, setInputBuffer] = useState("");
   const [selectedText, setSelectedText] = useState("");
@@ -57,7 +57,7 @@ export default function RichTextEditor() {
       // list triggers
       handleNumberListTrigger(e, timeoutRef, setInputBuffer, inputBuffer);
       handleUnorderedListTrigger(e, timeoutRef, setInputBuffer, inputBuffer);
-      handleTab(e)
+      handleTab(e);
     }
     // save to state with every key down
     setRichTextEditorContent(editorRef.current.innerHTML);
@@ -137,25 +137,31 @@ export default function RichTextEditor() {
 
   // link Trigger
   const handleTriggerAddLink = () => {
+    focusEditor();
     const selection = window.getSelection();
-    console.log("Original Selection: ", selection);
+    // console.log("Original Selection: ", selection);
     const range = selection.getRangeAt(0);
     // set modal open
     setLinkModal(true);
     // if there is selected text then send it as the label
-    if (selection && selection.rangeCount > 0) {
-      // console.log(range)
-      let startSelection = range.startOffset;
-      let endSelection = range.endOffset;
+    let startSelection = range.startOffset;
+    let endSelection = range.endOffset;
+    if (selection.anchorOffset >= 1) {
       let sel = selection.anchorNode.data.slice(startSelection, endSelection);
       setSelectedText(sel);
     }
     // set location
-    setCurrentSelectPosition(selection.anchorNode.parentElement.dataset.id);
+    if (selection.anchorNode.parentNode.dataset.id !== undefined) {
+      setCurrentSelectPosition(selection.anchorNode.parentElement.dataset.id);
+      console.log(selection.anchorNode.parentElement.dataset);
+    } else {
+      setCurrentSelectPosition(selection.anchorNode.dataset.id);
+      console.log(selection.anchorNode.dataset.id);
+    }
 
     setCurrentStartAndEndPosition({
-      start: range.startOffset,
-      end: range.endOffset,
+      start: startSelection,
+      end: endSelection,
     });
   };
   // create Links
@@ -198,13 +204,12 @@ export default function RichTextEditor() {
         }
         setSelectedText(sel);
       }
-      console.log(selection)
+      console.log(selection);
       // set location
       if (selection.anchorNode.dataset) {
         setCurrentSelectPosition(selection.anchorNode.dataset.id);
       } else {
         setCurrentSelectPosition(selection.anchorNode.parentElement.dataset.id);
-
       }
 
       setCurrentStartAndEndPosition({

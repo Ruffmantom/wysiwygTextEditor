@@ -1,40 +1,56 @@
 import React, { useState } from "react";
 import { ReactComponent as CloseIcon } from "../../../assets/icons/close.svg";
 import { richTextEditorStore } from "../../../stores/richTextEditorStore";
-import CodeMirror from '@uiw/react-codemirror';
-import { javascript } from '@codemirror/lang-javascript';
-import { python } from '@codemirror/lang-python';
+import CodeMirror from "@uiw/react-codemirror";
+import { javascript } from "@codemirror/lang-javascript";
+import { html } from "@codemirror/lang-html";
+import { css } from "@codemirror/lang-css";
+import { xml } from "@codemirror/lang-xml";
+import CustomSelect from "../../CustomSelect";
+
+const languageList = [
+  "HTML",
+  "XML",
+  "CSS",
+  "JavaScript",
+  "TypeScript",
+]
 
 const AddCode = ({ createCodeBlocks }) => {
   const { setCodeModal } = richTextEditorStore();
-  const [codeContent, setCodeContent] = useState('');
-  const [language, setLanguage] = useState('javascript');
+  const [codeContent, setCodeContent] = useState("");
+  const [language, setLanguage] = useState("javascript");
 
   const handleClose = (e) => {
     e.preventDefault();
     setCodeModal(false);
   };
 
-  const handleLanguageChange = (e) => {
-    setLanguage(e.target.value);
+  const handleLanguageChange = (value) => {
+    setLanguage(value.toLowerCase());
   };
 
   const getLanguageExtension = (lang) => {
     switch (lang) {
-      case 'javascript':
-      case 'jsx':
+      case "javascript":
+      case "typescript":
+      case "jsx":
         return javascript();
-      case 'python':
-        return python();
-      // Add more cases for other languages
+      case "html":
+        return html();
+      case "css":
+        return css();
+      case "xml":
+        return xml();
+      // Add more cases for other languages as needed
       default:
-        return javascript();
+        return javascript(); // default to javascript if language is not found
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log({ language, codeContent })
+    console.log({ language, codeContent });
     createCodeBlocks(language, codeContent);
     handleClose(e);
   };
@@ -55,23 +71,7 @@ const AddCode = ({ createCodeBlocks }) => {
           <div className="form_cont create">
             <div className="form_group">
               <label htmlFor="codelang">Code Language</label>
-              <select name="codelang" value={language} onChange={handleLanguageChange}>
-                <option value="html">HTML</option>
-                <option value="css">CSS</option>
-                <option value="javascript">JavaScript</option>
-                <option value="typescript">TypeScript</option>
-                <option value="java">Java</option>
-                <option value="python">Python</option>
-                <option value="php">PHP</option>
-                <option value="ruby">Ruby</option>
-                <option value="csharp">C#</option>
-                <option value="swift">Swift</option>
-                <option value="go">Go</option>
-                <option value="sql">SQL</option>
-                <option value="jsx">JSX</option>
-                <option value="sass">Sass</option>
-                <option value="less">Less</option>
-              </select>
+              <CustomSelect options={languageList} setValue={handleLanguageChange}/>
             </div>
             <div className="add_code form_group">
               <label htmlFor="code">Add Code</label>
@@ -86,17 +86,8 @@ const AddCode = ({ createCodeBlocks }) => {
         </div>
         <div className="hub_modal_footer">
           <div className="hub_footer_actions">
-            <button
-              className="form_action_btn"
-              onClick={handleSubmit}
-            >
+            <button className="form_action_btn" onClick={handleSubmit}>
               Add Code
-            </button>
-            <button
-              className="form_action_btn"
-              onClick={handleClose}
-            >
-              Close
             </button>
           </div>
         </div>

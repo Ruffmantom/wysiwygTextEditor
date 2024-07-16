@@ -1,6 +1,5 @@
 import { createLinkElement } from "./helpers";
 
-
 // after submitting the link the focus on the editor goes away
 // we need a way to add the link where the focus was originally before submitting the link
 export const createLink = (
@@ -70,6 +69,4 @@ export const createLink = (
   } catch (error) {
     console.error("Error setting range:", error);
   }
-
-
 };

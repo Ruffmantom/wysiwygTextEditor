@@ -3,14 +3,15 @@ import { ReactComponent as H1Icon } from "../../../../assets/icons/h1.svg";
 import { ReactComponent as H2Icon } from "../../../../assets/icons/h2.svg";
 import { ReactComponent as H3Icon } from "../../../../assets/icons/h3.svg";
 import { ReactComponent as H4Icon } from "../../../../assets/icons/h4.svg";
+import { useRichTextEditor } from "../../contexts/RichTextEditorContext";
 // state
-import { richTextEditorStore } from "../../../../stores/richTextEditorStore";
+
 
 export default function ParagraphTool() {
     const {
         paragraphDdOpen,
         setParaDropDown
-    } = richTextEditorStore();
+    } = useRichTextEditor();
     const paragraphDropDownRef = useRef(null);
 
     const handleOpenDropDown = (e) => {

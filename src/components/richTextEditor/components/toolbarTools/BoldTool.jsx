@@ -1,5 +1,6 @@
 import React from 'react'
 import { ReactComponent as BoldIcon } from "../../../../assets/icons/bold.svg";
+
 export default function BoldTool() {
     const isMac = navigator.userAgent.toLowerCase().includes("macintosh");
     const handleCreateBold = (e) => {

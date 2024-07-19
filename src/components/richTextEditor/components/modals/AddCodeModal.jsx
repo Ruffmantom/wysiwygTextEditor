@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { ReactComponent as CloseIcon } from "../../../../assets/icons/close.svg";
-import { richTextEditorStore } from "../../../../stores/richTextEditorStore";
 import CodeMirror from "@uiw/react-codemirror";
 import { vscodeDark } from '@uiw/codemirror-themes-all';
 import { javascript } from "@codemirror/lang-javascript";
@@ -8,13 +7,13 @@ import { html } from "@codemirror/lang-html";
 import { css } from "@codemirror/lang-css";
 import { xml } from "@codemirror/lang-xml";
 import CustomSelect from "../../../CustomSelect";
-
+import { useRichTextEditor } from '../../contexts/RichTextEditorContext'
 const languageList = ["HTML", "XML", "CSS", "JavaScript", "TypeScript"];
 
 const AddCodeModal = ({ createCodeBlocks }) => {
-  const { setCodeModal } = richTextEditorStore();
   const [codeContent, setCodeContent] = useState("");
   const [language, setLanguage] = useState("javascript");
+  const { codeModalOpen, setCodeModal } = useRichTextEditor()
 
   const handleClose = (e) => {
     e.preventDefault();
@@ -46,9 +45,14 @@ const AddCodeModal = ({ createCodeBlocks }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log({ language, codeContent });
-    createCodeBlocks(language, codeContent);
-    handleClose();
+    // createCodeBlocks(language, codeContent);
+    handleClose(e);
   };
+  
+  // if codemodal is false
+  if (!codeModalOpen) {
+    return null
+  }
 
   return (
     <div className="hub_modal_outer_cont">
@@ -84,7 +88,7 @@ const AddCodeModal = ({ createCodeBlocks }) => {
         </div>
         <div className="hub_modal_footer">
           <div className="hub_footer_actions">
-            <button className="form_action_btn" onClick={handleSubmit}>
+            <button className="form_action_btn" onClick={e=>handleSubmit(e)}>
               Add Code
             </button>
           </div>

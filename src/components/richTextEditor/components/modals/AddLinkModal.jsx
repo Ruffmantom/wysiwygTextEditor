@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { ReactComponent as CloseIcon } from "../../../../assets/icons/close.svg";
-import { richTextEditorStore } from "../../../../stores/richTextEditorStore";
+import { useRichTextEditor } from "../../contexts/RichTextEditorContext";
 
 const urlRegex = /^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?(#[a-z\d_]*)?$/i;
 
 const AddLinkModal = () => {
-  const { setLinkModal, selectedText } = richTextEditorStore();
+  const { linkModalOpen, setLinkModal, selectedText } = useRichTextEditor();
 
   const [linkData, setLinkData] = useState({
     label: selectedText || "",
@@ -59,6 +59,11 @@ const AddLinkModal = () => {
       }));
     }
   }, [selectedText]);
+
+  // if codemodal is false
+  if (!linkModalOpen) {
+    return null
+  }
 
   return (
     <div className="hub_modal_outer_cont">

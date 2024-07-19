@@ -1,11 +1,12 @@
 import React from 'react'
 import { ReactComponent as CodeIcon } from "../../../../assets/icons/code.svg";
-import { richTextEditorStore } from '../../../../stores/richTextEditorStore';
+import { useRichTextEditor } from '../../contexts/RichTextEditorContext';
+
 export default function AddCodeTool() {
 
     const {
         setCodeModal,
-    } = richTextEditorStore();
+    } = useRichTextEditor();
 
 
     const handleTriggerAddCode = (e) => {

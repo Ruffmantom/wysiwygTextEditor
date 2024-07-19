@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from "react";
 import { ReactComponent as MoreIcon } from "../../../../assets/icons/more-v.svg";
-// state
-import { richTextEditorStore } from "../../../../stores/richTextEditorStore";
 import UnderlineTool from "./UnderlineTool";
 import StrikeThroughTool from "./StrikeThroughTool";
 import ClearFormatTool from "./ClearFormatTool";
+// state
+import { useRichTextEditor } from "../../contexts/RichTextEditorContext";
 
 export default function MoreTools({ options }) {
 
@@ -12,7 +12,7 @@ export default function MoreTools({ options }) {
     const {
         textAlignDdOpen,
         setTxtAlignDd,
-    } = richTextEditorStore();
+    } = useRichTextEditor();
 
     const handleClickOutside = (event) => {
         if (

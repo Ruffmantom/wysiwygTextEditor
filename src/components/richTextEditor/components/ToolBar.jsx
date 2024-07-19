@@ -1,9 +1,4 @@
-import React, { useEffect, useRef } from "react";
-
-
-
-// state
-import { richTextEditorStore } from "../../../stores/richTextEditorStore";
+import React from "react";
 // helpers
 import BoldTool from "./toolbarTools/BoldTool";
 import ItalicTool from "./toolbarTools/ItalicTool";

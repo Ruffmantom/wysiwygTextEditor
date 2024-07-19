@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 import { ReactComponent as HighlightIcon } from "../../../../assets/icons/highlight.svg";
 // state
-import { richTextEditorStore } from "../../../../stores/richTextEditorStore";
+import {useRichTextEditor} from '../../contexts/RichTextEditorContext';
 
 const highlightColors = [
     "#FFEB3B",
@@ -19,8 +19,7 @@ export default function HighlightTool() {
     const {
         highlightDdOpen,
         setHighlightDropDown
-
-    } = richTextEditorStore();
+    } = useRichTextEditor();
 
 
     const handleDropDown = (e) => {

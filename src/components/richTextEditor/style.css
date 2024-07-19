@@ -136,9 +136,11 @@ code {
     font-weight: bold;
   }
 }
-.ͼ15{
+
+.ͼ15 {
   background-color: #1e1e1e;
 }
+
 .formatted_divider {
   height: 4px;
   background-color: var(--shade-2);
@@ -194,7 +196,8 @@ blockquote {
 .editable_container {
   flex-grow: 1;
   overflow-y: auto;
-  background-color: #f5f5f5 !important;
+  border-radius: 3px 3px 0 0 !important;
+  background-color: var(--shade-2) !important;
 }
 
 .wysiwyg_tool_bar {
@@ -409,5 +412,17 @@ blockquote {
 
   &&:hover {
     outline: 2px solid var(--black-2);
+  }
+}
+
+/* footer styles */
+.rich_editor_footer{
+  padding: 5px 10px;
+  border-radius: 0 0 3px 3px;
+  background-color: var(--shade-2);
+  .rich_editor_footer_element{
+    font-size: smaller;
+    max-width: 100%;
+    overflow-x: auto;
   }
 }

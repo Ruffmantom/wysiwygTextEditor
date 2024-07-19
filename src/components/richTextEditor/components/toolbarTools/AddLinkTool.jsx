@@ -1,10 +1,11 @@
 import React from 'react'
-import { richTextEditorStore } from '../../../../stores/richTextEditorStore';
+
 import { ReactComponent as LinkIcon } from "../../../../assets/icons/link.svg";
+import { useRichTextEditor } from '../../contexts/RichTextEditorContext';
 export default function AddLinkTool() {
     const {
         setLinkModal,
-    } = richTextEditorStore();
+    } = useRichTextEditor();
 
 
     const handleTriggerAddLink = (e) => {

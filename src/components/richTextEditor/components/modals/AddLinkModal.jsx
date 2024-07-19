@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { ReactComponent as CloseIcon } from "../../../assets/icons/close.svg";
-import { richTextEditorStore } from "../../../stores/richTextEditorStore";
+import { ReactComponent as CloseIcon } from "../../../../assets/icons/close.svg";
+import { richTextEditorStore } from "../../../../stores/richTextEditorStore";
 
 const urlRegex = /^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?(#[a-z\d_]*)?$/i;
 
@@ -11,7 +11,6 @@ const AddLinkModal = () => {
     label: selectedText || "",
     href: "",
   });
-
   const { label, href } = linkData;
 
   const handleInputChange = (e) => {
@@ -19,6 +18,11 @@ const AddLinkModal = () => {
       ...linkData,
       [e.target.name]: e.target.value,
     });
+  };
+
+  const handleClose = (e) => {
+    e.preventDefault();
+    setLinkModal(false);
   };
 
   const handleCreateLink = (e) => {
@@ -39,7 +43,7 @@ const AddLinkModal = () => {
       console.log('Please include a valid link');
       return;
     }
-    
+
     // create link
     // createLinks({ label, href });
 
@@ -61,7 +65,7 @@ const AddLinkModal = () => {
       <div className="hub_modal fit_content shade0">
         <button
           className="modal_close icon_button"
-          onClick={() => setLinkModal(false)}
+          onClick={handleClose}
         >
           <CloseIcon />
         </button>

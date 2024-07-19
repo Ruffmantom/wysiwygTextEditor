@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import ToolBar from "./components/ToolBar";
-import AddCodeModal from "./components/AddCodeModal";
-import AddLinkModal from "./components/AddLinkModal";
+import AddCodeModal from "./components/modals/AddCodeModal";
+import AddLinkModal from "./components/modals/AddLinkModal";
 import { richTextEditorStore } from "../../stores/richTextEditorStore";
 import "highlight.js/styles/github.css";
 import "./style.css"

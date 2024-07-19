@@ -1,40 +1,33 @@
 import { create } from "zustand";
 
 export const richTextEditorStore = create((set) => ({
-  paragraphDdOpen: false,
-  highlightDdOpen: false,
   colorDdOpen: false,
-  textAlignDdOpen: false,
   linkModalOpen: false,
   codeModalOpen: false,
-  selectedText: "",
-  currentSelectPosition: "",
-  currentSelectStartPosition: "",
-  currentSelectEndPosition: "",
-  richTextEditorContent: "",
+  highlightDdOpen: false,
+  textAlignDdOpen: false,
+  paragraphDdOpen: false,
   toolBarBoldActive: false,
+  toolBarColorActive: false,
   toolBarItalicActive: false,
   toolBarBkgColorActive: false,
-  toolBarBkgColor: "", // string of what color is selected to highlight the tool
-  toolBarColorActive: false,
+  selectedText: "",
   toolBarColor: "", // string of what color is selected to highlight the tool
+  toolBarBkgColor: "", // string of what color is selected to highlight the tool
   toolBarParagraph: "", // string of what the parent is
+  richTextEditorContent: "",
+  currentSelectPosition: "",
+  currentSelectEndPosition: "",
+  currentSelectStartPosition: "",
 
   setParaDropDown: (payload) => {
     set({ paragraphDdOpen: payload });
   },
-
-  setHighlightDdOpen: () => {
-    set({ highlightDdOpen: true });
+  setHighlightDropDown: (payload) => {
+    set({ highlightDdOpen: payload });
   },
-  setHighlightDdClose: () => {
-    set({ highlightDdOpen: false });
-  },
-  setColorDdOpen: () => {
-    set({ colorDdOpen: true });
-  },
-  setColorDdClose: () => {
-    set({ colorDdOpen: false });
+  setColorDropDown: (payload) => {
+    set({ colorDdOpen: payload });
   },
   setLinkModal: (payload) => {
     set({ linkModalOpen: payload });

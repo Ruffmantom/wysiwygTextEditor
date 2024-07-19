@@ -11,24 +11,32 @@ const deepFontColors = [
     "#D07C00",
     "#006064",
     "#B12917",
-  ];
+];
 
 
 export default function ColorTextTool() {
     const {
         colorDdOpen,
-        setColorDdOpen,
-        setColorDdClose
+        setColorDropDown
     } = richTextEditorStore();
 
     const handleTxtColorClick = (e, color) => {
         e.preventDefault();
         console.log("clicked color: " + color);
         // close drop down
-        setColorDdClose();
-      };
+        setColorDropDown(false)
+    };
 
     const colorDropDownRef = useRef(null);
+
+    const handleDropDown = (e) => {
+        e.preventDefault()
+        if(colorDdOpen){
+            setColorDropDown(false)
+        }else{
+            setColorDropDown(true)
+        }
+    }
 
     const handleClickOutside = (event) => {
         if (
@@ -36,9 +44,9 @@ export default function ColorTextTool() {
             !colorDropDownRef.current.contains(event.target)
         ) {
             event.stopPropagation();
-            setColorDdClose();
+            setColorDropDown(false)
         }
-      
+
     };
     // if click outside of dropdowns
     useEffect(() => {
@@ -54,7 +62,7 @@ export default function ColorTextTool() {
                 // style={{
                 //     outline: toolBarColor !== "" ? `2px solid #${toolBarColor}` : "",
                 // }}
-                onClick={() => setColorDdOpen()}
+                onClick={handleDropDown}
             ></button>
             <FontcolorIcon />
             <span className="wysiwyg_tool_tip">Font Color</span>

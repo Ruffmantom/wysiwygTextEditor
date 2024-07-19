@@ -18,10 +18,19 @@ export default function HighlightTool() {
     const highlightColorDropDownRef = useRef(null);
     const {
         highlightDdOpen,
-        setHighlightDdOpen,
-        setHighlightDdClose,
+        setHighlightDropDown
 
     } = richTextEditorStore();
+
+
+    const handleDropDown = (e) => {
+        e.preventDefault()
+        if(highlightDdOpen){
+            setHighlightDropDown(false)
+        }else{
+            setHighlightDropDown(true)
+        }
+    }
 
     const handleHighlightClick = (e, color) => {
         e.preventDefault()
@@ -34,7 +43,7 @@ export default function HighlightTool() {
             !highlightColorDropDownRef.current.contains(event.target)
         ) {
             event.stopPropagation();
-            setHighlightDdClose();
+            setHighlightDropDown(false);
         }
     };
 
@@ -50,9 +59,7 @@ export default function HighlightTool() {
         <div className="icon_button tool_bar tool_bar_dd">
             <button
                 className="btn_overlay"
-                onClick={() =>
-                    highlightDdOpen ? setHighlightDdClose() : setHighlightDdOpen()
-                }
+                onClick={handleDropDown}
             ></button>
             <HighlightIcon />
             <span className="wysiwyg_tool_tip">Highlight Color</span>

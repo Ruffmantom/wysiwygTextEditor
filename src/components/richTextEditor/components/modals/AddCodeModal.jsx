@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import { ReactComponent as CloseIcon } from "../../../assets/icons/close.svg";
-import { richTextEditorStore } from "../../../stores/richTextEditorStore";
+import { ReactComponent as CloseIcon } from "../../../../assets/icons/close.svg";
+import { richTextEditorStore } from "../../../../stores/richTextEditorStore";
 import CodeMirror from "@uiw/react-codemirror";
 import { vscodeDark } from '@uiw/codemirror-themes-all';
 import { javascript } from "@codemirror/lang-javascript";
 import { html } from "@codemirror/lang-html";
 import { css } from "@codemirror/lang-css";
 import { xml } from "@codemirror/lang-xml";
-import CustomSelect from "../../CustomSelect";
+import CustomSelect from "../../../CustomSelect";
 
 const languageList = ["HTML", "XML", "CSS", "JavaScript", "TypeScript"];
 
@@ -47,7 +47,7 @@ const AddCodeModal = ({ createCodeBlocks }) => {
     e.preventDefault();
     console.log({ language, codeContent });
     createCodeBlocks(language, codeContent);
-    handleClose(e);
+    handleClose();
   };
 
   return (
@@ -55,7 +55,7 @@ const AddCodeModal = ({ createCodeBlocks }) => {
       <div className="hub_modal fit_content shade0">
         <div
           className="modal_close icon_button"
-          onClick={() => setCodeModal(false)}
+          onClick={handleClose}
         >
           <CloseIcon />
         </div>

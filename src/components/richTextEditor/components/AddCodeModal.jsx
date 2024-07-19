@@ -11,7 +11,7 @@ import CustomSelect from "../../CustomSelect";
 
 const languageList = ["HTML", "XML", "CSS", "JavaScript", "TypeScript"];
 
-const AddCode = ({ createCodeBlocks }) => {
+const AddCodeModal = ({ createCodeBlocks }) => {
   const { setCodeModal } = richTextEditorStore();
   const [codeContent, setCodeContent] = useState("");
   const [language, setLanguage] = useState("javascript");
@@ -94,4 +94,4 @@ const AddCode = ({ createCodeBlocks }) => {
   );
 };
 
-export default AddCode;
+export default AddCodeModal;

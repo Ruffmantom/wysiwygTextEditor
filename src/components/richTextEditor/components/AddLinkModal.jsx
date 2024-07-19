@@ -4,8 +4,8 @@ import { richTextEditorStore } from "../../../stores/richTextEditorStore";
 
 const urlRegex = /^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?(#[a-z\d_]*)?$/i;
 
-const AddLink = ({ selectedText, createLinks }) => {
-  const { setLinkModal } = richTextEditorStore();
+const AddLinkModal = () => {
+  const { setLinkModal, selectedText } = richTextEditorStore();
 
   const [linkData, setLinkData] = useState({
     label: selectedText || "",
@@ -39,8 +39,9 @@ const AddLink = ({ selectedText, createLinks }) => {
       console.log('Please include a valid link');
       return;
     }
-
-    createLinks({ label, href });
+    
+    // create link
+    // createLinks({ label, href });
 
     // close modal
     setLinkModal(false);
@@ -106,4 +107,4 @@ const AddLink = ({ selectedText, createLinks }) => {
   );
 };
 
-export default AddLink;
+export default AddLinkModal;

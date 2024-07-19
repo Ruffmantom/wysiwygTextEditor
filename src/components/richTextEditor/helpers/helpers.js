@@ -117,3 +117,5 @@ export const createTabSpace = () => {
   newSpan.classList.add("formatted_tab_space");
   return newSpan;
 }
+
+export const isMac = navigator.userAgent.toLowerCase().includes("macintosh");

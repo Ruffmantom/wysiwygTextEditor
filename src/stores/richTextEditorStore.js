@@ -7,7 +7,7 @@ export const richTextEditorStore = create((set) => ({
   textAlignDdOpen: false,
   linkModalOpen: false,
   codeModalOpen: false,
-  textSelection: "",
+  selectedText: "",
   currentSelectPosition: "",
   currentSelectStartPosition: "",
   currentSelectEndPosition: "",
@@ -20,12 +20,10 @@ export const richTextEditorStore = create((set) => ({
   toolBarColor: "", // string of what color is selected to highlight the tool
   toolBarParagraph: "", // string of what the parent is
 
-  setParaDdOpen: () => {
-    set({ paragraphDdOpen: true });
+  setParaDropDown: (payload) => {
+    set({ paragraphDdOpen: payload });
   },
-  setParaDdClose: () => {
-    set({ paragraphDdOpen: false });
-  },
+
   setHighlightDdOpen: () => {
     set({ highlightDdOpen: true });
   },
@@ -47,8 +45,8 @@ export const richTextEditorStore = create((set) => ({
   setTxtAlignDd: (payload) => {
     set({ textAlignDdOpen: payload });
   },
-  setTextSelection: (payload) => {
-    set({ textSelection: payload });
+  setSelectedText: (payload) => {
+    set({ selectedText: payload });
   },
   setRichTextEditorContent: (payload) => {
     set({ richTextEditorContent: payload });

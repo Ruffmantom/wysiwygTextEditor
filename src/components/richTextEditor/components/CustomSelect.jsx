@@ -21,6 +21,7 @@ const CustomSelect = ({ setValue, options }) => {
       setSelectOpen(true);
     }
   };
+  
   const handleClickOutside = (event) => {
     if (
       dropDownRef.current &&

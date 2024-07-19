@@ -6,7 +6,7 @@ import { javascript } from "@codemirror/lang-javascript";
 import { html } from "@codemirror/lang-html";
 import { css } from "@codemirror/lang-css";
 import { xml } from "@codemirror/lang-xml";
-import CustomSelect from "../../../CustomSelect";
+import CustomSelect from "../CustomSelect";
 import { useRichTextEditor } from '../../contexts/RichTextEditorContext'
 const languageList = ["HTML", "XML", "CSS", "JavaScript", "TypeScript"];
 
@@ -48,7 +48,7 @@ const AddCodeModal = ({ createCodeBlocks }) => {
     // createCodeBlocks(language, codeContent);
     handleClose(e);
   };
-  
+
   // if codemodal is false
   if (!codeModalOpen) {
     return null
@@ -88,7 +88,7 @@ const AddCodeModal = ({ createCodeBlocks }) => {
         </div>
         <div className="hub_modal_footer">
           <div className="hub_footer_actions">
-            <button className="form_action_btn" onClick={e=>handleSubmit(e)}>
+            <button className="form_action_btn" onClick={e => handleSubmit(e)}>
               Add Code
             </button>
           </div>

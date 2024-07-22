@@ -1,7 +1,9 @@
 import React, { useEffect, useRef } from "react";
 import { ReactComponent as FontcolorIcon } from "../../../../assets/icons/fontcolor.svg";
 // state
-import {useRichTextEditor} from '../../contexts/RichTextEditorContext';
+import { useRichTextEditor } from '../../contexts/RichTextEditorContext';
+
+
 const deepFontColors = [
     "#D0C031",
     "#D0481C",
@@ -17,11 +19,13 @@ const deepFontColors = [
 export default function ColorTextTool() {
     const {
         colorDdOpen,
-        setColorDropDown
+        setColorDropDown,
+        applyColor
     } = useRichTextEditor();
 
     const handleTxtColorClick = (e, color) => {
         e.preventDefault();
+        applyColor(color)
         console.log("clicked color: " + color);
         // close drop down
         setColorDropDown(false)
@@ -31,9 +35,9 @@ export default function ColorTextTool() {
 
     const handleDropDown = (e) => {
         e.preventDefault()
-        if(colorDdOpen){
+        if (colorDdOpen) {
             setColorDropDown(false)
-        }else{
+        } else {
             setColorDropDown(true)
         }
     }

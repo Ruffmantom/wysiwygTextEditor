@@ -18,7 +18,8 @@ export default function HighlightTool() {
     const highlightColorDropDownRef = useRef(null);
     const {
         highlightDdOpen,
-        setHighlightDropDown
+        setHighlightDropDown,
+        applyBackgroundColor
     } = useRichTextEditor();
 
 
@@ -33,6 +34,7 @@ export default function HighlightTool() {
 
     const handleHighlightClick = (e, color) => {
         e.preventDefault()
+        applyBackgroundColor(color)
         console.log(`Highlight: ${color}`)
     }
 

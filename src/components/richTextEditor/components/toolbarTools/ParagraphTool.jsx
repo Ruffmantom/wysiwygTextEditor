@@ -3,14 +3,17 @@ import { ReactComponent as H1Icon } from "../../../../assets/icons/h1.svg";
 import { ReactComponent as H2Icon } from "../../../../assets/icons/h2.svg";
 import { ReactComponent as H3Icon } from "../../../../assets/icons/h3.svg";
 import { ReactComponent as H4Icon } from "../../../../assets/icons/h4.svg";
-import { useRichTextEditor } from "../../contexts/RichTextEditorContext";
 // state
-
+import { useRichTextEditor } from "../../contexts/RichTextEditorContext";
 
 export default function ParagraphTool() {
+
+
+
     const {
         paragraphDdOpen,
-        setParaDropDown
+        setParaDropDown,
+        toggleBlockType
     } = useRichTextEditor();
     const paragraphDropDownRef = useRef(null);
 
@@ -19,9 +22,9 @@ export default function ParagraphTool() {
         setParaDropDown(true)
     }
 
-    const createHeadings = (e, tag) => {
+    const createHeadings = (e,tag) => {
         e.preventDefault()
-        console.log(`Create tag: ${tag}`)
+        toggleBlockType(tag)
     }
 
     const handleClickOutside = (event) => {
@@ -55,35 +58,35 @@ export default function ParagraphTool() {
             >
                 <button
                     className="tool_bar_dd_item h1"
-                    onClick={(e) => createHeadings(e, "h1")}
+                    onClick={(e) => createHeadings(e,'header-one')}
                 >
                     <span>Heading 1</span>
                     <H1Icon />
                 </button>
                 <button
                     className="tool_bar_dd_item h2"
-                    onClick={(e) => createHeadings(e, "h2")}
+                    onClick={(e) => createHeadings(e, "header-two")}
                 >
                     <span>Heading 2</span>
                     <H2Icon />
                 </button>
                 <button
                     className="tool_bar_dd_item h3"
-                    onClick={(e) => createHeadings(e, "h3")}
+                    onClick={(e) => createHeadings(e, "header-three")}
                 >
                     <span>Heading 3</span>
                     <H3Icon />
                 </button>
                 <button
                     className="tool_bar_dd_item h4"
-                    onClick={(e) => createHeadings(e, "h4")}
+                    onClick={(e) => createHeadings(e, "header-four")}
                 >
                     <span>Heading 4</span>
                     <H4Icon />
                 </button>
                 <button
                     className="tool_bar_dd_item p"
-                    onClick={(e) => createHeadings(e, "p")}
+                    onClick={(e) => createHeadings(e, "unstyled")}
                 >
                     <span>Paragraph</span>P
                 </button>

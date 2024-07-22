@@ -1,10 +1,17 @@
 import React from 'react'
 import { ReactComponent as ItalicIcon } from "../../../../assets/icons/italic.svg";
+import { isMac } from '../../helpers/helpers';
+import { RichUtils } from 'draft-js';
+import { useRichTextEditor } from "../../contexts/RichTextEditorContext"
+
 export default function ItalicTool() {
-    const isMac = navigator.userAgent.toLowerCase().includes("macintosh");
+    const { editorState, setEditorState, focusEditor } = useRichTextEditor()
+
     const handleCreateItalic = (e) => {
         e.preventDefault()
-        console.log('Bold Italic')
+        // set italic
+        setEditorState(RichUtils.toggleInlineStyle(editorState, 'ITALIC'))
+        focusEditor()
     }
 
     return (

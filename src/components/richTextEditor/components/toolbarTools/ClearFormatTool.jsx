@@ -1,12 +1,15 @@
 import React from 'react'
 import { ReactComponent as ClearFormatIcon } from "../../../../assets/icons/clearFormat.svg";
+import { RichUtils } from 'draft-js';
+import { useRichTextEditor } from "../../contexts/RichTextEditorContext"
+import { isMac } from '../../helpers/helpers';
 
 export default function ClearFormatTool() {
-    // const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-    const isMac = navigator.userAgent.toLowerCase().includes("macintosh");
+    const { clearFormatting } = useRichTextEditor();
+
     const clearFormat = (e) => {
         e.preventDefault()
-        console.log('Clear all formats')
+        clearFormatting()
     }
 
     return (

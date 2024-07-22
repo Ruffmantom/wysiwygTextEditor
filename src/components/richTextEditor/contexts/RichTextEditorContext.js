@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useRef, useEffect } from 'react';
+import { EditorState, Modifier, RichUtils } from 'draft-js';
 
 const RichTextEditorContext = createContext();
 
@@ -18,6 +19,7 @@ export const RichTextEditorProvider = ({ children }) => {
     toolBarColorActive: false,
     toolBarItalicActive: false,
     toolBarBkgColorActive: false,
+    editorState: EditorState.createEmpty(),
     selectedText: "",
     toolBarColor: "", // string of what color is selected to highlight the tool
     toolBarBkgColor: "", // string of what color is selected to highlight the tool
@@ -28,8 +30,133 @@ export const RichTextEditorProvider = ({ children }) => {
     currentSelectStartPosition: "",
   });
 
+  const editorRef = useRef(null);
+
+  const focusEditor = () => {
+    if (editorRef.current) {
+      editorRef.current.focus();
+    }
+  };
+
+
+  // clear format function
+  const clearFormatting = () => {
+    const contentState = state.editorState.getCurrentContent();
+    const selection = state.editorState.getSelection();
+
+    // Remove inline styles
+    const stylesToRemove = ['BOLD', 'ITALIC', 'UNDERLINE', 'CODE'];
+    let newContentState = stylesToRemove.reduce((content, style) => {
+      return Modifier.removeInlineStyle(content, selection, style);
+    }, contentState);
+
+    // Remove block type
+    const newEditorState = EditorState.push(
+      state.editorState,
+      newContentState,
+      'change-inline-style'
+    );
+    setEditorState(RichUtils.toggleBlockType(newEditorState, 'unstyled'));
+    focusEditor();
+  };
+
+  // change text color
+  const applyColor = (color) => {
+    const COLOR_STYLES = [
+      "#D0C031",
+      "#D0481C",
+      "#1B5E20",
+      "#0D47A1",
+      "#4A148C",
+      "#D07C00",
+      "#006064",
+      "#B12917",
+    ];
+
+    const selection = state.editorState.getSelection();
+    const nextContentState = COLOR_STYLES.reduce((contentState, color) => {
+      return Modifier.removeInlineStyle(contentState, selection, color);
+    }, state.editorState.getCurrentContent());
+
+    let nextEditorState = EditorState.push(
+      state.editorState,
+      nextContentState,
+      'change-inline-style'
+    );
+
+    const currentStyle = state.editorState.getCurrentInlineStyle();
+
+    if (selection.isCollapsed()) {
+      nextEditorState = currentStyle.reduce((state, color) => {
+        return RichUtils.toggleInlineStyle(state, color);
+      }, nextEditorState);
+    }
+
+    if (!currentStyle.has(color)) {
+      nextEditorState = RichUtils.toggleInlineStyle(
+        nextEditorState,
+        color
+      );
+    }
+
+    setEditorState(nextEditorState);
+  };
+
+  // apply a background
+  const applyBackgroundColor = (bgColor) => {
+    const BG_COLOR_STYLES = [
+      "#FFEB3B",
+      "#FF5722",
+      "#4CAF50",
+      "#2196F3",
+      "#9C27B0",
+      "#FF9800",
+      "#00BCD4",
+      "#eb361e",
+    ];
+
+    const selection = state.editorState.getSelection();
+    const nextContentState = BG_COLOR_STYLES.reduce((contentState, bgColor) => {
+      return Modifier.removeInlineStyle(contentState, selection, bgColor);
+    }, state.editorState.getCurrentContent());
+
+    let nextEditorState = EditorState.push(
+      state.editorState,
+      nextContentState,
+      'change-inline-style'
+    );
+
+    const currentStyle = state.editorState.getCurrentInlineStyle();
+
+    if (selection.isCollapsed()) {
+      nextEditorState = currentStyle.reduce((state, bgColor) => {
+        return RichUtils.toggleInlineStyle(state, bgColor);
+      }, nextEditorState);
+    }
+
+    if (!currentStyle.has(bgColor)) {
+      nextEditorState = RichUtils.toggleInlineStyle(
+        nextEditorState,
+        bgColor
+      );
+    }
+
+    setEditorState(nextEditorState);
+  };
+
+  // toggle block type
+  const toggleBlockType = (blockType) => {
+    const newEditorState = RichUtils.toggleBlockType(state.editorState, blockType);
+    setState((prevState) => ({ ...prevState, editorState: newEditorState }));
+    focusEditor();
+  };
+
   const setParaDropDown = (payload) => {
     setState((prevState) => ({ ...prevState, paragraphDdOpen: payload }));
+  };
+
+  const setEditorState = (payload) => { // this is the onChange Function
+    setState((prevState) => ({ ...prevState, editorState: payload }));
   };
 
   const setHighlightDropDown = (payload) => {
@@ -105,23 +232,30 @@ export const RichTextEditorProvider = ({ children }) => {
     <RichTextEditorContext.Provider
       value={{
         ...state,
-        setParaDropDown,
-        setHighlightDropDown,
-        setColorDropDown,
+        editorRef,
+        applyColor,
+        focusEditor,
         setLinkModal,
         setCodeModal,
         setTxtAlignDd,
+        setEditorState,
+        setParaDropDown,
+        setToolBarColor,
+        toggleBlockType,
         setSelectedText,
+        clearFormatting,
+        setColorDropDown,
+        setToolBarBkgColor,
+        setToolBarParagraph,
+        applyBackgroundColor,
+        setHighlightDropDown,
+        setToolBarBoldActive,
+        setToolBarColorActive,
+        setToolBarItalicActive,
+        setToolBarBkgColorActive,
         setRichTextEditorContent,
         setCurrentSelectPosition,
         setCurrentStartAndEndPosition,
-        setToolBarBoldActive,
-        setToolBarItalicActive,
-        setToolBarBkgColorActive,
-        setToolBarBkgColor,
-        setToolBarColorActive,
-        setToolBarColor,
-        setToolBarParagraph,
       }}
     >
       {children}

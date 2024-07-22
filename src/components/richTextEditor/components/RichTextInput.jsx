@@ -1,27 +1,40 @@
-import ReactDOM from 'react-dom';
-import { Editor, EditorState } from 'draft-js';
+import React, {useEffect} from 'react';
+import { Editor, RichUtils } from 'draft-js';
 import 'draft-js/dist/Draft.css';
+import { useRichTextEditor } from "../contexts/RichTextEditorContext"
+import { customStyleMap } from '../helpers/CustomStyleMaps';
 
-const RichTextInput = forwardRef(({ value, onChange }, ref) => {
-    const [editorState, setEditorState] = React.useState(
-        () => EditorState.createEmpty(),
-    );
+const RichTextInput = () => {
+    const { editorState, setEditorState, editorRef, focusEditor } = useRichTextEditor()
+
+    const handleKeyCommand = (command, editorState) => {
+        const newState = RichUtils.handleKeyCommand(editorState, command);
+
+        if (newState) {
+            setEditorState(newState);
+            return 'handled';
+        }
+        return 'not-handled';
+    };
+
+    useEffect(() => {
+        focusEditor();
+      }, [focusEditor]);
 
     return (
-        // <div
-        //         ref={ref}
-        //         className="editable_container"
-        //         contentEditable="true"
-        //         aria-multiline="true"
-        //         spellCheck="true"
-        //         role="textbox"
-        //         // onFocus={handleFocus}
-        //         // onSelect={handleSelection}
-        //         // onKeyDown={handleKeyDown}
-        //       ></div>
-
-        <Editor editorState={editorState} onChange={setEditorState} />
-    )
-});
+        <Editor
+            ref={editorRef}
+            // onClick={()=>focusEditor()}
+            className="editable_container"
+            customStyleMap={customStyleMap}
+            editorState={editorState}
+            handleKeyCommand={handleKeyCommand}
+            onChange={setEditorState}
+        />
+    );
+};
 
 export default RichTextInput
+
+
+

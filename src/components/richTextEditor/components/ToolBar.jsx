@@ -32,12 +32,12 @@ tool options: {
 */
 
 
-const ToolBar = ({ options, editorRef }) => {
+const ToolBar = ({ options }) => {
 
 
   return (
     <div className="wysiwyg_tool_bar">
-      {options.tools.bold || !options ? <BoldTool editorRef={editorRef} /> : ""}
+      {options.tools.bold || !options ? <BoldTool /> : ""}
       {options.tools.italic || !options ? <ItalicTool /> : ""}
       {options.tools.highlight || options.tools.color || options.tools.headings ? <div className="wysiwyg_tool_bar_divider"></div> : ""}
       {options.tools.highlight || !options ? <HighlightTool /> : ""}

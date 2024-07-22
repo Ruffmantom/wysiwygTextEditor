@@ -6,6 +6,7 @@ import "highlight.js/styles/github.css";
 import "./style.css"
 import { RichTextEditorProvider, useRichTextEditor } from './contexts/RichTextEditorContext';
 import Footer from "./components/Footer";
+import RichTextInput from "./components/RichTextInput";
 // helpers
 
 export default function RichTextEditor({ options }) {
@@ -43,18 +44,8 @@ export default function RichTextEditor({ options }) {
         <div className="rich_text_editor">
           <AddCodeModal />
           <AddLinkModal />
-          <ToolBar options={options} />
-          <div
-            ref={editorRef}
-            className="editable_container"
-            contentEditable="true"
-            aria-multiline="true"
-            spellCheck="true"
-            role="textbox"
-            // onFocus={handleFocus}
-            onSelect={handleSelection}
-            onKeyDown={handleKeyDown}
-          ></div>
+          <ToolBar options={options} editorRef={editorRef} />
+          <RichTextInput ref={editorRef}/>
           <Footer />
         </div>
       </div>

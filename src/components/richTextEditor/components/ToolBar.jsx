@@ -32,27 +32,27 @@ tool options: {
 */
 
 
-const ToolBar = ({ options }) => {
+const ToolBar = ({ options, editorRef }) => {
 
 
   return (
     <div className="wysiwyg_tool_bar">
-      { options.tools.bold || !options ? <BoldTool /> : ""}
-      { options.tools.italic || !options ? <ItalicTool /> : ""}
+      {options.tools.bold || !options ? <BoldTool editorRef={editorRef} /> : ""}
+      {options.tools.italic || !options ? <ItalicTool /> : ""}
       {options.tools.highlight || options.tools.color || options.tools.headings ? <div className="wysiwyg_tool_bar_divider"></div> : ""}
-      { options.tools.highlight || !options ? <HighlightTool /> : ""}
-      { options.tools.color || !options ? <ColorTextTool /> : ""}
-      { options.tools.headings || !options ? <ParagraphTool /> : ""}
+      {options.tools.highlight || !options ? <HighlightTool /> : ""}
+      {options.tools.color || !options ? <ColorTextTool /> : ""}
+      {options.tools.headings || !options ? <ParagraphTool /> : ""}
       {
-         options.tools.other.underline ||
+        options.tools.other.underline ||
           options.tools.other.strikeThrough ||
           options.tools.other.removeFormats || !options ? <MoreTools options={options} /> : ""
       }
       {options.tools.link || options.tools.code || options.tools.quote || options.tools.divider ? <div className="wysiwyg_tool_bar_divider"></div> : ""}
-      { options.tools.link || !options ? <AddLinkTool /> : ""}
-      { options.tools.code || !options ? <AddCodeTool /> : ""}
-      { options.tools.quote || !options ? <AddQuoteTool /> : ""}
-      { options.tools.divider || !options ? <AddDividerTool /> : ""}
+      {options.tools.link || !options ? <AddLinkTool /> : ""}
+      {options.tools.code || !options ? <AddCodeTool /> : ""}
+      {options.tools.quote || !options ? <AddQuoteTool /> : ""}
+      {options.tools.divider || !options ? <AddDividerTool /> : ""}
     </div>
   );
 };

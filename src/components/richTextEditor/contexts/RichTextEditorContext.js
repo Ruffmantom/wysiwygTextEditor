@@ -66,7 +66,33 @@ export const RichTextEditorProvider = ({ children }) => {
     const selection = state.editorState.getSelection();
 
     // Remove inline styles
-    const stylesToRemove = ["BOLD", "ITALIC", "UNDERLINE", "CODE"];
+    const stylesToRemove = [
+      "STRIKETHROUGH",
+      "header-one",
+      "header-two",
+      "header-three",
+      "header-four",
+      "BOLD",
+      "ITALIC",
+      "UNDERLINE",
+      "CODE",
+      "#D0C031",
+      "#D0481C",
+      "#1B5E20",
+      "#0D47A1",
+      "#4A148C",
+      "#D07C00",
+      "#006064",
+      "#B12917",
+      "#FFEB3B",
+      "#FF5722",
+      "#4CAF50",
+      "#2196F3",
+      "#9C27B0",
+      "#FF9800",
+      "#00BCD4",
+      "#eb361e"
+    ];
     let newContentState = stylesToRemove.reduce((content, style) => {
       return Modifier.removeInlineStyle(content, selection, style);
     }, contentState);
@@ -78,7 +104,6 @@ export const RichTextEditorProvider = ({ children }) => {
       "change-inline-style"
     );
     setEditorState(RichUtils.toggleBlockType(newEditorState, "unstyled"));
-    focusEditor();
   };
 
   // change text color
@@ -288,7 +313,7 @@ export const RichTextEditorProvider = ({ children }) => {
     setState((prevState) => ({ ...prevState, codeModalOpen: payload }));
   };
 
-  const setTxtAlignDd = (payload) => {
+  const setMoreToolDd = (payload) => {
     setState((prevState) => ({ ...prevState, textAlignDdOpen: payload }));
   };
 
@@ -378,7 +403,7 @@ export const RichTextEditorProvider = ({ children }) => {
         focusEditor,
         setLinkModal,
         setCodeModal,
-        setTxtAlignDd,
+        setMoreToolDd,
         setEditorState,
         insertHrBlock,
         setParaDropDown,

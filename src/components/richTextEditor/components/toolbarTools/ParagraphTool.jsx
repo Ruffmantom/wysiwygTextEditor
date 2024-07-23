@@ -54,58 +54,60 @@ export default function ParagraphTool() {
                 onClick={(e) => handleOpenDropDown(e)}
                 onMouseDown={(e) => e.preventDefault()}
             ></button>
-            <p>Paragraph</p>
+            <p>Heading</p>
             <div
                 className={`tool_bar_dd_content ${paragraphDdOpen ? "active" : ""}`}
                 ref={paragraphDropDownRef}
             >
                 <button
-                    className="tool_bar_dd_item h1"
-                    onClick={(e) => createHeadings(e, 'header-one')}
+                    className={`tool_bar_dd_item h1 ${isActive("header-one", 'block') ? "active" : ""}`}
+                    onClick={(e) => {
+                        applyStyle(e, "header-one", 'block')
+                        // close dropdown
+                        setParaDropDown(false)
+                    }}
                     onMouseDown={(e) => e.preventDefault()}
                 >
                     <span>Heading 1</span>
                     <H1Icon />
                 </button>
                 <button
-                    className="tool_bar_dd_item h2"
-                    onClick={(e) => createHeadings(e, "header-two")}
+                    className={`tool_bar_dd_item h2 ${isActive("header-two", 'block') ? "active" : ""}`}
+                    onClick={(e) => {
+                        applyStyle(e, "header-two", 'block')
+                        // close dropdown
+                        setParaDropDown(false)
+                    }}
                     onMouseDown={(e) => e.preventDefault()}
                 >
                     <span>Heading 2</span>
                     <H2Icon />
                 </button>
                 <button
-                    className="tool_bar_dd_item h3"
-                    onClick={(e) => createHeadings(e, "header-three")}
+                    className={`tool_bar_dd_item h3 ${isActive("header-three", 'block') ? "active" : ""}`}
+                    onClick={(e) => {
+                        applyStyle(e, "header-three", 'block')
+                        // close dropdown
+                        setParaDropDown(false)
+                    }}
                     onMouseDown={(e) => e.preventDefault()}
                 >
                     <span>Heading 3</span>
                     <H3Icon />
                 </button>
                 <button
-                   className={`tool_bar_dd_item h4 ${isActive("header-four", 'block') ? "active":""}`}
-                   onClick={(e) => {
-                       applyStyle(e, "header-four", 'block')
-                       // close dropdown
-                       setParaDropDown(false)
-                   }}
-                   onMouseDown={(e) => e.preventDefault()}
-                >
-                    <span>Heading 4</span>
-                    <H4Icon />
-                </button>
-                <button
-                    className={`tool_bar_dd_item p ${isActive("span", 'block') ? "active":""}`}
+                    className={`tool_bar_dd_item h4 ${isActive("header-four", 'block') ? "active" : ""}`}
                     onClick={(e) => {
-                        applyStyle(e, "span", 'block')
+                        applyStyle(e, "header-four", 'block')
                         // close dropdown
                         setParaDropDown(false)
                     }}
                     onMouseDown={(e) => e.preventDefault()}
                 >
-                    <span>Paragraph</span>P
+                    <span>Heading 4</span>
+                    <H4Icon />
                 </button>
+               
             </div>
         </div>
     )

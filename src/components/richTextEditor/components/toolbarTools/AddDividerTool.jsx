@@ -16,6 +16,7 @@ export default function AddDividerTool() {
     <button
       className="icon_button tool_bar heading"
       onClick={(e) => createDivider(e)}
+      onMouseDown={(e) => e.preventDefault()}
     >
       <DividerIcon />
       <span className="wysiwyg_tool_tip">Divider</span>

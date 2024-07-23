@@ -1,23 +1,20 @@
 import React from 'react'
 import { ReactComponent as UnderlineIcon } from "../../../../assets/icons/underline.svg";
-import { isMac } from '../../helpers/helpers';
-import { RichUtils } from 'draft-js';
 import { useRichTextEditor } from "../../contexts/RichTextEditorContext"
+import { isMac } from '../../helpers/helpers';
 
 export default function UnderlineTool() {
-    const { editorState, setEditorState, focusEditor } = useRichTextEditor()
+    const { applyStyle, isActive, setMoreToolDd } = useRichTextEditor()
 
-    const handleCreateNewTag = (e) => {
-        e.preventDefault()
-        // set u
-        setEditorState(RichUtils.toggleInlineStyle(editorState, 'UNDERLINE'))
-        focusEditor()
-    }
 
     return (
         <button
-            className="icon_button tool_bar"
-            onClick={(e) => handleCreateNewTag(e)}
+            className={`icon_button tool_bar ${isActive('UNDERLINE', 'inline') ? 'active' : ""}`}
+            onClick={(e) => {
+                applyStyle(e, 'UNDERLINE', 'inline')
+                setMoreToolDd(false);
+            }}
+            onMouseDown={(e) => e.preventDefault()}
         >
             <UnderlineIcon />
             <span className="wysiwyg_tool_tip">

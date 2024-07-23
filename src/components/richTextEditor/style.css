@@ -90,8 +90,10 @@ hr.custom_hr {
 blockquote {
   padding-left: 10px;
   border-left: 3px solid var(--black-3);
+  color: var(--black-2);
   font-style: italic;
   font-size: smaller;
+  font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
 .rich_text_editor {

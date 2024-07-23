@@ -11,7 +11,7 @@ export default function MoreTools({ options }) {
     const moreToolsRef = useRef(null);
     const {
         textAlignDdOpen,
-        setTxtAlignDd,
+        setMoreToolDd,
     } = useRichTextEditor();
 
     const handleClickOutside = (event) => {
@@ -20,7 +20,7 @@ export default function MoreTools({ options }) {
             !moreToolsRef.current.contains(event.target)
         ) {
             event.stopPropagation();
-            setTxtAlignDd(false);
+            setMoreToolDd(false);
         }
     };
 
@@ -38,7 +38,8 @@ export default function MoreTools({ options }) {
         <div className="icon_button tool_bar tool_bar_dd icon">
             <button
                 className="btn_overlay"
-                onClick={() => setTxtAlignDd(true)}
+                onClick={() => setMoreToolDd(true)}
+                onMouseDown={(e) => e.preventDefault()}
             ></button>
             <div className="icon_button tool_bar heading">
                 <MoreIcon />

@@ -1,22 +1,19 @@
 import React from 'react'
 import { ReactComponent as StrikeIcon } from "../../../../assets/icons/strike.svg";
 import { isMac } from '../../helpers/helpers';
-import { RichUtils } from 'draft-js';
 import { useRichTextEditor } from "../../contexts/RichTextEditorContext"
 
 export default function StrikeThroughTool() {
-    const { editorState, setEditorState, focusEditor } = useRichTextEditor()
-    const handleCreateNewTag = (e) => {
-        e.preventDefault()
-        // set s
-        setEditorState(RichUtils.toggleInlineStyle(editorState, 'STRIKETHROUGH'))
-        focusEditor()
-    }
+const { applyStyle, isActive, setMoreToolDd } = useRichTextEditor()
 
     return (
         <button
-            className="icon_button tool_bar"
-            onClick={(e) => handleCreateNewTag(e)}
+            className={`icon_button tool_bar ${isActive('STRIKETHROUGH', 'inline') ? 'active' : ""}`}
+            onClick={(e) => {
+                applyStyle(e, 'STRIKETHROUGH', 'inline')
+                setMoreToolDd(false);
+            }}
+            onMouseDown={(e) => e.preventDefault()}
         >
             <StrikeIcon />
             <span className="wysiwyg_tool_tip">

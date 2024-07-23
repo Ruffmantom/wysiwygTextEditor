@@ -47,5 +47,8 @@ export const customStyleMap = {
   },
   "#eb361e": {
     backgroundColor: "#eb361e",
+  },
+  "CLEAR_HIGHLIGHT": {
+    backgroundColor: "unset",
   }
 };

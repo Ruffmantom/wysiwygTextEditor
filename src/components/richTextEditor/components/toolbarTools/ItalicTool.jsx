@@ -5,19 +5,13 @@ import { RichUtils } from 'draft-js';
 import { useRichTextEditor } from "../../contexts/RichTextEditorContext"
 
 export default function ItalicTool() {
-    const { editorState, setEditorState, focusEditor } = useRichTextEditor()
-
-    const handleCreateItalic = (e) => {
-        e.preventDefault()
-        // set italic
-        setEditorState(RichUtils.toggleInlineStyle(editorState, 'ITALIC'))
-        focusEditor()
-    }
+    const { applyStyle, isActive } = useRichTextEditor()
 
     return (
         <button
-            className="icon_button tool_bar"
-            onClick={handleCreateItalic}
+        className={`icon_button tool_bar ${isActive('ITALIC', 'inline') ? 'active' : ""}`}
+            onClick={e => applyStyle(e, 'ITALIC', 'inline')}
+            onMouseDown={(e) => e.preventDefault()}
         >
             <ItalicIcon />
             <span className="wysiwyg_tool_tip">

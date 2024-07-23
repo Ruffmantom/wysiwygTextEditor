@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { ReactComponent as FontcolorIcon } from "../../../../assets/icons/fontcolor.svg";
 // state
 import { useRichTextEditor } from '../../contexts/RichTextEditorContext';
@@ -17,21 +17,14 @@ const deepFontColors = [
 
 
 export default function ColorTextTool() {
+    const colorDropDownRef = useRef(null);
+    const [currentStyle, setCurrentStyle] = useState('')
     const {
         colorDdOpen,
         setColorDropDown,
-        applyColor
+        applyStyle,
+        isActive
     } = useRichTextEditor();
-
-    const handleTxtColorClick = (e, color) => {
-        e.preventDefault();
-        applyColor(color)
-        console.log("clicked color: " + color);
-        // close drop down
-        setColorDropDown(false)
-    };
-
-    const colorDropDownRef = useRef(null);
 
     const handleDropDown = (e) => {
         e.preventDefault()
@@ -59,14 +52,13 @@ export default function ColorTextTool() {
             document.removeEventListener("mousedown", (e) => handleClickOutside(e));
         };
     }, []);
+
     return (
         <div className="icon_button tool_bar tool_bar_dd">
             <button
                 className="btn_overlay"
-                // style={{
-                //     outline: toolBarColor !== "" ? `2px solid #${toolBarColor}` : "",
-                // }}
                 onClick={handleDropDown}
+                onMouseDown={(e) => e.preventDefault()}
             ></button>
             <FontcolorIcon />
             <span className="wysiwyg_tool_tip">Font Color</span>
@@ -80,17 +72,33 @@ export default function ColorTextTool() {
                     {deepFontColors.map((c) => (
                         <button
                             key={c}
-                            className="color_swatch"
-                            onClick={(e) => handleTxtColorClick(e, c)}
+                            className={`color_swatch ${isActive(c, 'inline') ? 'active' : ""}`}
+                            onClick={e => {
+                                applyStyle(e, c, 'inline')
+                                setCurrentStyle(c)
+                                setColorDropDown(false)
+                            }}
+                            onMouseDown={(e) => e.preventDefault()}
                             style={{ backgroundColor: c }}
                         ></button>
                     ))}
                 </div>
-                <div className="tool_bar_dd_item p center">
-                    <button onClick={(e) => handleTxtColorClick(e, "auto")}>
-                        Automatic
-                    </button>
-                </div>
+
+                <button
+                    className='tool_bar_dd_item p center clear_style_btn'
+                    onClick={e => {
+                        console.log('Clearing color, current color: ', currentStyle)
+                        if (currentStyle !== "") {
+                            applyStyle(e, currentStyle, 'inline')
+                            setCurrentStyle('')
+                            setColorDropDown(false)
+                        }
+                    }}
+                    onMouseDown={(e) => e.preventDefault()}
+                >
+                    Automatic
+                </button>
+
             </div>
         </div>
     )

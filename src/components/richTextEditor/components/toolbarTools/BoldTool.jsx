@@ -1,24 +1,16 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { ReactComponent as BoldIcon } from "../../../../assets/icons/bold.svg";
-import { RichUtils } from 'draft-js';
 import { useRichTextEditor } from "../../contexts/RichTextEditorContext"
+import { isMac } from '../../helpers/helpers';
 
 export default function BoldTool() {
-    const isMac = navigator.userAgent.toLowerCase().includes("macintosh");
-    const { editorState, setEditorState, focusEditor } = useRichTextEditor()
-
-
-    const handleCreateBold = (e) => {
-        e.preventDefault()
-        // set bold
-        setEditorState(RichUtils.toggleInlineStyle(editorState, 'BOLD'))
-        focusEditor()
-    }
+    const { applyStyle, isActive } = useRichTextEditor()
 
     return (
         <button
-            className="icon_button tool_bar"
-            onClick={handleCreateBold}
+            className={`icon_button tool_bar ${isActive('BOLD', 'inline') ? 'active' : ""}`}
+            onClick={(e) => applyStyle(e, 'BOLD', 'inline')}
+            onMouseDown={(e) => e.preventDefault()}
         >
             <BoldIcon />
             <span className="wysiwyg_tool_tip">

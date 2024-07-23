@@ -13,7 +13,9 @@ export default function ParagraphTool() {
     const {
         paragraphDdOpen,
         setParaDropDown,
-        toggleBlockType
+        toggleBlockType,
+        applyStyle,
+        isActive
     } = useRichTextEditor();
     const paragraphDropDownRef = useRef(null);
 
@@ -22,7 +24,7 @@ export default function ParagraphTool() {
         setParaDropDown(true)
     }
 
-    const createHeadings = (e,tag) => {
+    const createHeadings = (e, tag) => {
         e.preventDefault()
         toggleBlockType(tag)
     }
@@ -36,7 +38,7 @@ export default function ParagraphTool() {
             setParaDropDown(false);
         }
     };
-  
+
     // if click outside of dropdowns
     useEffect(() => {
         document.addEventListener("mousedown", (e) => handleClickOutside(e));
@@ -50,6 +52,7 @@ export default function ParagraphTool() {
             <button
                 className="btn_overlay"
                 onClick={(e) => handleOpenDropDown(e)}
+                onMouseDown={(e) => e.preventDefault()}
             ></button>
             <p>Paragraph</p>
             <div
@@ -58,7 +61,8 @@ export default function ParagraphTool() {
             >
                 <button
                     className="tool_bar_dd_item h1"
-                    onClick={(e) => createHeadings(e,'header-one')}
+                    onClick={(e) => createHeadings(e, 'header-one')}
+                    onMouseDown={(e) => e.preventDefault()}
                 >
                     <span>Heading 1</span>
                     <H1Icon />
@@ -66,6 +70,7 @@ export default function ParagraphTool() {
                 <button
                     className="tool_bar_dd_item h2"
                     onClick={(e) => createHeadings(e, "header-two")}
+                    onMouseDown={(e) => e.preventDefault()}
                 >
                     <span>Heading 2</span>
                     <H2Icon />
@@ -73,20 +78,31 @@ export default function ParagraphTool() {
                 <button
                     className="tool_bar_dd_item h3"
                     onClick={(e) => createHeadings(e, "header-three")}
+                    onMouseDown={(e) => e.preventDefault()}
                 >
                     <span>Heading 3</span>
                     <H3Icon />
                 </button>
                 <button
-                    className="tool_bar_dd_item h4"
-                    onClick={(e) => createHeadings(e, "header-four")}
+                   className={`tool_bar_dd_item h4 ${isActive("header-four", 'block') ? "active":""}`}
+                   onClick={(e) => {
+                       applyStyle(e, "header-four", 'block')
+                       // close dropdown
+                       setParaDropDown(false)
+                   }}
+                   onMouseDown={(e) => e.preventDefault()}
                 >
                     <span>Heading 4</span>
                     <H4Icon />
                 </button>
                 <button
-                    className="tool_bar_dd_item p"
-                    onClick={(e) => createHeadings(e, "unstyled")}
+                    className={`tool_bar_dd_item p ${isActive("span", 'block') ? "active":""}`}
+                    onClick={(e) => {
+                        applyStyle(e, "span", 'block')
+                        // close dropdown
+                        setParaDropDown(false)
+                    }}
+                    onMouseDown={(e) => e.preventDefault()}
                 >
                     <span>Paragraph</span>P
                 </button>

@@ -5,6 +5,7 @@ import React, {
   useRef,
   useEffect,
 } from "react";
+
 import {
   EditorState,
   Modifier,
@@ -13,6 +14,7 @@ import {
   genKey,
   SelectionState,
 } from "draft-js";
+
 import { getSelectedText } from "../helpers/utils";
 
 const RichTextEditorContext = createContext();
@@ -47,9 +49,7 @@ export const RichTextEditorProvider = ({ children }) => {
   const editorRef = useRef(null);
 
   const focusEditor = () => {
-    if (editorRef.current) {
-      editorRef.current.focus();
-    }
+    editorRef.current.focus();
   };
 
   const blurEditor = () => {
@@ -241,15 +241,15 @@ export const RichTextEditorProvider = ({ children }) => {
   const addLink = (editorState, label, href) => {
     const contentState = editorState.getCurrentContent();
     const selection = editorState.getSelection();
-  
+
     const contentStateWithEntity = contentState.createEntity(
       'LINK',
       'MUTABLE',
       { url: href }
     );
-  
+
     const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
-  
+
     let newContentState = Modifier.insertText(
       contentState,
       selection,
@@ -257,19 +257,20 @@ export const RichTextEditorProvider = ({ children }) => {
       null,
       entityKey
     );
-  
+
     const newEditorState = EditorState.push(editorState, newContentState, 'insert-characters');
     return EditorState.forceSelection(newEditorState, newContentState.getSelectionAfter());
-  };
-
-  const setParaDropDown = (payload) => {
-    setState((prevState) => ({ ...prevState, paragraphDdOpen: payload }));
   };
 
   const setEditorState = (payload) => {
     // this is the onChange Function
     setState((prevState) => ({ ...prevState, editorState: payload }));
   };
+
+  const setParaDropDown = (payload) => {
+    setState((prevState) => ({ ...prevState, paragraphDdOpen: payload }));
+  };
+
 
   const setHighlightDropDown = (payload) => {
     setState((prevState) => ({ ...prevState, highlightDdOpen: payload }));
@@ -341,13 +342,37 @@ export const RichTextEditorProvider = ({ children }) => {
   const setToolBarParagraph = (payload) => {
     setState((prevState) => ({ ...prevState, toolBarParagraph: payload }));
   };
+  // apply block or inline style
+  const applyStyle = (e, style, method) => {
+    e.preventDefault();
+    method === "block"
+      ? setEditorState(RichUtils.toggleBlockType(state.editorState, style))
+      : setEditorState(RichUtils.toggleInlineStyle(state.editorState, style));
+  };
+
+  // is active function
+  const isActive = (style, method) => {
+    if (method === "block") {
+      const selection = state.editorState.getSelection();
+      const blockType = state.editorState
+        .getCurrentContent()
+        .getBlockForKey(selection.getStartKey())
+        .getType();
+      return blockType === style;
+    } else {
+      const currentStyle = state.editorState.getCurrentInlineStyle();
+      return currentStyle.has(style);
+    }
+  };
 
   return (
     <RichTextEditorContext.Provider
       value={{
         ...state,
         addLink,
+        isActive,
         editorRef,
+        applyStyle,
         blurEditor,
         applyColor,
         focusEditor,

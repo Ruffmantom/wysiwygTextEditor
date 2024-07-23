@@ -1,5 +1,9 @@
-import React, { useEffect, useRef } from "react";
-import { Editor, RichUtils } from "draft-js";
+import React, { useEffect } from "react";
+import {
+  Editor,
+  RichUtils
+} from "draft-js";
+
 import "draft-js/dist/Draft.css";
 import { useRichTextEditor } from "../contexts/RichTextEditorContext";
 import { customStyleMap } from "../helpers/CustomStyleMaps";
@@ -8,66 +12,44 @@ import ToolBar from "./ToolBar";
 
 
 const RichTextInput = ({ options }) => {
-  const editorContRef = useRef(null)
+
   const {
     editorState,
     setEditorState,
-    blurEditor,
     editorRef,
-    focusEditor,
-    linkModalOpen,
-    codeModalOpen,
+    focusEditor
   } = useRichTextEditor();
 
-  const handleKeyCommand = (command, editorState) => {
+
+  useEffect(() => {
+    focusEditor();
+  }, []);
+
+  const handleKeyCommand = (command) => {
     const newState = RichUtils.handleKeyCommand(editorState, command);
     if (newState) {
       setEditorState(newState);
-      return "handled";
+      return true;
     }
-    return "not-handled";
+    return false;
   };
 
-
-  const handleClickOutside = (event) => {
-    if (
-      editorContRef.current &&
-      !editorContRef.current.contains(event.target)
-    ) {
-      event.stopPropagation();
-      blurEditor();
-    }
-  };
-
-  useEffect(() => {
-    if (linkModalOpen ||
-      codeModalOpen) {
-      return
-    } else {
-      console.log("Editor refocus")
-      focusEditor();
-    }
-
-    document.addEventListener("mousedown", (e) => handleClickOutside(e));
-    return () => {
-      document.removeEventListener("mousedown", (e) => handleClickOutside(e));
-    };
-
-  }, [focusEditor]);
 
 
   return (
-    <div className="rich_text_editor" ref={editorContRef}>
-      <ToolBar options={options} />
+    <div className="rich_text_editor">
+      <ToolBar options={options}  editorState={editorState} setEditorState={setEditorState} />
       <div className="editable_container">
         <Editor
           ref={editorRef}
-          customStyleMap={customStyleMap}
+          placeholder="Start Typing..."
           editorState={editorState}
+          customStyleMap={customStyleMap}
           blockRendererFn={blockRendererFn}
-          // blockStyleFn={blockStyleFn}
           handleKeyCommand={handleKeyCommand}
-          onChange={setEditorState}
+          onChange={(editorState) => {
+            setEditorState(editorState)
+          }}
         />
       </div>
     </div>

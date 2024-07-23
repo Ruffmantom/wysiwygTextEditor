@@ -1,7 +1,7 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { ReactComponent as HighlightIcon } from "../../../../assets/icons/highlight.svg";
 // state
-import {useRichTextEditor} from '../../contexts/RichTextEditorContext';
+import { useRichTextEditor } from '../../contexts/RichTextEditorContext';
 
 const highlightColors = [
     "#FFEB3B",
@@ -16,26 +16,21 @@ const highlightColors = [
 
 export default function HighlightTool() {
     const highlightColorDropDownRef = useRef(null);
+    const [currentStyle, setCurrentStyle] = useState('')
     const {
         highlightDdOpen,
         setHighlightDropDown,
-        applyBackgroundColor
+        applyStyle,
+        isActive
     } = useRichTextEditor();
-
 
     const handleDropDown = (e) => {
         e.preventDefault()
-        if(highlightDdOpen){
+        if (highlightDdOpen) {
             setHighlightDropDown(false)
-        }else{
+        } else {
             setHighlightDropDown(true)
         }
-    }
-
-    const handleHighlightClick = (e, color) => {
-        e.preventDefault()
-        applyBackgroundColor(color)
-        console.log(`Highlight: ${color}`)
     }
 
     const handleClickOutside = (event) => {
@@ -61,6 +56,7 @@ export default function HighlightTool() {
             <button
                 className="btn_overlay"
                 onClick={handleDropDown}
+                onMouseDown={(e) => e.preventDefault()}
             ></button>
             <HighlightIcon />
             <span className="wysiwyg_tool_tip">Highlight Color</span>
@@ -74,17 +70,33 @@ export default function HighlightTool() {
                     {highlightColors.map((c) => (
                         <button
                             key={c}
-                            className="color_swatch"
-                            onClick={(e) => handleHighlightClick(e, c)}
+                            className={`color_swatch ${isActive(c, 'inline') ? 'active' : ""}`}
+                            onClick={e => {
+                                applyStyle(e, c, 'inline')
+                                setCurrentStyle(c)
+                                setHighlightDropDown(false)
+                            }}
+                            onMouseDown={(e) => e.preventDefault()}
                             style={{ backgroundColor: c }}
                         ></button>
                     ))}
                 </div>
-                <div className="tool_bar_dd_item p center">
-                    <button onClick={(e) => handleHighlightClick(e, "none")}>
-                        None
-                    </button>
-                </div>
+
+                <button
+                    className='tool_bar_dd_item p center clear_style_btn'
+                    onClick={e => {
+                        console.log('Clearing bkg, current color: ', currentStyle)
+                        if (currentStyle !== "") {
+                            applyStyle(e, currentStyle, 'inline')
+                            setCurrentStyle('')
+                            setHighlightDropDown(false)
+                        }
+                    }}
+                    onMouseDown={(e) => e.preventDefault()}
+                >
+                    None
+                </button>
+
             </div>
         </div>
     )

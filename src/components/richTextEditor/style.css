@@ -73,7 +73,7 @@ code {
   background-color: #1e1e1e;
 }
 
-hr.custom_hr{
+hr.custom_hr {
   height: 3px;
   background-color: var(--shade-3);
   border-radius: 3px;
@@ -113,11 +113,13 @@ blockquote {
   position: relative;
   display: flex;
   gap: 15px;
+
   .output {
     max-height: 100%;
     overflow-y: auto;
   }
-  && > * {
+
+  &&>* {
     width: 100%;
   }
 }
@@ -149,14 +151,14 @@ blockquote {
     }
   }
 
-  .icon_button > svg {
+  .icon_button>svg {
     height: 10px;
     width: unset;
     max-height: unset;
     max-width: 18px;
   }
 
-  .icon_button:not(.heading) > svg {
+  .icon_button:not(.heading)>svg {
     height: 14px;
   }
 }
@@ -171,7 +173,7 @@ blockquote {
   background-color: var(--shade-0);
 }
 
-.add_code > textarea {
+.add_code>textarea {
   max-width: 100%;
   max-height: 400px;
 }
@@ -198,6 +200,14 @@ blockquote {
 .icon_button.tool_bar {
   position: relative;
 
+  &&.active {
+    background-color: var(--blue);
+
+    svg {
+      fill: var(--action-text);
+    }
+  }
+
   .wysiwyg_tool_tip {
     position: absolute;
     /* just to get it out of the area */
@@ -221,7 +231,7 @@ blockquote {
   }
 }
 
-.icon_button:hover > .wysiwyg_tool_tip {
+.icon_button:hover>.wysiwyg_tool_tip {
   width: max-content;
   height: unset;
   overflow: unset;
@@ -279,15 +289,28 @@ blockquote {
       gap: 10px;
       justify-content: space-between;
       align-items: center;
+      padding: 0;
       padding: 5px 7px;
       border-radius: 3px;
 
+      &&.active {
+        background-color: var(--blue);
+        color: var(--action-text);
+        svg{
+          fill: var(--action-text);
+        }
+      }
+      &&.active:hover {
+        background-color: var(--blue-1);
+      }
+      
       &&:hover {
         background-color: var(--shade-2);
       }
     }
   }
 }
+
 
 .tool_bar_dd_item.h1 {
   font-size: larger;
@@ -338,13 +361,20 @@ blockquote {
   width: 20px;
   border-radius: 3px;
 
+  &&.active {
+    outline: 2px solid var(--blue);
+
+  }
+
   &&:hover {
     outline: 2px solid var(--black-2);
   }
 }
+
 /*  custom select styles */
 .cust_select {
   position: relative;
+
   .cust_select_dd {
     padding: 5px;
     display: flex;
@@ -364,6 +394,7 @@ blockquote {
     border-radius: 5px;
     height: 0;
     z-index: -1;
+
     &&.active {
       height: fit-content;
       opacity: 1;
@@ -372,6 +403,7 @@ blockquote {
     }
   }
 }
+
 .cust_select_btn {
   padding: 10px 20px;
   background-color: var(--shade-1);
@@ -389,6 +421,7 @@ blockquote {
     display: flex;
     align-items: center;
     justify-content: center;
+
     .chev_item {
       margin-right: -4px;
       height: 3px;
@@ -397,6 +430,7 @@ blockquote {
       background-color: black;
       transform: rotate(-45deg);
     }
+
     .chev_left {
       transform: rotate(45deg);
     }
@@ -406,11 +440,13 @@ blockquote {
     background-color: var(--shade-2);
   }
 }
+
 .cust_select_option {
   padding: 10px 20px;
   cursor: pointer;
   border-radius: 3px;
   background-color: var(--shade1);
+
   &&:hover {
     background-color: var(--shade-2);
   }

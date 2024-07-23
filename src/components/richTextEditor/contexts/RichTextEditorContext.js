@@ -1,5 +1,19 @@
-import React, { createContext, useContext, useState, useRef, useEffect } from 'react';
-import { EditorState, Modifier, RichUtils } from 'draft-js';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useRef,
+  useEffect,
+} from "react";
+import {
+  EditorState,
+  Modifier,
+  RichUtils,
+  ContentBlock,
+  genKey,
+  SelectionState,
+} from "draft-js";
+import { getSelectedText } from "../helpers/utils";
 
 const RichTextEditorContext = createContext();
 
@@ -38,6 +52,13 @@ export const RichTextEditorProvider = ({ children }) => {
     }
   };
 
+  const blurEditor = () => {
+    if (editorRef.current) {
+      console.log('unfocus editor')
+      editorRef.current.blur();
+    }
+  };
+
 
   // clear format function
   const clearFormatting = () => {
@@ -45,7 +66,7 @@ export const RichTextEditorProvider = ({ children }) => {
     const selection = state.editorState.getSelection();
 
     // Remove inline styles
-    const stylesToRemove = ['BOLD', 'ITALIC', 'UNDERLINE', 'CODE'];
+    const stylesToRemove = ["BOLD", "ITALIC", "UNDERLINE", "CODE"];
     let newContentState = stylesToRemove.reduce((content, style) => {
       return Modifier.removeInlineStyle(content, selection, style);
     }, contentState);
@@ -54,14 +75,15 @@ export const RichTextEditorProvider = ({ children }) => {
     const newEditorState = EditorState.push(
       state.editorState,
       newContentState,
-      'change-inline-style'
+      "change-inline-style"
     );
-    setEditorState(RichUtils.toggleBlockType(newEditorState, 'unstyled'));
+    setEditorState(RichUtils.toggleBlockType(newEditorState, "unstyled"));
     focusEditor();
   };
 
   // change text color
   const applyColor = (color) => {
+    console.log("Changing color to: " + color);
     const COLOR_STYLES = [
       "#D0C031",
       "#D0481C",
@@ -78,27 +100,29 @@ export const RichTextEditorProvider = ({ children }) => {
       return Modifier.removeInlineStyle(contentState, selection, color);
     }, state.editorState.getCurrentContent());
 
+    console.log("Got selection & content state: ", nextContentState);
     let nextEditorState = EditorState.push(
       state.editorState,
       nextContentState,
-      'change-inline-style'
+      "change-inline-style"
     );
 
     const currentStyle = state.editorState.getCurrentInlineStyle();
+    console.log("Current Style: ", currentStyle);
 
     if (selection.isCollapsed()) {
+      console.log("Selection is collapsed");
       nextEditorState = currentStyle.reduce((state, color) => {
         return RichUtils.toggleInlineStyle(state, color);
       }, nextEditorState);
     }
 
     if (!currentStyle.has(color)) {
-      nextEditorState = RichUtils.toggleInlineStyle(
-        nextEditorState,
-        color
-      );
+      console.log("There is a current style");
+      nextEditorState = RichUtils.toggleInlineStyle(nextEditorState, color);
     }
 
+    console.log("Setting new state");
     setEditorState(nextEditorState);
   };
 
@@ -123,7 +147,7 @@ export const RichTextEditorProvider = ({ children }) => {
     let nextEditorState = EditorState.push(
       state.editorState,
       nextContentState,
-      'change-inline-style'
+      "change-inline-style"
     );
 
     const currentStyle = state.editorState.getCurrentInlineStyle();
@@ -135,10 +159,7 @@ export const RichTextEditorProvider = ({ children }) => {
     }
 
     if (!currentStyle.has(bgColor)) {
-      nextEditorState = RichUtils.toggleInlineStyle(
-        nextEditorState,
-        bgColor
-      );
+      nextEditorState = RichUtils.toggleInlineStyle(nextEditorState, bgColor);
     }
 
     setEditorState(nextEditorState);
@@ -146,16 +167,107 @@ export const RichTextEditorProvider = ({ children }) => {
 
   // toggle block type
   const toggleBlockType = (blockType) => {
-    const newEditorState = RichUtils.toggleBlockType(state.editorState, blockType);
+    const newEditorState = RichUtils.toggleBlockType(
+      state.editorState,
+      blockType
+    );
     setState((prevState) => ({ ...prevState, editorState: newEditorState }));
     focusEditor();
+  };
+
+  // toggle hr element
+  const insertHrBlock = () => {
+    const contentState = state.editorState.getCurrentContent();
+    const selectionState = state.editorState.getSelection();
+
+    // Create a new ContentBlock for the <hr> element
+    const hrBlock = new ContentBlock({
+      key: genKey(),
+      type: "hr",
+      text: "",
+    });
+
+    // Create a new ContentBlock for the paragraph after the <hr>
+    const newBlock = new ContentBlock({
+      key: genKey(),
+      type: "unstyled",
+      text: "",
+    });
+
+    const blockMap = contentState.getBlockMap();
+    const blocksBefore = blockMap
+      .toSeq()
+      .takeUntil(
+        (v) => v === contentState.getBlockForKey(selectionState.getStartKey())
+      );
+    const blocksAfter = blockMap
+      .toSeq()
+      .skipUntil(
+        (v) => v === contentState.getBlockForKey(selectionState.getStartKey())
+      )
+      .rest();
+
+    const newBlocks = blocksBefore
+      .concat(
+        [
+          [
+            contentState.getBlockForKey(selectionState.getStartKey()).getKey(),
+            contentState.getBlockForKey(selectionState.getStartKey()),
+          ],
+          [hrBlock.getKey(), hrBlock],
+          [newBlock.getKey(), newBlock],
+        ],
+        blocksAfter
+      )
+      .toOrderedMap();
+
+    const newContentState = contentState.merge({
+      blockMap: newBlocks,
+      selectionBefore: selectionState,
+      selectionAfter: SelectionState.createEmpty(newBlock.getKey()),
+    });
+
+    const newEditorState = EditorState.push(
+      state.editorState,
+      newContentState,
+      "insert-fragment"
+    );
+    setEditorState(newEditorState);
+    focusEditor();
+  };
+
+
+  // add link
+  const addLink = (editorState, label, href) => {
+    const contentState = editorState.getCurrentContent();
+    const selection = editorState.getSelection();
+  
+    const contentStateWithEntity = contentState.createEntity(
+      'LINK',
+      'MUTABLE',
+      { url: href }
+    );
+  
+    const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+  
+    let newContentState = Modifier.insertText(
+      contentState,
+      selection,
+      label,
+      null,
+      entityKey
+    );
+  
+    const newEditorState = EditorState.push(editorState, newContentState, 'insert-characters');
+    return EditorState.forceSelection(newEditorState, newContentState.getSelectionAfter());
   };
 
   const setParaDropDown = (payload) => {
     setState((prevState) => ({ ...prevState, paragraphDdOpen: payload }));
   };
 
-  const setEditorState = (payload) => { // this is the onChange Function
+  const setEditorState = (payload) => {
+    // this is the onChange Function
     setState((prevState) => ({ ...prevState, editorState: payload }));
   };
 
@@ -179,8 +291,10 @@ export const RichTextEditorProvider = ({ children }) => {
     setState((prevState) => ({ ...prevState, textAlignDdOpen: payload }));
   };
 
-  const setSelectedText = (payload) => {
-    setState((prevState) => ({ ...prevState, selectedText: payload }));
+  const setSelectedText = (newState) => {
+    setEditorState(newState);
+    const selectedText = getSelectedText(newState);
+    setState((prevState) => ({ ...prevState, selectedText: selectedText }));
   };
 
   const setRichTextEditorContent = (payload) => {
@@ -232,13 +346,16 @@ export const RichTextEditorProvider = ({ children }) => {
     <RichTextEditorContext.Provider
       value={{
         ...state,
+        addLink,
         editorRef,
+        blurEditor,
         applyColor,
         focusEditor,
         setLinkModal,
         setCodeModal,
         setTxtAlignDd,
         setEditorState,
+        insertHrBlock,
         setParaDropDown,
         setToolBarColor,
         toggleBlockType,

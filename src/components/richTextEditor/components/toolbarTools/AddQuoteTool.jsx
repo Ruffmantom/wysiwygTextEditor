@@ -1,10 +1,17 @@
 import React from 'react'
 import { ReactComponent as QuoteIcon } from "../../../../assets/icons/quote.svg";
-export default function AddQuoteTool() {
+// state
+import { useRichTextEditor } from "../../contexts/RichTextEditorContext";
 
+
+export default function AddQuoteTool() {
+    const {
+         toggleBlockType
+     } = useRichTextEditor();
+    
     const handleCreateNewTag = (e,tag) => {
         e.preventDefault()
-
+        toggleBlockType('blockquote')
         console.log(`Create Tag: ${tag}`)
     }
 

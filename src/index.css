@@ -88,16 +88,6 @@ body {
   height: 100%;
 }
 
-p,
-h1,
-h2,
-h3,
-h4,
-h5,
-span {
-  color: var(--black-1);
-}
-
 svg {
   fill: var(--black-2);
 }

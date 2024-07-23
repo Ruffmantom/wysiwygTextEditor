@@ -10,7 +10,10 @@ import AddLinkTool from "./toolbarTools/AddLinkTool";
 import AddCodeTool from "./toolbarTools/AddCodeTool";
 import AddQuoteTool from "./toolbarTools/AddQuoteTool";
 import AddDividerTool from "./toolbarTools/AddDividerTool";
-
+import OrderedListTool from "./toolbarTools/OrderedListTool"
+import UnorderedListTool from "./toolbarTools/UnorderedListTool";
+import InfoTool from "./toolbarTools/InfoTool";
+import MonoSpaceTool from "./toolbarTools/MonoSpaceTool";
 /*
 
 tool options: {
@@ -27,7 +30,12 @@ tool options: {
             link: true,
             code: true,
             quote: true,
-            divider: true
+            divider: true,
+            orderedList:true,
+            unorderedList:true,
+            info:true,
+            monospace:true,
+
           }
 */
 
@@ -39,6 +47,7 @@ const ToolBar = ({ options }) => {
     <div className="wysiwyg_tool_bar">
       {options.tools.bold || !options ? <BoldTool /> : ""}
       {options.tools.italic || !options ? <ItalicTool /> : ""}
+      {options.tools.monospace || !options ? <MonoSpaceTool /> : ""}
       {options.tools.highlight || options.tools.color || options.tools.headings ? <div className="wysiwyg_tool_bar_divider"></div> : ""}
       {options.tools.highlight || !options ? <HighlightTool /> : ""}
       {options.tools.color || !options ? <ColorTextTool /> : ""}
@@ -51,8 +60,11 @@ const ToolBar = ({ options }) => {
       {options.tools.link || options.tools.code || options.tools.quote || options.tools.divider ? <div className="wysiwyg_tool_bar_divider"></div> : ""}
       {options.tools.link || !options ? <AddLinkTool /> : ""}
       {options.tools.code || !options ? <AddCodeTool /> : ""}
+      {options.tools.info || !options ? <InfoTool /> : ""}
       {options.tools.quote || !options ? <AddQuoteTool /> : ""}
       {options.tools.divider || !options ? <AddDividerTool /> : ""}
+      {options.tools.orderedList || !options ? <OrderedListTool /> : ""}
+      {options.tools.unorderedList || !options ? <UnorderedListTool /> : ""}
     </div>
   );
 };

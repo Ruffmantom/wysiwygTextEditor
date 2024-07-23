@@ -50,5 +50,21 @@ export const customStyleMap = {
   },
   "CLEAR_HIGHLIGHT": {
     backgroundColor: "unset",
+  },
+  "INFO_ELM": {
+    backgroundColor: "var(--blue)",
+    color: "var(--action-text)",
+    padding:"2rem",
+    fontWeight:'bolder',
+    borderRadius:"5px",
+    display:"block",
+    margin:"10px 0",
+  },
+  "MONOSPACE":{
+    fontFamily:"monospace",
+    backgroundColor: "var(--shade-3)",
+    borderRadius:"5px",
+    padding:'3px 10px',
+    display:"inline-block"
   }
 };

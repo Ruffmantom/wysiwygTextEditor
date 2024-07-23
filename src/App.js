@@ -18,7 +18,12 @@ function App() {
             link: true,
             code: true,
             quote: true,
-            divider: true
+            divider: true,
+            orderedList:true,
+            unorderedList:true,
+            info:true,
+            monospace:true,
+
           }
         }} />
       </div>

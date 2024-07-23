@@ -59,7 +59,8 @@ const AddCodeModal = ({ createCodeBlocks }) => {
       <div className="hub_modal fit_content shade0">
         <div
           className="modal_close icon_button"
-          onClick={handleClose}
+          onClick={e => handleClose(e)}
+          onMouseDown={(e) => e.preventDefault()}
         >
           <CloseIcon />
         </div>
@@ -88,7 +89,11 @@ const AddCodeModal = ({ createCodeBlocks }) => {
         </div>
         <div className="hub_modal_footer">
           <div className="hub_footer_actions">
-            <button className="form_action_btn" onClick={e => handleSubmit(e)}>
+            <button
+              className="form_action_btn"
+              onClick={e => handleSubmit(e)}
+              onMouseDown={(e) => e.preventDefault()}
+            >
               Add Code
             </button>
           </div>

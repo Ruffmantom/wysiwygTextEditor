@@ -75,6 +75,8 @@ export const RichTextEditorProvider = ({ children }) => {
       "BOLD",
       "ITALIC",
       "UNDERLINE",
+      "INFO_ELM",
+      "MONOSPACE",
       "CODE",
       "#D0C031",
       "#D0481C",
@@ -91,7 +93,7 @@ export const RichTextEditorProvider = ({ children }) => {
       "#9C27B0",
       "#FF9800",
       "#00BCD4",
-      "#eb361e"
+      "#eb361e",
     ];
     let newContentState = stylesToRemove.reduce((content, style) => {
       return Modifier.removeInlineStyle(content, selection, style);
@@ -258,7 +260,6 @@ export const RichTextEditorProvider = ({ children }) => {
       "insert-fragment"
     );
     setEditorState(newEditorState);
-    focusEditor();
   };
 
 

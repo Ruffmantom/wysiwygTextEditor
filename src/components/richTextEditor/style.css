@@ -33,6 +33,32 @@
 .align_right {
   text-align: right;
 }
+.info_element{
+  padding: 3.5rem 2rem 2rem 2rem;
+  border-radius: 5px;
+  display: block;
+  margin: 15px 0;
+  position: relative;
+  background-color: var(--blue);
+  color: var(--action-text);
+  &&::before{
+    content: "i";
+    position: absolute;
+    top: 1.5rem;
+    left: 2rem;
+    height: 22px;
+    font-weight: bold;
+    width: 22px;
+    border-radius: 1pc;
+    outline: 2px solid var(--action-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  svg{
+    fill: var(--action-text);
+  }
+}
 
 .formatted_link {
   color: var(--blue);
@@ -137,6 +163,7 @@ blockquote {
   width: 100%;
   padding: 5px;
   display: flex;
+  flex-wrap: wrap;
   gap: 5px;
   border-radius: 3px;
   background-color: var(--shade-0);

@@ -13,12 +13,9 @@ export default function RichTextEditor({ options }) {
   return (
     <RichTextEditorProvider>
       <div className="editable_container_cont">
-        <div className="rich_text_editor">
           <AddCodeModal />
           <AddLinkModal />
-          <ToolBar options={options}/>
-          <RichTextInput/>
-        </div>
+          <RichTextInput options={options}/>
       </div>
     </RichTextEditorProvider>
   );

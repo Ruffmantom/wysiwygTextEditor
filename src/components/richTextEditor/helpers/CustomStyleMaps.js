@@ -64,7 +64,7 @@ export const customStyleMap = {
     fontFamily:"monospace",
     backgroundColor: "var(--shade-3)",
     borderRadius:"5px",
-    padding:'3px 10px',
+    padding:'4px 10px',
     display:"inline-block"
   }
 };

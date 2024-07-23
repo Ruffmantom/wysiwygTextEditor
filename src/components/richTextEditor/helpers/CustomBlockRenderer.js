@@ -9,20 +9,11 @@ export const blockRendererFn = (contentBlock) => {
       editable: false,
     };
   }
-  if (type === 'note') {
-    return {
-      component: NoteComponent,
-      editable: true,
-    }
-  }
+
   return null;
 };
 
 const HRComponent = (props) => {
   return <hr className="custom_hr" />;
 };
-const NoteComponent = (props) => {
-  return <div className='formatted_note'>
 
-  </div>;
-};

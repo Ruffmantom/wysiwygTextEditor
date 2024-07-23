@@ -58,9 +58,9 @@ const ToolBar = ({ options }) => {
           options.tools.other.removeFormats || !options ? <MoreTools options={options} /> : ""
       }
       {options.tools.link || options.tools.code || options.tools.quote || options.tools.divider ? <div className="wysiwyg_tool_bar_divider"></div> : ""}
+      {options.tools.info || !options ? <InfoTool /> : ""}
       {options.tools.link || !options ? <AddLinkTool /> : ""}
       {options.tools.code || !options ? <AddCodeTool /> : ""}
-      {options.tools.info || !options ? <InfoTool /> : ""}
       {options.tools.quote || !options ? <AddQuoteTool /> : ""}
       {options.tools.divider || !options ? <AddDividerTool /> : ""}
       {options.tools.orderedList || !options ? <OrderedListTool /> : ""}

@@ -13,7 +13,7 @@ export default function InfoTool() {
         >
             <InfoToolIcon />
             <span className="wysiwyg_tool_tip">
-                Info Note{" "}
+                Info Block{" "}
                 {/* <span className="key_command">{isMac ? "cmd + b" : "ctrl + b"}</span> */}
             </span>
         </button>

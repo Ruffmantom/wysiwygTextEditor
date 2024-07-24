@@ -17,6 +17,5 @@ export const getSelectedText = (editorState) => {
       selectedText += text.slice(start, end);
     }
   });
-  console.log("selected Text: ", selectedText);
   return selectedText;
 };

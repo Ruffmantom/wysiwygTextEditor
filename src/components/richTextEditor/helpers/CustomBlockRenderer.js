@@ -1,53 +1,53 @@
-import React from "react";
-import { useRichTextEditor } from "../contexts/RichTextEditorContext";
+// import React from "react";
 
-const HRComponent = (props) => {
-  return <hr className="custom_hr" />;
-};
+// const HRComponent = (props) => {
+//   return <hr className="custom_hr" />;
+// };
 
-const LinkComponent = (props) => {
-  const { contentState, entityKey } = props;
-  const { label, url } = contentState.getEntity(entityKey).getData();
+// export const blockRendererFn = (contentBlock) => {
+//   const type = contentBlock.getType();
+//   if (type === "hr") {
+//     return {
+//       component: HRComponent,
+//       editable: false,
+//     };
+//   }
 
-  console.log("from link component: " + label + " url: " + url);
+//   return null;
+// };
+
+import React from 'react';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/github.css'; // Import a highlight.js theme
+
+const CodeBlock = (props) => {
+  const entity = props.contentState.getEntity(props.block.getEntityAt(0));
+  const { language, codeContent } = entity.getData();
+
+  const highlightedCode = hljs.highlight(language, codeContent).value;
+
   return (
-    <a
-      className="formatted_link"
-      href={url}
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      {label}
-    </a>
+    <pre className="code-block">
+      <code dangerouslySetInnerHTML={{ __html: highlightedCode }} />
+    </pre>
   );
 };
 
-export const blockRendererFn = (contentBlock) => {
-// const {editorState} = useRichTextEditor()
-
-  const type = contentBlock.getType();
-  if (type === "hr") {
-    return {
-      component: HRComponent,
-      editable: false,
-    };
+const blockRendererFn = (block) => {
+  if (block.getType() === 'atomic') {
+    const contentState = block.getEntityAt(0);
+    if (contentState) {
+      const entity = block.getEntityAt(0);
+      const entityType = entity.getType();
+      if (entityType === 'CODE_BLOCK') {
+        return {
+          component: CodeBlock,
+          editable: false,
+        };
+      }
+    }
   }
-  // if (type === "atomic") {
-  //   const contentState = editorState.getCurrentContent();
-  //   const entityKey = contentBlock.getEntityAt(0);
-  //   if (entityKey) {
-  //     const entityType = contentState.getEntity(entityKey).getType();
-  //     if (entityType === "LINK") {
-  //       return {
-  //         component: LinkComponent,
-  //         editable: false,
-  //         props: {
-  //           contentState,
-  //           entityKey,
-  //         },
-  //       };
-  //     }
-  //   }
-  // }
   return null;
 };
+
+export { CodeBlock, blockRendererFn };

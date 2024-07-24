@@ -8,16 +8,25 @@ import { css } from "@codemirror/lang-css";
 import { xml } from "@codemirror/lang-xml";
 import CustomSelect from "../CustomSelect";
 import { useRichTextEditor } from '../../contexts/RichTextEditorContext'
+import { AtomicBlockUtils } from "draft-js";
 const languageList = ["HTML", "XML", "CSS", "JavaScript", "TypeScript"];
 
-const AddCodeModal = ({ createCodeBlocks }) => {
+const AddCodeModal = () => {
   const [codeContent, setCodeContent] = useState("");
   const [language, setLanguage] = useState("javascript");
-  const { codeModalOpen, setCodeModal } = useRichTextEditor()
+  const { 
+    codeModalOpen, 
+    setCodeModal,
+    focusEditor,
+    editorState,
+    setEditorState
+   } = useRichTextEditor()
 
   const handleClose = (e) => {
     e.preventDefault();
     setCodeModal(false);
+    // refocus the editor
+    focusEditor()
   };
 
   const handleLanguageChange = (value) => {
@@ -41,12 +50,30 @@ const AddCodeModal = ({ createCodeBlocks }) => {
         return javascript(); // default to javascript if language is not found
     }
   };
+// create the codeblock
+  const insertCodeBlock = (language, codeContent) => {
+    const contentState = editorState.getCurrentContent();
+    const contentStateWithEntity = contentState.createEntity(
+      'CODE_BLOCK',
+      'IMMUTABLE',
+      { language, codeContent }
+    );
+    const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+    const newEditorState = AtomicBlockUtils.insertAtomicBlock(
+      editorState,
+      entityKey,
+      ' '
+    );
+    setEditorState(newEditorState);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log({ language, codeContent });
+    console.log("Code: ",{ language, codeContent });
     // createCodeBlocks(language, codeContent);
+    insertCodeBlock(language, codeContent)
     handleClose(e);
+    focusEditor()
   };
 
   // if codemodal is false

@@ -30,9 +30,9 @@ const RichTextInput = ({ options }) => {
     const newState = RichUtils.handleKeyCommand(editorState, command);
     if (newState) {
       setEditorState(newState);
-      return true;
+      return 'handled';
     }
-    return false;
+    return 'not-handled';
   };
 
   const onTab = (e) => {

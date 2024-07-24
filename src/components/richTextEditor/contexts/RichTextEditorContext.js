@@ -3,7 +3,6 @@ import React, {
   useContext,
   useState,
   useRef,
-  useEffect,
 } from "react";
 
 import {
@@ -13,9 +12,31 @@ import {
   ContentBlock,
   genKey,
   SelectionState,
+  CompositeDecorator,
 } from "draft-js";
 
 import { getSelectedText } from "../helpers/utils";
+import LinkComponent from "../components/LinkComponent";
+
+
+function findLinkEntities(contentBlock, callback, contentState) {
+  console.log("hit findLinkEntities")
+  contentBlock.findEntityRanges(
+    (character) => {
+      console.log('Entity Character: ', character)
+      const entityKey = character.getEntity();
+      return entityKey !== null && contentState.getEntity(entityKey).getType() === 'LINK';
+    },
+    callback
+  );
+}
+
+const decorator = new CompositeDecorator([
+  {
+    strategy: findLinkEntities,
+    component: LinkComponent,
+  },
+]);
 
 const RichTextEditorContext = createContext();
 
@@ -35,15 +56,11 @@ export const RichTextEditorProvider = ({ children }) => {
     toolBarColorActive: false,
     toolBarItalicActive: false,
     toolBarBkgColorActive: false,
-    editorState: EditorState.createEmpty(),
+    editorState: EditorState.createEmpty(decorator),
     selectedText: "",
     toolBarColor: "", // string of what color is selected to highlight the tool
     toolBarBkgColor: "", // string of what color is selected to highlight the tool
     toolBarParagraph: "", // string of what the parent is
-    richTextEditorContent: "",
-    currentSelectPosition: "",
-    currentSelectEndPosition: "",
-    currentSelectStartPosition: "",
   });
 
   const editorRef = useRef(null);
@@ -59,6 +76,7 @@ export const RichTextEditorProvider = ({ children }) => {
     }
   };
 
+ 
   // clear format function
   const clearFormatting = () => {
     const contentState = state.editorState.getCurrentContent();
@@ -105,100 +123,6 @@ export const RichTextEditorProvider = ({ children }) => {
       "change-inline-style"
     );
     setEditorState(RichUtils.toggleBlockType(newEditorState, "unstyled"));
-  };
-
-  // change text color
-  const applyColor = (color) => {
-    console.log("Changing color to: " + color);
-    const COLOR_STYLES = [
-      "#D0C031",
-      "#D0481C",
-      "#1B5E20",
-      "#0D47A1",
-      "#4A148C",
-      "#D07C00",
-      "#006064",
-      "#B12917",
-    ];
-
-    const selection = state.editorState.getSelection();
-    const nextContentState = COLOR_STYLES.reduce((contentState, color) => {
-      return Modifier.removeInlineStyle(contentState, selection, color);
-    }, state.editorState.getCurrentContent());
-
-    console.log("Got selection & content state: ", nextContentState);
-    let nextEditorState = EditorState.push(
-      state.editorState,
-      nextContentState,
-      "change-inline-style"
-    );
-
-    const currentStyle = state.editorState.getCurrentInlineStyle();
-    console.log("Current Style: ", currentStyle);
-
-    if (selection.isCollapsed()) {
-      console.log("Selection is collapsed");
-      nextEditorState = currentStyle.reduce((state, color) => {
-        return RichUtils.toggleInlineStyle(state, color);
-      }, nextEditorState);
-    }
-
-    if (!currentStyle.has(color)) {
-      console.log("There is a current style");
-      nextEditorState = RichUtils.toggleInlineStyle(nextEditorState, color);
-    }
-
-    console.log("Setting new state");
-    setEditorState(nextEditorState);
-  };
-
-  // apply a background
-  const applyBackgroundColor = (bgColor) => {
-    const BG_COLOR_STYLES = [
-      "#FFEB3B",
-      "#FF5722",
-      "#4CAF50",
-      "#2196F3",
-      "#9C27B0",
-      "#FF9800",
-      "#00BCD4",
-      "#eb361e",
-    ];
-
-    const selection = state.editorState.getSelection();
-    const nextContentState = BG_COLOR_STYLES.reduce((contentState, bgColor) => {
-      return Modifier.removeInlineStyle(contentState, selection, bgColor);
-    }, state.editorState.getCurrentContent());
-
-    let nextEditorState = EditorState.push(
-      state.editorState,
-      nextContentState,
-      "change-inline-style"
-    );
-
-    const currentStyle = state.editorState.getCurrentInlineStyle();
-
-    if (selection.isCollapsed()) {
-      nextEditorState = currentStyle.reduce((state, bgColor) => {
-        return RichUtils.toggleInlineStyle(state, bgColor);
-      }, nextEditorState);
-    }
-
-    if (!currentStyle.has(bgColor)) {
-      nextEditorState = RichUtils.toggleInlineStyle(nextEditorState, bgColor);
-    }
-
-    setEditorState(nextEditorState);
-  };
-
-  // toggle block type
-  const toggleBlockType = (blockType) => {
-    const newEditorState = RichUtils.toggleBlockType(
-      state.editorState,
-      blockType
-    );
-    setState((prevState) => ({ ...prevState, editorState: newEditorState }));
-    focusEditor();
   };
 
   // toggle hr element
@@ -295,22 +219,6 @@ export const RichTextEditorProvider = ({ children }) => {
     setState((prevState) => ({ ...prevState, selectedText: selectedText }));
   };
 
-  const setRichTextEditorContent = (payload) => {
-    setState((prevState) => ({ ...prevState, richTextEditorContent: payload }));
-  };
-
-  const setCurrentSelectPosition = (payload) => {
-    setState((prevState) => ({ ...prevState, currentSelectPosition: payload }));
-  };
-
-  const setCurrentStartAndEndPosition = (payload) => {
-    setState((prevState) => ({
-      ...prevState,
-      currentSelectStartPosition: payload.start,
-      currentSelectEndPosition: payload.end,
-    }));
-  };
-
   // Toolbar states
   const setToolBarBoldActive = (payload) => {
     setState((prevState) => ({ ...prevState, toolBarBoldActive: payload }));
@@ -328,17 +236,7 @@ export const RichTextEditorProvider = ({ children }) => {
     setState((prevState) => ({ ...prevState, toolBarBkgColor: payload }));
   };
 
-  const setToolBarColorActive = (payload) => {
-    setState((prevState) => ({ ...prevState, toolBarColorActive: payload }));
-  };
 
-  const setToolBarColor = (payload) => {
-    setState((prevState) => ({ ...prevState, toolBarColor: payload }));
-  };
-
-  const setToolBarParagraph = (payload) => {
-    setState((prevState) => ({ ...prevState, toolBarParagraph: payload }));
-  };
   // apply block or inline style
   const applyStyle = (e, style, method) => {
     e.preventDefault();
@@ -369,12 +267,10 @@ export const RichTextEditorProvider = ({ children }) => {
     <RichTextEditorContext.Provider
       value={{
         ...state,
-        // addLink,
         isActive,
         editorRef,
         applyStyle,
         blurEditor,
-        applyColor,
         focusEditor,
         setLinkModal,
         setCodeModal,
@@ -382,22 +278,14 @@ export const RichTextEditorProvider = ({ children }) => {
         setEditorState,
         insertHrBlock,
         setParaDropDown,
-        setToolBarColor,
-        toggleBlockType,
         setSelectedText,
         clearFormatting,
         setColorDropDown,
         setToolBarBkgColor,
-        setToolBarParagraph,
-        applyBackgroundColor,
         setHighlightDropDown,
         setToolBarBoldActive,
-        setToolBarColorActive,
         setToolBarItalicActive,
-        setToolBarBkgColorActive,
-        setRichTextEditorContent,
-        setCurrentSelectPosition,
-        setCurrentStartAndEndPosition,
+        setToolBarBkgColorActive
       }}
     >
       {children}

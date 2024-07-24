@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { ReactComponent as CloseIcon } from "../../../../assets/icons/close.svg";
 import { useRichTextEditor } from "../../contexts/RichTextEditorContext";
-import { CompositeDecorator, EditorState, RichUtils } from "draft-js";
+import { EditorState, RichUtils } from "draft-js";
 
 const urlRegex =
   /^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?(#[a-z\d_]*)?$/i;
@@ -14,6 +14,7 @@ const AddLinkModal = () => {
     setEditorState,
     editorState,
     editorRef,
+    focusEditor,
   } = useRichTextEditor();
 
   const [linkData, setLinkData] = useState({
@@ -33,44 +34,23 @@ const AddLinkModal = () => {
   const handleClose = (e) => {
     e.preventDefault();
     setLinkModal(false);
+    focusEditor();
   };
 
-  function findLinkEntities(contentBlock, callback, contentState) {
-    contentBlock.findEntityRanges((character) => {
-      const entityKey = character.getEntity();
-      return (
-        entityKey !== null &&
-        contentState.getEntity(entityKey).getType() === "LINK"
-      );
-    }, callback);
-  }
-
-  const Link = (props) => {
-    const { url, label } = props.contentState
-      .getEntity(props.entityKey)
-      .getData();
-    return (
-      <a href={url} className="formatted_link">
-        {props.children}
-      </a>
-    );
+  const clearInputValues = () => {
+    setLinkData({
+      label: "",
+      href: "",
+    });
   };
 
-  const decorator = new CompositeDecorator([
-    {
-      strategy: findLinkEntities,
-      component: Link,
-    },
-  ]);
-
-  const confirmLink = useCallback(
-    (e) => {
-      e.preventDefault();
+  const createLink = useCallback(
+    (linkData) => {
       const contentState = editorState.getCurrentContent();
       const contentStateWithEntity = contentState.createEntity(
         "LINK",
         "MUTABLE",
-        { url: href, label: label }
+        { url: linkData.href, label: linkData.label }
       );
       const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
       const newEditorState = EditorState.set(editorState, {
@@ -83,9 +63,9 @@ const AddLinkModal = () => {
           entityKey
         )
       );
-      setTimeout(() => editorRef.current.focus(), 0);
+      clearInputValues();
     },
-    [editorState, href, label, setEditorState, editorRef]
+    [editorState, setEditorState]
   );
 
   const handleCreateLink = (e) => {
@@ -105,23 +85,23 @@ const AddLinkModal = () => {
       console.log("Please include a valid link");
       return;
     }
-
-    confirmLink(e);
+    // add create link here
+    console.log(linkData);
+    createLink(linkData);
+    // close modal
     setLinkModal(false);
+    focusEditor();
   };
 
   useEffect(() => {
     if (selectedText) {
+      // set local state on load
       setLinkData((prevData) => ({
         ...prevData,
         label: selectedText,
       }));
     }
   }, [selectedText]);
-
-  useEffect(() => {
-    setEditorState(() => EditorState.createEmpty(decorator));
-  }, []);
 
   if (!linkModalOpen) {
     return null;
@@ -132,7 +112,7 @@ const AddLinkModal = () => {
       <div className="hub_modal fit_content shade0">
         <button
           className="modal_close icon_button"
-          onClick={handleClose}
+          onClick={(e) => handleClose(e)}
           onMouseDown={(e) => e.preventDefault()}
         >
           <CloseIcon />
@@ -179,5 +159,4 @@ const AddLinkModal = () => {
     </div>
   );
 };
-
 export default AddLinkModal;

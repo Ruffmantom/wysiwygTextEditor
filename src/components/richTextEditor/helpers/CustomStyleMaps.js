@@ -62,9 +62,11 @@ export const customStyleMap = {
   },
   "MONOSPACE":{
     fontFamily:"monospace",
-    backgroundColor: "var(--shade-3)",
-    borderRadius:"5px",
-    padding:'4px 10px',
+    fontSize:'16px',
+    backgroundColor: "var(--shade-2)",
+    outline:"2px solid var(--shade-3)",
+    borderRadius:"3px",
+    padding:'0px 5px',
     display:"inline-block"
   }
 };

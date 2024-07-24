@@ -35,6 +35,11 @@ const RichTextInput = ({ options }) => {
     return false;
   };
 
+  const onTab = (e) => {
+    const maxDepth = 4;
+    setEditorState(RichUtils.onTab(e, editorState, maxDepth));
+  };
+
 
   return (
     <div className="rich_text_editor">
@@ -48,6 +53,7 @@ const RichTextInput = ({ options }) => {
           blockRendererFn={blockRendererFn}
           blockStyleFn={myBlockStyleFn}
           handleKeyCommand={handleKeyCommand}
+          onTab={onTab}
           onChange={(editorState) => {
             setEditorState(editorState)
           }}

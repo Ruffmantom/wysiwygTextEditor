@@ -54,11 +54,10 @@ export const RichTextEditorProvider = ({ children }) => {
 
   const blurEditor = () => {
     if (editorRef.current) {
-      console.log('unfocus editor')
+      console.log("unfocus editor");
       editorRef.current.blur();
     }
   };
-
 
   // clear format function
   const clearFormatting = () => {
@@ -262,32 +261,6 @@ export const RichTextEditorProvider = ({ children }) => {
     setEditorState(newEditorState);
   };
 
-
-  // add link
-  const addLink = (editorState, label, href) => {
-    const contentState = editorState.getCurrentContent();
-    const selection = editorState.getSelection();
-
-    const contentStateWithEntity = contentState.createEntity(
-      'LINK',
-      'MUTABLE',
-      { url: href }
-    );
-
-    const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
-
-    let newContentState = Modifier.insertText(
-      contentState,
-      selection,
-      label,
-      null,
-      entityKey
-    );
-
-    const newEditorState = EditorState.push(editorState, newContentState, 'insert-characters');
-    return EditorState.forceSelection(newEditorState, newContentState.getSelectionAfter());
-  };
-
   const setEditorState = (payload) => {
     // this is the onChange Function
     setState((prevState) => ({ ...prevState, editorState: payload }));
@@ -296,7 +269,6 @@ export const RichTextEditorProvider = ({ children }) => {
   const setParaDropDown = (payload) => {
     setState((prevState) => ({ ...prevState, paragraphDdOpen: payload }));
   };
-
 
   const setHighlightDropDown = (payload) => {
     setState((prevState) => ({ ...prevState, highlightDdOpen: payload }));
@@ -318,9 +290,8 @@ export const RichTextEditorProvider = ({ children }) => {
     setState((prevState) => ({ ...prevState, textAlignDdOpen: payload }));
   };
 
-  const setSelectedText = (newState) => {
-    setEditorState(newState);
-    const selectedText = getSelectedText(newState);
+  const setSelectedText = () => {
+    const selectedText = getSelectedText(state.editorState);
     setState((prevState) => ({ ...prevState, selectedText: selectedText }));
   };
 
@@ -391,11 +362,14 @@ export const RichTextEditorProvider = ({ children }) => {
     }
   };
 
+  // add custom link
+
+
   return (
     <RichTextEditorContext.Provider
       value={{
         ...state,
-        addLink,
+        // addLink,
         isActive,
         editorRef,
         applyStyle,

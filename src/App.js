@@ -1,8 +1,11 @@
 import RichTextEditor from "./components/richTextEditor/RichTextEditor";
+import LinkEditorExample from "./test";
+
 function App() {
   return (
     <div className="App">
       <div className="content">
+        {/* <LinkEditorExample/> */}
         <RichTextEditor options={{
           tools: {
             bold: true,

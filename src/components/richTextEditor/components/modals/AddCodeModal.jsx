@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback } from "react";
 import { ReactComponent as CloseIcon } from "../../../../assets/icons/close.svg";
 import CodeMirror from "@uiw/react-codemirror";
 import { vscodeDark } from '@uiw/codemirror-themes-all';
@@ -8,19 +8,23 @@ import { css } from "@codemirror/lang-css";
 import { xml } from "@codemirror/lang-xml";
 import CustomSelect from "../CustomSelect";
 import { useRichTextEditor } from '../../contexts/RichTextEditorContext'
-import { AtomicBlockUtils } from "draft-js";
+import { AtomicBlockUtils, EditorState, RichUtils } from "draft-js";
 const languageList = ["HTML", "XML", "CSS", "JavaScript", "TypeScript"];
 
 const AddCodeModal = () => {
-  const [codeContent, setCodeContent] = useState("");
-  const [language, setLanguage] = useState("javascript");
-  const { 
-    codeModalOpen, 
+  const {
+    codeModalOpen,
     setCodeModal,
     focusEditor,
     editorState,
-    setEditorState
-   } = useRichTextEditor()
+    setEditorState,
+    codeLang,
+    codeValue,
+    setCodeLanguage,
+    setCodeValue,
+    editorRef,
+    codeRef,
+  } = useRichTextEditor()
 
   const handleClose = (e) => {
     e.preventDefault();
@@ -30,7 +34,7 @@ const AddCodeModal = () => {
   };
 
   const handleLanguageChange = (value) => {
-    setLanguage(value.toLowerCase());
+    setCodeLanguage(value.toLowerCase());
   };
 
   const getLanguageExtension = (lang) => {
@@ -50,30 +54,36 @@ const AddCodeModal = () => {
         return javascript(); // default to javascript if language is not found
     }
   };
-// create the codeblock
-  const insertCodeBlock = (language, codeContent) => {
+  // create the codeblock
+  const confirmCode = useCallback((e) => {
+    e.preventDefault();
+
     const contentState = editorState.getCurrentContent();
-    const contentStateWithEntity = contentState.createEntity(
-      'CODE_BLOCK',
-      'IMMUTABLE',
-      { language, codeContent }
-    );
+    // Create a new entity and get its key
+    const contentStateWithEntity = contentState.createEntity('CODE_BLOCK', 'MUTABLE', {
+      language: codeLang,
+      codeContent: codeValue,
+    });
     const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
-    const newEditorState = AtomicBlockUtils.insertAtomicBlock(
-      editorState,
-      entityKey,
-      ' '
-    );
-    setEditorState(newEditorState);
-  };
+    // Create a new editor state with the updated content state
+    const newEditorState = EditorState.set(editorState, {
+      currentContent: contentStateWithEntity,
+    });
+    // Apply the entity to the selected text using RichUtils.toggleLink
+    setEditorState(RichUtils.toggleLink(newEditorState, newEditorState.getSelection(), entityKey));
+    // Close the modal and clear input values
+    setCodeModal(false)
+    setCodeLanguage('');
+    setCodeValue('');
+    // Focus the editor
+    setTimeout(() => editorRef.current.focus(), 0);
+  }, [editorState, codeLang, codeValue, setEditorState, setCodeModal, setCodeLanguage, setCodeValue, editorRef]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Code: ",{ language, codeContent });
+    console.log("Code: ", { language:codeLang, codeContent:codeValue });
     // createCodeBlocks(language, codeContent);
-    insertCodeBlock(language, codeContent)
-    handleClose(e);
-    focusEditor()
+    confirmCode(e)
   };
 
   // if codemodal is false
@@ -106,10 +116,10 @@ const AddCodeModal = () => {
             <div className="add_code form_group">
               <label htmlFor="code">Add Code</label>
               <CodeMirror
-                value={codeContent}
+                value={codeValue}
                 height="200px"
-                extensions={[getLanguageExtension(language), vscodeDark]}
-                onChange={(value) => setCodeContent(value)}
+                extensions={[getLanguageExtension(codeLang), vscodeDark]}
+                onChange={(value) => setCodeValue(value)}
               />
             </div>
           </div>

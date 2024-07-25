@@ -3,14 +3,8 @@ export const myBlockStyleFn = (contentBlock) => {
     switch (type) {
       case "INFO_ELEMENT":
         return "info_element";
-      case "leftAlign":
-        return "leftAlign";
-      case "rightAlign":
-        return "rightAlign";
-      case "centerAlign":
-        return "centerAlign";
-      case "justifyAlign":
-        return "justifyAlign";
+      case "code-block":
+        return "code_block_preview";
       default:
         break;
     }

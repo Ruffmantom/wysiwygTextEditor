@@ -39,22 +39,6 @@ export default function AddLinkTool() {
   }, [editorState]);
 
 
-
-  // const handleOpenLinkModal = (e) => {
-  //   e.preventDefault();
-  //   console.log("Open Link Modal");
-  //   // check to see if there is a selection
-  //   const selection = editorState.getSelection();
-  //   if (!selection.isCollapsed()) {
-  //     setLinkModal(true);
-  //     setSelectedText()
-  //   } else {
-  //     // toast here saying "Please select some text first"
-  //     console.log('Please select some text first')
-  //     return
-  //   }
-  // };
-
   return (
     <button
       className="icon_button tool_bar heading"

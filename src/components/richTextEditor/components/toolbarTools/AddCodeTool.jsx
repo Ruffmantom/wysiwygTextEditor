@@ -6,19 +6,24 @@ export default function AddCodeTool() {
 
     const {
         setCodeModal,
+        applyStyle,
+
     } = useRichTextEditor();
 
 
     const handleTriggerAddCode = (e) => {
         e.preventDefault()
-        console.log("Open Code Modal")
-        setCodeModal(true)
+
+        // show the modal
+        // setCodeModal(true)
     }
 
     return (
         <button
             className="icon_button tool_bar heading"
-            onClick={handleTriggerAddCode}
+            // onClick={handleTriggerAddCode}
+            onClick={e => applyStyle(e, "code-block", 'block')}
+            onMouseDown={(e) => e.preventDefault()}
         >
             <CodeIcon />
             <span className="wysiwyg_tool_tip">Code Block</span>

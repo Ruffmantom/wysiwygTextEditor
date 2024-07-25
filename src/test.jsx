@@ -63,6 +63,7 @@ const LinkEditorExample = () => {
   }, [editorState]);
 
   // Function to prompt for a link, showing the URL input modal
+  // this has been added to the tool button
   const promptForLink = useCallback((e) => {
     e.preventDefault();
     const selection = editorState.getSelection();
@@ -81,6 +82,7 @@ const LinkEditorExample = () => {
         label = linkInstance.getData().label || label;
       }
 
+      // show the inputs
       setShowURLInput(true);
       setUrlValue(url);
       setLabelValue(label);
@@ -97,9 +99,12 @@ const LinkEditorExample = () => {
     const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
     const newEditorState = EditorState.set(editorState, { currentContent: contentStateWithEntity });
     setEditorState(RichUtils.toggleLink(newEditorState, newEditorState.getSelection(), entityKey));
+    // close modal
     setShowURLInput(false);
+    // clear values
     setUrlValue('');
     setLabelValue('');
+    // focus editor
     setTimeout(() => editorRef.current.focus(), 0);
   }, [editorState, urlValue, labelValue]);
 
@@ -214,7 +219,7 @@ function findLinkEntities(contentBlock, callback, contentState) {
 // Component to render the link
 const Link = (props) => {
   const { url, label } = props.contentState.getEntity(props.entityKey).getData();
-  return <a href={url} style={{color:"blue",textDecoration:"underline"}}>{label || props.children}</a>;
+  return <a href={url} style={{ color: "blue", textDecoration: "underline" }}>{label || props.children}</a>;
 };
 
 // Decorator to handle link rendering

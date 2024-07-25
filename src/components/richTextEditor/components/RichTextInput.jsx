@@ -1,6 +1,9 @@
 import React, { useEffect } from "react";
 import {
   Editor,
+  EditorState,
+  getDefaultKeyBinding,
+  Modifier,
   RichUtils
 } from "draft-js";
 
@@ -26,9 +29,36 @@ const RichTextInput = ({ options }) => {
     focusEditor();
   }, []);
 
+  const myKeyBindingFn = (e) => {
+    if (e.keyCode === 13 /* `Enter` key */) {
+      return 'insert-newline';
+    }
+    return getDefaultKeyBinding(e);
+  };
+
+  const handlePastedText = (text, html, editorState, setEditorState) => {
+    const currentContent = editorState.getCurrentContent();
+    const selection = editorState.getSelection();
+  
+    const contentState = Modifier.replaceText(
+      currentContent,
+      selection,
+      text,
+      editorState.getCurrentInlineStyle()
+    );
+  
+    setEditorState(EditorState.push(editorState, contentState, 'insert-characters'));
+    return 'handled';
+  };
+
   const handleKeyCommand = (command) => {
     const newState = RichUtils.handleKeyCommand(editorState, command);
     if (newState) {
+      setEditorState(newState);
+      return 'handled';
+    }
+    if (command === 'insert-newline') {
+      const newState = RichUtils.insertSoftNewline(editorState);
       setEditorState(newState);
       return 'handled';
     }
@@ -53,6 +83,8 @@ const RichTextInput = ({ options }) => {
           blockRendererFn={blockRendererFn}
           blockStyleFn={myBlockStyleFn}
           handleKeyCommand={handleKeyCommand}
+          keyBindingFn={myKeyBindingFn}
+          handlePastedText={(text, html) => handlePastedText(text, html, editorState, setEditorState)}
           onTab={onTab}
           onChange={(editorState) => {
             setEditorState(editorState)

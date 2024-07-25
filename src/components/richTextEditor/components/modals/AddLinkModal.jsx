@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { ReactComponent as CloseIcon } from "../../../../assets/icons/close.svg";
 import { useRichTextEditor } from "../../contexts/RichTextEditorContext";
-import { EditorState, RichUtils } from "draft-js";
+import { EditorState, Modifier, RichUtils, SelectionState } from "draft-js";
 
 const urlRegex =
   /^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?(#[a-z\d_]*)?$/i;
@@ -10,7 +10,6 @@ const AddLinkModal = () => {
   const {
     linkModalOpen,
     setLinkModal,
-    selectedText,
     setEditorState,
     editorState,
     focusEditor,
@@ -19,6 +18,7 @@ const AddLinkModal = () => {
     urlValue,
     labelValue,
     hrefRef,
+    editorRef,
   } = useRichTextEditor();
 
 
@@ -31,39 +31,44 @@ const AddLinkModal = () => {
     focusEditor();
   };
 
-  // confirm the link and create element
   const confirmLink = useCallback((e) => {
     e.preventDefault();
+    // Validate the URL
+    if (!urlRegex.test(urlValue)) {
+      console.log("Please include a valid link");
+      return;
+    }
     const contentState = editorState.getCurrentContent();
-    const contentStateWithEntity = contentState.createEntity('LINK', 'MUTABLE', { url: urlValue, label: labelValue });
+    // Create a new entity and get its key
+    const contentStateWithEntity = contentState.createEntity('LINK', 'MUTABLE', {
+      url: urlValue,
+      label: labelValue,
+    });
     const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
-    const newEditorState = EditorState.set(editorState, { currentContent: contentStateWithEntity });
+    // Create a new editor state with the updated content state
+    const newEditorState = EditorState.set(editorState, {
+      currentContent: contentStateWithEntity,
+    });
+    // Apply the entity to the selected text using RichUtils.toggleLink
     setEditorState(RichUtils.toggleLink(newEditorState, newEditorState.getSelection(), entityKey));
-    // close modal
+    // Close the modal and clear input values
     setLinkModal(false);
-    // clear selected text in state
-    setUrlValue('')
-    setLabelValue('')
-    // focus editor
-    setTimeout(() => focusEditor(), 0);
-  }, [editorState, urlValue, labelValue]);
-
+    setUrlValue('');
+    setLabelValue('');
+    // Focus the editor
+    setTimeout(() => editorRef.current.focus(), 0);
+  }, [editorState, urlValue, labelValue, setEditorState, setLinkModal, setUrlValue, setLabelValue, editorRef]);
+  
+  
 
   const handleCreateLink = (e) => {
     e.preventDefault();
-
     if (!labelValue) {
       console.log("Please include a label for the link");
       return;
     }
     if (!urlValue) {
       console.log("Please include a link for the link");
-      return;
-    }
-    let linkPass = urlRegex.test(urlValue);
-
-    if (!linkPass) {
-      console.log("Please include a valid link");
       return;
     }
     // add create link here
@@ -119,7 +124,7 @@ const AddLinkModal = () => {
           <div className="hub_footer_actions">
             <button
               className="form_action_btn"
-              onClick={e=>handleCreateLink(e)}
+              onClick={e => handleCreateLink(e)}
               onMouseDown={(e) => e.preventDefault()}
             >
               Add Link

@@ -14,13 +14,15 @@ import {
   SelectionState,
   CompositeDecorator,
 } from "draft-js";
-
-import { getSelectedText } from "../helpers/utils";
+import LinkComponent from "../components/LinkComponent";
+import CodeBlockComponent from "../components/CodeBlockComponent";
 
 const RichTextEditorContext = createContext();
 // add custom link
 // Function to find link entities in the content
 function findLinkEntities(contentBlock, callback, contentState) {
+  console.log("hit find link entity")
+
   contentBlock.findEntityRanges(
     (character) => {
       const entityKey = character.getEntity();
@@ -30,17 +32,27 @@ function findLinkEntities(contentBlock, callback, contentState) {
   );
 }
 
-// Component to render the link
-const Link = (props) => {
-  const { url, label } = props.contentState.getEntity(props.entityKey).getData();
-  return <a href={url} style={{ color: "blue", textDecoration: "underline" }}>{label || props.children}</a>;
-};
+function findCodeBlockEntities(contentBlock, callback, contentState) {
+  console.log("hit find code block entity")
+  contentBlock.findEntityRanges(
+
+    (character) => {
+      const entityKey = character.getEntity();
+      return entityKey !== null && contentState.getEntity(entityKey).getType() === 'CODE_BLOCK';
+    },
+    callback
+  );
+}
 
 // Decorator to handle link rendering
 const decorator = new CompositeDecorator([
   {
     strategy: findLinkEntities,
-    component: Link,
+    component: LinkComponent,
+  },
+  {
+    strategy: findCodeBlockEntities,
+    component: CodeBlockComponent,
   },
 ]);
 
@@ -62,13 +74,14 @@ export const RichTextEditorProvider = ({ children }) => {
     toolBarItalicActive: false,
     toolBarBkgColorActive: false,
     editorState: EditorState.createEmpty(decorator),
-    selectedText: "",
     toolBarColor: "", // string of what color is selected to highlight the tool
     toolBarBkgColor: "", // string of what color is selected to highlight the tool
     toolBarParagraph: "", // string of what the parent is
     // link test
     urlValue: "",
     labelValue: "",
+    codeLang: "javascript", 
+    codeValue: "",
   });
 
   const editorRef = useRef(null);
@@ -223,6 +236,15 @@ export const RichTextEditorProvider = ({ children }) => {
   const setLabelValue = (payload) => {
     setState((prevState) => ({ ...prevState, labelValue: payload }));
   };
+  // value for the link modal
+  const setCodeLanguage = (payload) => {
+    setState((prevState) => ({ ...prevState, codeLang: payload }));
+  };
+
+  // value for the link modal
+  const setCodeValue = (payload) => {
+    setState((prevState) => ({ ...prevState, codeValue: payload }));
+  };
 
   const setLinkModal = (payload) => {
     setState((prevState) => ({ ...prevState, linkModalOpen: payload }));
@@ -234,16 +256,6 @@ export const RichTextEditorProvider = ({ children }) => {
 
   const setMoreToolDd = (payload) => {
     setState((prevState) => ({ ...prevState, textAlignDdOpen: payload }));
-  };
-
-  const setSelectedText = (payload) => {
-    // if there is a payload else grab what is selected
-    if (payload) {
-      setState((prevState) => ({ ...prevState, selectedText: payload }));
-    } else {
-      const selectedText = getSelectedText(state.editorState);
-      setState((prevState) => ({ ...prevState, selectedText: selectedText }));
-    }
   };
 
   // Toolbar states
@@ -292,21 +304,22 @@ export const RichTextEditorProvider = ({ children }) => {
     <RichTextEditorContext.Provider
       value={{
         ...state,
+        hrefRef,
         isActive,
         editorRef,
-        hrefRef,
         applyStyle,
         blurEditor,
         focusEditor,
-        setLinkModal,
         setUrlValue,
-        setLabelValue,
+        setCodeLanguage,
+        setCodeValue,
+        setLinkModal,
         setCodeModal,
+        setLabelValue,
         setMoreToolDd,
-        setEditorState,
         insertHrBlock,
+        setEditorState,
         setParaDropDown,
-        setSelectedText,
         clearFormatting,
         setColorDropDown,
         setToolBarBkgColor,

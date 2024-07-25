@@ -13,95 +13,64 @@ const AddLinkModal = () => {
     selectedText,
     setEditorState,
     editorState,
-    editorRef,
     focusEditor,
+    setUrlValue,
+    setLabelValue,
+    urlValue,
+    labelValue,
+    hrefRef,
   } = useRichTextEditor();
 
-  const [linkData, setLinkData] = useState({
-    label: selectedText || "",
-    href: "",
-  });
-
-  const { label, href } = linkData;
-
-  const handleInputChange = (e) => {
-    setLinkData({
-      ...linkData,
-      [e.target.name]: e.target.value,
-    });
-  };
 
   const handleClose = (e) => {
     e.preventDefault();
+    // clear out the label
+    setUrlValue('')
+    setLabelValue('')
     setLinkModal(false);
     focusEditor();
   };
 
-  const clearInputValues = () => {
-    setLinkData({
-      label: "",
-      href: "",
-    });
-  };
+  // confirm the link and create element
+  const confirmLink = useCallback((e) => {
+    e.preventDefault();
+    const contentState = editorState.getCurrentContent();
+    const contentStateWithEntity = contentState.createEntity('LINK', 'MUTABLE', { url: urlValue, label: labelValue });
+    const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+    const newEditorState = EditorState.set(editorState, { currentContent: contentStateWithEntity });
+    setEditorState(RichUtils.toggleLink(newEditorState, newEditorState.getSelection(), entityKey));
+    // close modal
+    setLinkModal(false);
+    // clear selected text in state
+    setUrlValue('')
+    setLabelValue('')
+    // focus editor
+    setTimeout(() => focusEditor(), 0);
+  }, [editorState, urlValue, labelValue]);
 
-  const createLink = useCallback(
-    (linkData) => {
-      const contentState = editorState.getCurrentContent();
-      const contentStateWithEntity = contentState.createEntity(
-        "LINK",
-        "MUTABLE",
-        { url: linkData.href, label: linkData.label }
-      );
-      const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
-      const newEditorState = EditorState.set(editorState, {
-        currentContent: contentStateWithEntity,
-      });
-      setEditorState(
-        RichUtils.toggleLink(
-          newEditorState,
-          newEditorState.getSelection(),
-          entityKey
-        )
-      );
-      clearInputValues();
-    },
-    [editorState, setEditorState]
-  );
 
   const handleCreateLink = (e) => {
     e.preventDefault();
 
-    if (!label) {
+    if (!labelValue) {
       console.log("Please include a label for the link");
       return;
     }
-    if (!href) {
+    if (!urlValue) {
       console.log("Please include a link for the link");
       return;
     }
-    let linkPass = urlRegex.test(href);
+    let linkPass = urlRegex.test(urlValue);
 
     if (!linkPass) {
       console.log("Please include a valid link");
       return;
     }
     // add create link here
-    console.log(linkData);
-    createLink(linkData);
-    // close modal
-    setLinkModal(false);
-    focusEditor();
+    console.log("Link Data: ", { labelValue, urlValue });
+    // create the link
+    confirmLink(e);
   };
-
-  useEffect(() => {
-    if (selectedText) {
-      // set local state on load
-      setLinkData((prevData) => ({
-        ...prevData,
-        label: selectedText,
-      }));
-    }
-  }, [selectedText]);
 
   if (!linkModalOpen) {
     return null;
@@ -125,20 +94,22 @@ const AddLinkModal = () => {
             <div className="form_group">
               <label htmlFor="label">Link Label</label>
               <input
+
                 type="text"
                 placeholder="Label..."
                 name="label"
-                onChange={handleInputChange}
-                value={label || ""}
+                onChange={e => setLabelValue(e.target.value)}
+                value={labelValue || ""}
               />
             </div>
             <div className="form_group">
               <label htmlFor="href">Link href</label>
               <input
+                ref={hrefRef}
                 type="text"
                 name="href"
-                onChange={handleInputChange}
-                value={href || ""}
+                onChange={e => setUrlValue(e.target.value)}
+                value={urlValue || ""}
                 placeholder="https://www.mylink.com..."
               />
             </div>
@@ -148,7 +119,7 @@ const AddLinkModal = () => {
           <div className="hub_footer_actions">
             <button
               className="form_action_btn"
-              onClick={handleCreateLink}
+              onClick={e=>handleCreateLink(e)}
               onMouseDown={(e) => e.preventDefault()}
             >
               Add Link

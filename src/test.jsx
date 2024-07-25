@@ -1,7 +1,8 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { convertToRaw, CompositeDecorator, Editor, EditorState, RichUtils } from 'draft-js';
 import 'draft-js/dist/Draft.css';
 
+// Styling for the components
 const styles = {
   root: {
     fontFamily: 'arial',
@@ -31,27 +32,37 @@ const styles = {
   },
 };
 
+// Main component for the link editor example
 const LinkEditorExample = () => {
+  // State to manage the editor content
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty(decorator));
+  // State to show/hide URL input
   const [showURLInput, setShowURLInput] = useState(false);
+  // State to manage the URL value
   const [urlValue, setUrlValue] = useState('');
+  // State to manage the label value
   const [labelValue, setLabelValue] = useState('');
+  // Refs for editor and URL input
   const editorRef = useRef(null);
   const urlRef = useRef(null);
 
+  // Function to focus the editor
   const focus = useCallback(() => {
     editorRef.current.focus();
   }, []);
 
+  // Function to handle changes in the editor state
   const handleChange = useCallback((newEditorState) => {
     setEditorState(newEditorState);
   }, []);
 
+  // Function to log the current state of the editor
   const logState = useCallback(() => {
     const content = editorState.getCurrentContent();
     console.log(convertToRaw(content));
   }, [editorState]);
 
+  // Function to prompt for a link, showing the URL input modal
   const promptForLink = useCallback((e) => {
     e.preventDefault();
     const selection = editorState.getSelection();
@@ -78,6 +89,7 @@ const LinkEditorExample = () => {
     }
   }, [editorState]);
 
+  // Function to confirm the link and update the editor state
   const confirmLink = useCallback((e) => {
     e.preventDefault();
     const contentState = editorState.getCurrentContent();
@@ -91,12 +103,14 @@ const LinkEditorExample = () => {
     setTimeout(() => editorRef.current.focus(), 0);
   }, [editorState, urlValue, labelValue]);
 
+  // Function to handle Enter key press in the URL input
   const handleLinkInputKeyDown = useCallback((e) => {
     if (e.which === 13) {
       confirmLink(e);
     }
   }, [confirmLink]);
 
+  // Function to remove a link from the selected text
   const removeLink = useCallback((e) => {
     e.preventDefault();
     const selection = editorState.getSelection();
@@ -105,6 +119,22 @@ const LinkEditorExample = () => {
     }
   }, [editorState]);
 
+  // Effect hook to handle keyboard shortcuts
+  useEffect(() => {
+    const handleKeyCommand = (e) => {
+      if (e.ctrlKey && e.key === 'l') {
+        e.preventDefault();
+        promptForLink(e);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyCommand);
+    return () => {
+      document.removeEventListener('keydown', handleKeyCommand);
+    };
+  }, [promptForLink]);
+
+  // URL input component to show/hide URL input
   const urlInput = showURLInput && (
     <URLInput
       urlValue={urlValue}
@@ -140,12 +170,14 @@ const LinkEditorExample = () => {
   );
 };
 
+// Component to show instructions
 const Instructions = () => (
   <div style={{ marginBottom: 10 }}>
-    Select some text, then use the buttons to add or remove links on the selected text.
+    Select some text, then use the buttons to add or remove links on the selected text. You can also use Ctrl + L to add a link.
   </div>
 );
 
+// URL input component
 const URLInput = React.forwardRef(({ urlValue, labelValue, onChangeUrl, onChangeLabel, onKeyDown, onConfirm }, ref) => (
   <div style={styles.urlInputContainer}>
     <input
@@ -168,6 +200,7 @@ const URLInput = React.forwardRef(({ urlValue, labelValue, onChangeUrl, onChange
   </div>
 ));
 
+// Function to find link entities in the content
 function findLinkEntities(contentBlock, callback, contentState) {
   contentBlock.findEntityRanges(
     (character) => {
@@ -178,11 +211,13 @@ function findLinkEntities(contentBlock, callback, contentState) {
   );
 }
 
+// Component to render the link
 const Link = (props) => {
   const { url, label } = props.contentState.getEntity(props.entityKey).getData();
   return <a href={url} style={{color:"blue",textDecoration:"underline"}}>{label || props.children}</a>;
 };
 
+// Decorator to handle link rendering
 const decorator = new CompositeDecorator([
   {
     strategy: findLinkEntities,

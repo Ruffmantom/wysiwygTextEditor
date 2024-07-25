@@ -16,14 +16,13 @@ import {
 } from "draft-js";
 
 import { getSelectedText } from "../helpers/utils";
-import LinkComponent from "../components/LinkComponent";
 
-
+const RichTextEditorContext = createContext();
+// add custom link
+// Function to find link entities in the content
 function findLinkEntities(contentBlock, callback, contentState) {
-  console.log("hit findLinkEntities")
   contentBlock.findEntityRanges(
     (character) => {
-      console.log('Entity Character: ', character)
       const entityKey = character.getEntity();
       return entityKey !== null && contentState.getEntity(entityKey).getType() === 'LINK';
     },
@@ -31,14 +30,20 @@ function findLinkEntities(contentBlock, callback, contentState) {
   );
 }
 
+// Component to render the link
+const Link = (props) => {
+  const { url, label } = props.contentState.getEntity(props.entityKey).getData();
+  return <a href={url} style={{ color: "blue", textDecoration: "underline" }}>{label || props.children}</a>;
+};
+
+// Decorator to handle link rendering
 const decorator = new CompositeDecorator([
   {
     strategy: findLinkEntities,
-    component: LinkComponent,
+    component: Link,
   },
 ]);
 
-const RichTextEditorContext = createContext();
 
 export const useRichTextEditor = () => {
   return useContext(RichTextEditorContext);
@@ -61,9 +66,13 @@ export const RichTextEditorProvider = ({ children }) => {
     toolBarColor: "", // string of what color is selected to highlight the tool
     toolBarBkgColor: "", // string of what color is selected to highlight the tool
     toolBarParagraph: "", // string of what the parent is
+    // link test
+    urlValue: "",
+    labelValue: "",
   });
 
   const editorRef = useRef(null);
+  const hrefRef = useRef(null);
 
   const focusEditor = () => {
     editorRef.current.focus();
@@ -76,7 +85,7 @@ export const RichTextEditorProvider = ({ children }) => {
     }
   };
 
- 
+
   // clear format function
   const clearFormatting = () => {
     const contentState = state.editorState.getCurrentContent();
@@ -190,16 +199,29 @@ export const RichTextEditorProvider = ({ children }) => {
     setState((prevState) => ({ ...prevState, editorState: payload }));
   };
 
+  // drop down state managers
   const setParaDropDown = (payload) => {
     setState((prevState) => ({ ...prevState, paragraphDdOpen: payload }));
   };
 
+  // background highlight drop down
   const setHighlightDropDown = (payload) => {
     setState((prevState) => ({ ...prevState, highlightDdOpen: payload }));
   };
-
+  
+  // Font color drop down
   const setColorDropDown = (payload) => {
     setState((prevState) => ({ ...prevState, colorDdOpen: payload }));
+  };
+
+  // value for the link modal
+  const setUrlValue = (payload) => {
+    setState((prevState) => ({ ...prevState, urlValue: payload }));
+  };
+
+  // value for the link modal
+  const setLabelValue = (payload) => {
+    setState((prevState) => ({ ...prevState, labelValue: payload }));
   };
 
   const setLinkModal = (payload) => {
@@ -214,9 +236,14 @@ export const RichTextEditorProvider = ({ children }) => {
     setState((prevState) => ({ ...prevState, textAlignDdOpen: payload }));
   };
 
-  const setSelectedText = () => {
-    const selectedText = getSelectedText(state.editorState);
-    setState((prevState) => ({ ...prevState, selectedText: selectedText }));
+  const setSelectedText = (payload) => {
+    // if there is a payload else grab what is selected
+    if (payload) {
+      setState((prevState) => ({ ...prevState, selectedText: payload }));
+    } else {
+      const selectedText = getSelectedText(state.editorState);
+      setState((prevState) => ({ ...prevState, selectedText: selectedText }));
+    }
   };
 
   // Toolbar states
@@ -260,8 +287,6 @@ export const RichTextEditorProvider = ({ children }) => {
     }
   };
 
-  // add custom link
-
 
   return (
     <RichTextEditorContext.Provider
@@ -269,10 +294,13 @@ export const RichTextEditorProvider = ({ children }) => {
         ...state,
         isActive,
         editorRef,
+        hrefRef,
         applyStyle,
         blurEditor,
         focusEditor,
         setLinkModal,
+        setUrlValue,
+        setLabelValue,
         setCodeModal,
         setMoreToolDd,
         setEditorState,

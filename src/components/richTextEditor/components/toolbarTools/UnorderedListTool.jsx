@@ -14,7 +14,7 @@ export default function UnorderedListTool() {
             <ULIcon />
             <span className="wysiwyg_tool_tip">
                 Unordered List{" "}
-                {/* <span className="key_command">{isMac ? "cmd + b" : "ctrl + b"}</span> */}
+                <span className="key_command">alt + u</span>
             </span>
         </button>
   )

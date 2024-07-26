@@ -23,6 +23,7 @@ export default function ColorTextTool() {
         colorDdOpen,
         setColorDropDown,
         applyStyle,
+        defaultTextColor,
         isActive
     } = useRichTextEditor();
 
@@ -88,6 +89,7 @@ export default function ColorTextTool() {
                     className='tool_bar_dd_item p center clear_style_btn'
                     onClick={e => {
                         console.log('Clearing color, current color: ', currentStyle)
+                        // and set new state as default
                         if (currentStyle !== "") {
                             applyStyle(e, currentStyle, 'inline')
                             setCurrentStyle('')
@@ -96,7 +98,7 @@ export default function ColorTextTool() {
                     }}
                     onMouseDown={(e) => e.preventDefault()}
                 >
-                    Automatic
+                    Default
                 </button>
 
             </div>

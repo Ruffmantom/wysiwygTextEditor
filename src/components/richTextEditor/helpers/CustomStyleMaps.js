@@ -24,6 +24,9 @@ export const customStyleMap = {
   "#B12917": {
     color: "#B12917",
   },
+  "DEFAULT_TEXT": {
+    color: "var(--black)",
+  },
   "#FFEB3B": {
     backgroundColor: "#FFEB3B",
   },

@@ -23,7 +23,7 @@ export default function ClearFormatTool() {
             <span className="wysiwyg_tool_tip">
                 Clear Format{" "}
                 <span className="key_command">
-                    {isMac ? "cmd + \\" : "ctrl + \\"}
+                    {isMac ? "cmd + /" : "ctrl + /"}
                 </span>
             </span>
         </button>

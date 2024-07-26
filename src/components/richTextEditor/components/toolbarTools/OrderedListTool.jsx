@@ -15,7 +15,7 @@ export default function OrderedListTool() {
             <OLIcon />
             <span className="wysiwyg_tool_tip">
                 Ordered List{" "}
-                {/* <span className="key_command">{isMac ? "cmd + b" : "ctrl + b"}</span> */}
+                <span className="key_command">alt + 1</span>
             </span>
         </button>
     )

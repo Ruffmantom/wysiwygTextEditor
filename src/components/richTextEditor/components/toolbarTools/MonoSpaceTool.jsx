@@ -15,7 +15,7 @@ export default function MonoSpaceTool() {
             <MonoIcon />
             <span className="wysiwyg_tool_tip">
                 Monospace{" "}
-                {/* <span className="key_command">{isMac ? "cmd + b" : "ctrl + b"}</span> */}
+                <span className="key_command">alt + m</span>
             </span>
         </button>
     )

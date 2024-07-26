@@ -19,7 +19,7 @@ const { applyStyle, isActive, setMoreToolDd } = useRichTextEditor()
             <span className="wysiwyg_tool_tip">
                 Strike Through{" "}
                 <span className="key_command">
-                    {isMac ? "cmd + shift + s" : "ctrl + shift + s"}
+                    alt + s
                 </span>
             </span>
         </button>

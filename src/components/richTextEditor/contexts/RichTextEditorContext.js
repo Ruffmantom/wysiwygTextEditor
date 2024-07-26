@@ -210,11 +210,6 @@ export const RichTextEditorProvider = ({ children }) => {
     setEditorState(newEditorState);
   };
 
-  // const setEditorState = (payload) => {
-  //   // this is the onChange Function
-  //   setState((prevState) => ({ ...prevState, editorState: payload }));
-  // };
-
   // drop down state managers
   const setParaDropDown = (payload) => {
     setState((prevState) => ({ ...prevState, paragraphDdOpen: payload }));
@@ -280,8 +275,14 @@ export const RichTextEditorProvider = ({ children }) => {
 
 
   // apply block or inline style
-  const applyStyle = (e, style, method) => {
+  const applyStyle = ( e,style, method) => {
     e.preventDefault();
+    method === "block"
+      ? setEditorState(RichUtils.toggleBlockType(editorState, style))
+      : setEditorState(RichUtils.toggleInlineStyle(editorState, style));
+  };
+  // apply block or inline style
+  const keyCodeApplyStyle = ( style, method) => {
     method === "block"
       ? setEditorState(RichUtils.toggleBlockType(editorState, style))
       : setEditorState(RichUtils.toggleInlineStyle(editorState, style));
@@ -315,7 +316,6 @@ export const RichTextEditorProvider = ({ children }) => {
         editorState,
         focusEditor,
         setUrlValue,
-        setCodeLanguage,
         setCodeValue,
         setLinkModal,
         setCodeModal,
@@ -324,8 +324,10 @@ export const RichTextEditorProvider = ({ children }) => {
         insertHrBlock,
         setEditorState,
         setParaDropDown,
+        setCodeLanguage,
         clearFormatting,
         setColorDropDown,
+        keyCodeApplyStyle,
         setToolBarBkgColor,
         setHighlightDropDown,
         setToolBarBoldActive,

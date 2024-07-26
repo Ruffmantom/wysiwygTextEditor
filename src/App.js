@@ -1,10 +1,13 @@
+import CodeBlockComponent from "./components/richTextEditor/components/CodeBlockComponent";
 import RichTextEditor from "./components/richTextEditor/RichTextEditor";
+import EntityEditorExample from "./EntityExample";
 import LinkEditorExample from "./test";
 
 function App() {
   return (
     <div className="App">
       <div className="content">
+        {/* <EntityEditorExample/> */}
         {/* <LinkEditorExample/> */}
         <RichTextEditor options={{
           tools: {
@@ -29,6 +32,7 @@ function App() {
 
           }
         }} />
+        {/* <CodeBlockComponent codeLang={'HTML'} codeValue={"<a>Hello World!</a>"} /> */}
       </div>
     </div>
   );

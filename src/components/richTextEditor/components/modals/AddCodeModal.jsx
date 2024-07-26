@@ -56,33 +56,18 @@ const AddCodeModal = () => {
   };
   // create the codeblock
   const confirmCode = useCallback((e) => {
-    e.preventDefault();
-
-    const contentState = editorState.getCurrentContent();
-    // Create a new entity and get its key
-    const contentStateWithEntity = contentState.createEntity('CODE_BLOCK', 'MUTABLE', {
-      language: codeLang,
-      codeContent: codeValue,
-    });
-    const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
-    // Create a new editor state with the updated content state
-    const newEditorState = EditorState.set(editorState, {
-      currentContent: contentStateWithEntity,
-    });
-    // Apply the entity to the selected text using RichUtils.toggleLink
-    setEditorState(RichUtils.toggleLink(newEditorState, newEditorState.getSelection(), entityKey));
+    // Create code here to build code block entity
     // Close the modal and clear input values
     setCodeModal(false)
     setCodeLanguage('');
     setCodeValue('');
     // Focus the editor
     setTimeout(() => editorRef.current.focus(), 0);
-  }, [editorState, codeLang, codeValue, setEditorState, setCodeModal, setCodeLanguage, setCodeValue, editorRef]);
+  }, [, codeLang, codeValue, setCodeModal, setCodeLanguage, setCodeValue, editorRef]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Code: ", { language:codeLang, codeContent:codeValue });
-    // createCodeBlocks(language, codeContent);
+    console.log("Code: ", { language: codeLang, codeContent: codeValue });
     confirmCode(e)
   };
 

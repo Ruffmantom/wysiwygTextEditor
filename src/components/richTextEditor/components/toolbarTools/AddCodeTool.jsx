@@ -6,7 +6,6 @@ export default function AddCodeTool() {
 
     const {
         setCodeModal,
-        applyStyle,
 
     } = useRichTextEditor();
 
@@ -15,14 +14,13 @@ export default function AddCodeTool() {
         e.preventDefault()
 
         // show the modal
-        // setCodeModal(true)
+        setCodeModal(true)
     }
 
     return (
         <button
             className="icon_button tool_bar heading"
-            // onClick={handleTriggerAddCode}
-            onClick={e => applyStyle(e, "code-block", 'block')}
+            onClick={e => handleTriggerAddCode(e)}
             onMouseDown={(e) => e.preventDefault()}
         >
             <CodeIcon />

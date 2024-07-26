@@ -29,36 +29,10 @@ const RichTextInput = ({ options }) => {
     focusEditor();
   }, []);
 
-  const myKeyBindingFn = (e) => {
-    if (e.keyCode === 13 /* `Enter` key */) {
-      return 'insert-newline';
-    }
-    return getDefaultKeyBinding(e);
-  };
-
-  const handlePastedText = (text, html, editorState, setEditorState) => {
-    const currentContent = editorState.getCurrentContent();
-    const selection = editorState.getSelection();
-  
-    const contentState = Modifier.replaceText(
-      currentContent,
-      selection,
-      text,
-      editorState.getCurrentInlineStyle()
-    );
-  
-    setEditorState(EditorState.push(editorState, contentState, 'insert-characters'));
-    return 'handled';
-  };
 
   const handleKeyCommand = (command) => {
     const newState = RichUtils.handleKeyCommand(editorState, command);
     if (newState) {
-      setEditorState(newState);
-      return 'handled';
-    }
-    if (command === 'insert-newline') {
-      const newState = RichUtils.insertSoftNewline(editorState);
       setEditorState(newState);
       return 'handled';
     }
@@ -77,18 +51,14 @@ const RichTextInput = ({ options }) => {
       <div className="editable_container">
         <Editor
           ref={editorRef}
-          placeholder="Start Typing..."
           editorState={editorState}
+          onChange={setEditorState}
+          placeholder="Start Typing..."
           customStyleMap={customStyleMap}
           blockRendererFn={blockRendererFn}
           blockStyleFn={myBlockStyleFn}
           handleKeyCommand={handleKeyCommand}
-          keyBindingFn={myKeyBindingFn}
-          handlePastedText={(text, html) => handlePastedText(text, html, editorState, setEditorState)}
           onTab={onTab}
-          onChange={(editorState) => {
-            setEditorState(editorState)
-          }}
         />
       </div>
     </div>

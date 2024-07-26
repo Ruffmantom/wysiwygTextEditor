@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 
-const CustomSelect = ({ setValue, options }) => {
-  const [currentOption, setCurrentOption] = useState("JavaScript");
+const CustomSelect = ({ setValue, options, initialOption }) => {
+  const [currentOption, setCurrentOption] = useState(initialOption ? initialOption : "JavaScript");
   const [selectOpen, setSelectOpen] = useState(false);
   const dropDownRef = useRef();
 
@@ -21,7 +21,7 @@ const CustomSelect = ({ setValue, options }) => {
       setSelectOpen(true);
     }
   };
-  
+
   const handleClickOutside = (event) => {
     if (
       dropDownRef.current &&
@@ -30,7 +30,7 @@ const CustomSelect = ({ setValue, options }) => {
       event.stopPropagation();
       setSelectOpen(false)
     }
-    
+
   };
   useEffect(() => {
     document.addEventListener("mousedown", (e) => handleClickOutside(e));
@@ -42,7 +42,7 @@ const CustomSelect = ({ setValue, options }) => {
   return (
     <div className="cust_select" ref={dropDownRef}>
       <div className="cust_select_btn" onClick={() => handleOpenSelect()}>
-        {currentOption}
+        <p className="cust_select_selected_text">{currentOption}</p>
         <div className="cust_select_chevron">
           <div className="chev_item chev_left"></div>
           <div className="chev_item chev_right"></div>

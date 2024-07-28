@@ -261,6 +261,7 @@ blockquote {
 
 .icon_button:hover>.wysiwyg_tool_tip {
   width: max-content;
+  min-width: max-content;
   height: unset;
   overflow: unset;
   bottom: 40px;
@@ -532,6 +533,11 @@ blockquote {
     border-radius: 10px;
   }
 }
+.code_block_cont{
+  /* padding: 10px; */
+  /* background-color: var(--shade-2); */
+  border-radius: 3px;
+}
 
 .cust_select_dd::-webkit-scrollbar,
 .cm-scroller::-webkit-scrollbar {
@@ -553,4 +559,22 @@ blockquote {
 .cust_select_dd::-webkit-scrollbar-thumb:hover,
 .cm-scroller::-webkit-scrollbar-thumb:hover {
   background: var(--black-2);
+}
+
+.code_block_header_read_only{
+align-items: center;
+padding-bottom: 10px;
+}
+.formatted_code_block.read_only{
+  padding: 10px;
+  
+}
+.code_block_lang_text{
+  font-size: small;
+  
+}
+.code_block_cont{
+  max-width: 100%;
+  max-height: 250px;
+
 }

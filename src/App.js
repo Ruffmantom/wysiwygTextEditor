@@ -1,4 +1,5 @@
 import CodeBlockComponent from "./components/richTextEditor/components/CodeBlockComponent";
+import CodeReadOnlyBlock from "./components/richTextEditor/components/CodeReadOnlyBlock";
 import RichTextEditor from "./components/richTextEditor/RichTextEditor";
 import EntityEditorExample from "./examples/EntityExample";
 import RichEditorExample from "./examples/rich";
@@ -12,6 +13,7 @@ function App() {
         {/* <EntityEditorExample/> */}
         {/* <LinkEditorExample/> */}
         {/* <RichEditorExample/> */}
+        {/* <CodeReadOnlyBlock/> */}
         
         {/* WIP Tool */}
         <RichTextEditor options={{

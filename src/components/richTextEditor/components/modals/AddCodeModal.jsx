@@ -1,13 +1,13 @@
 import React, { useCallback } from "react";
 import { ReactComponent as CloseIcon } from "../../../../assets/icons/close.svg";
 import CodeMirror from "@uiw/react-codemirror";
-import { vscodeDark } from '@uiw/codemirror-themes-all';
+import { vscodeDark } from "@uiw/codemirror-themes-all";
 import { javascript } from "@codemirror/lang-javascript";
 import { html } from "@codemirror/lang-html";
 import { css } from "@codemirror/lang-css";
 import { xml } from "@codemirror/lang-xml";
 import CustomSelect from "../CustomSelect";
-import { useRichTextEditor } from '../../contexts/RichTextEditorContext'
+import { useRichTextEditor } from "../../contexts/RichTextEditorContext";
 import { AtomicBlockUtils, EditorState, RichUtils } from "draft-js";
 const languageList = ["HTML", "XML", "CSS", "JavaScript", "TypeScript"];
 
@@ -16,25 +16,23 @@ const AddCodeModal = () => {
     codeModalOpen,
     setCodeModal,
     focusEditor,
-    editorState,
-    setEditorState,
     codeLang,
     codeValue,
     setCodeLanguage,
     setCodeValue,
-    editorRef,
-    codeRef,
-  } = useRichTextEditor()
+    setEditorState,
+    createAtomicBlock,
+  } = useRichTextEditor();
 
   const handleClose = (e) => {
     e.preventDefault();
     setCodeModal(false);
     // refocus the editor
-    focusEditor()
+    focusEditor();
   };
 
   const handleLanguageChange = (value) => {
-    setCodeLanguage(value.toLowerCase());
+    setCodeLanguage(value);
   };
 
   const getLanguageExtension = (lang) => {
@@ -54,26 +52,23 @@ const AddCodeModal = () => {
         return javascript(); // default to javascript if language is not found
     }
   };
-  // create the codeblock
-  const confirmCode = useCallback((e) => {
-    // Create code here to build code block entity
-    // Close the modal and clear input values
-    setCodeModal(false)
-    setCodeLanguage('');
-    setCodeValue('');
-    // Focus the editor
-    setTimeout(() => editorRef.current.focus(), 0);
-  }, [, codeLang, codeValue, setCodeModal, setCodeLanguage, setCodeValue, editorRef]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Code: ", { language: codeLang, codeContent: codeValue });
-    confirmCode(e)
+    const newEditorState = createAtomicBlock("CODE_BLOCK", {
+      language: codeLang,
+      codeContent: codeValue,
+    });
+    setEditorState(newEditorState);
+    // clear inputs and close modal
+    setCodeModal(false);
+    setCodeLanguage("");
+    setCodeValue("");
   };
 
   // if codemodal is false
   if (!codeModalOpen) {
-    return null
+    return null;
   }
 
   return (
@@ -81,7 +76,7 @@ const AddCodeModal = () => {
       <div className="hub_modal fit_content shade0">
         <div
           className="modal_close icon_button"
-          onClick={e => handleClose(e)}
+          onClick={(e) => handleClose(e)}
           onMouseDown={(e) => e.preventDefault()}
         >
           <CloseIcon />
@@ -103,7 +98,7 @@ const AddCodeModal = () => {
               <CodeMirror
                 value={codeValue}
                 height="200px"
-                extensions={[getLanguageExtension(codeLang), vscodeDark]}
+                extensions={[getLanguageExtension(codeLang.toLowerCase()), vscodeDark]}
                 onChange={(value) => setCodeValue(value)}
               />
             </div>
@@ -113,7 +108,7 @@ const AddCodeModal = () => {
           <div className="hub_footer_actions">
             <button
               className="form_action_btn"
-              onClick={e => handleSubmit(e)}
+              onClick={(e) => handleSubmit(e)}
               onMouseDown={(e) => e.preventDefault()}
             >
               Add Code

@@ -1,9 +1,4 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useRef,
-} from "react";
+import React, { createContext, useContext, useState, useRef } from "react";
 
 import {
   EditorState,
@@ -13,6 +8,7 @@ import {
   genKey,
   SelectionState,
   CompositeDecorator,
+  AtomicBlockUtils,
 } from "draft-js";
 import LinkComponent from "../components/LinkComponent";
 import CodeBlockComponent from "../components/CodeBlockComponent";
@@ -21,27 +17,23 @@ const RichTextEditorContext = createContext();
 // add custom link
 // Function to find link entities in the content
 function findLinkEntities(contentBlock, callback, contentState) {
-  console.log("hit find link entity")
-
-  contentBlock.findEntityRanges(
-    (character) => {
-      const entityKey = character.getEntity();
-      return entityKey !== null && contentState.getEntity(entityKey).getType() === 'LINK';
-    },
-    callback
-  );
+  contentBlock.findEntityRanges((character) => {
+    const entityKey = character.getEntity();
+    return (
+      entityKey !== null &&
+      contentState.getEntity(entityKey).getType() === "LINK"
+    );
+  }, callback);
 }
 
 function findCodeBlockEntities(contentBlock, callback, contentState) {
-  console.log("hit find code block entity")
-  contentBlock.findEntityRanges(
-
-    (character) => {
-      const entityKey = character.getEntity();
-      return entityKey !== null && contentState.getEntity(entityKey).getType() === 'CODE_BLOCK';
-    },
-    callback
-  );
+  contentBlock.findEntityRanges((character) => {
+    const entityKey = character.getEntity();
+    return (
+      entityKey !== null &&
+      contentState.getEntity(entityKey).getType() === "CODE_BLOCK"
+    );
+  }, callback);
 }
 
 // Decorator to handle link rendering
@@ -56,14 +48,13 @@ const decorator = new CompositeDecorator([
   },
 ]);
 
-
 export const useRichTextEditor = () => {
   return useContext(RichTextEditorContext);
 };
 
 export const RichTextEditorProvider = ({ children }) => {
   const [editorState, setEditorState] = useState(() =>
-    EditorState.createEmpty(decorator),
+    EditorState.createEmpty(decorator)
   );
 
   const [state, setState] = useState({
@@ -83,10 +74,10 @@ export const RichTextEditorProvider = ({ children }) => {
     // link test
     urlValue: "",
     labelValue: "",
-    codeLang: "javascript", 
+    codeLang: "javascript",
     codeValue: "",
   });
-
+  // const { codeLang, codeValue } = state;
   const editorRef = useRef(null);
   const hrefRef = useRef(null);
 
@@ -100,7 +91,6 @@ export const RichTextEditorProvider = ({ children }) => {
       editorRef.current.blur();
     }
   };
-
 
   // clear format function
   const clearFormatting = () => {
@@ -219,7 +209,7 @@ export const RichTextEditorProvider = ({ children }) => {
   const setHighlightDropDown = (payload) => {
     setState((prevState) => ({ ...prevState, highlightDdOpen: payload }));
   };
-  
+
   // Font color drop down
   const setColorDropDown = (payload) => {
     setState((prevState) => ({ ...prevState, colorDdOpen: payload }));
@@ -273,16 +263,15 @@ export const RichTextEditorProvider = ({ children }) => {
     setState((prevState) => ({ ...prevState, toolBarBkgColor: payload }));
   };
 
-
   // apply block or inline style
-  const applyStyle = ( e,style, method) => {
+  const applyStyle = (e, style, method) => {
     e.preventDefault();
     method === "block"
       ? setEditorState(RichUtils.toggleBlockType(editorState, style))
       : setEditorState(RichUtils.toggleInlineStyle(editorState, style));
   };
   // apply block or inline style
-  const keyCodeApplyStyle = ( style, method) => {
+  const keyCodeApplyStyle = (style, method) => {
     method === "block"
       ? setEditorState(RichUtils.toggleBlockType(editorState, style))
       : setEditorState(RichUtils.toggleInlineStyle(editorState, style));
@@ -303,6 +292,105 @@ export const RichTextEditorProvider = ({ children }) => {
     }
   };
 
+  // create atomic block
+  // const createAtomicBlock = (entityType, entityData) => {
+  //   const contentState = editorState.getCurrentContent();
+  //   const contentStateWithEntity = contentState.createEntity(
+  //     entityType,
+  //     "IMMUTABLE",
+  //     entityData
+  //   );
+  //   const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+  //   const newEditorState = AtomicBlockUtils.insertAtomicBlock(
+  //     editorState,
+  //     entityKey,
+  //     " "
+  //   );
+
+  //   const newSelection = newEditorState.getCurrentContent().getSelectionAfter();
+
+  //   return EditorState.forceSelection(newEditorState, newSelection);
+  // };
+  const createAtomicBlock = ( entityType, entityData) => {
+    console.log('hit the block creator');
+    
+    const contentState = editorState.getCurrentContent();
+    const selectionState = editorState.getSelection();
+    const currentBlock = contentState.getBlockForKey(selectionState.getStartKey());
+    const isAtEndOfBlock = selectionState.getEndOffset() === currentBlock.getLength();
+  
+    let newContentState = contentState;
+    let newSelection = selectionState;
+  
+    // If the current block is not empty and the cursor is not at the end, move to the next line
+    if (currentBlock.getText().trim() !== '' && !isAtEndOfBlock) {
+      const newBlockKey = genKey();
+      const newBlock = new ContentBlock({
+        key: newBlockKey,
+        type: 'unstyled',
+        text: '',
+      });
+  
+      const blockMap = contentState.getBlockMap();
+      const blocksBefore = blockMap.toSeq().takeUntil(v => v === currentBlock);
+      const blocksAfter = blockMap.toSeq().skipUntil(v => v === currentBlock).rest();
+      const newBlocks = blocksBefore.concat(
+        [[currentBlock.getKey(), currentBlock], [newBlockKey, newBlock]],
+        blocksAfter
+      ).toOrderedMap();
+  
+      newContentState = contentState.merge({
+        blockMap: newBlocks,
+        selectionBefore: selectionState,
+        selectionAfter: SelectionState.createEmpty(newBlockKey),
+      });
+  
+      newSelection = newContentState.getSelectionAfter().set('focusKey', newBlockKey);
+    }
+  
+    const contentStateWithEntity = newContentState.createEntity(
+      entityType,
+      "IMMUTABLE",
+      entityData
+    );
+  
+    const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+    const newEditorState = AtomicBlockUtils.insertAtomicBlock(
+      EditorState.set(editorState, { currentContent: newContentState }),
+      entityKey,
+      " "
+    );
+  
+    // Create an empty block after the atomic block for typing
+    const newBlockKey = genKey();
+    const newBlock = new ContentBlock({
+      key: newBlockKey,
+      type: 'unstyled',
+      text: '',
+    });
+  
+    const blockMap = newEditorState.getCurrentContent().getBlockMap();
+    const blocksBefore = blockMap.toSeq().takeUntil(v => v === newEditorState.getCurrentContent().getBlockForKey(newSelection.getFocusKey()));
+    const blocksAfter = blockMap.toSeq().skipUntil(v => v === newEditorState.getCurrentContent().getBlockForKey(newSelection.getFocusKey())).rest();
+    const newBlocks = blocksBefore.concat(
+      [[newSelection.getFocusKey(), newEditorState.getCurrentContent().getBlockForKey(newSelection.getFocusKey())], [newBlockKey, newBlock]],
+      blocksAfter
+    ).toOrderedMap();
+  
+    newContentState = newEditorState.getCurrentContent().merge({
+      blockMap: newBlocks,
+      selectionAfter: SelectionState.createEmpty(newBlockKey),
+    });
+  
+    const finalEditorState = EditorState.push(
+      newEditorState,
+      newContentState,
+      'insert-fragment'
+    );
+  
+    const finalSelection = finalEditorState.getCurrentContent().getSelectionAfter();
+    return EditorState.forceSelection(finalEditorState, finalSelection);
+  };
 
   return (
     <RichTextEditorContext.Provider
@@ -327,12 +415,13 @@ export const RichTextEditorProvider = ({ children }) => {
         setCodeLanguage,
         clearFormatting,
         setColorDropDown,
+        createAtomicBlock,
         keyCodeApplyStyle,
         setToolBarBkgColor,
         setHighlightDropDown,
         setToolBarBoldActive,
         setToolBarItalicActive,
-        setToolBarBkgColorActive
+        setToolBarBkgColorActive,
       }}
     >
       {children}

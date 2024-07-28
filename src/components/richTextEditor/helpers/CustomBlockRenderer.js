@@ -16,33 +16,23 @@
 //   return null;
 // };
 
-import React from 'react';
-import hljs from 'highlight.js';
-import 'highlight.js/styles/github.css'; // Import a highlight.js theme
-
-const CodeBlock = (props) => {
-  const entity = props.contentState.getEntity(props.block.getEntityAt(0));
-  const { language, codeContent } = entity.getData();
-
-  const highlightedCode = hljs.highlight(language, codeContent).value;
-
-  return (
-    <pre className="code-block">
-      <code dangerouslySetInnerHTML={{ __html: highlightedCode }} />
-    </pre>
-  );
-};
+import React from "react";
+import hljs from "highlight.js";
+import "highlight.js/styles/github.css"; // Import a highlight.js theme
 
 const blockRendererFn = (block) => {
-  if (block.getType() === 'atomic') {
+  if (block.getType() === "atomic") {
     const contentState = block.getEntityAt(0);
     if (contentState) {
       const entity = block.getEntityAt(0);
       const entityType = entity.getType();
-      if (entityType === 'CODE_BLOCK') {
+      if (entityType === "CODE_BLOCK") {
         return {
-          component: CodeBlock,
+          component: CodeReadOnlyBlock,
           editable: false,
+          props: {
+            foo: 'bar',
+          },
         };
       }
     }
@@ -50,4 +40,4 @@ const blockRendererFn = (block) => {
   return null;
 };
 
-export { CodeBlock, blockRendererFn };
+export { blockRendererFn };

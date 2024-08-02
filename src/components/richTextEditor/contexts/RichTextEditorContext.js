@@ -12,6 +12,7 @@ import {
 } from "draft-js";
 import LinkComponent from "../components/LinkComponent";
 import CodeBlockComponent from "../components/CodeBlockComponent";
+import HrComponent from "../components/HrComponent";
 
 const RichTextEditorContext = createContext();
 // add custom link
@@ -36,6 +37,16 @@ function findCodeBlockEntities(contentBlock, callback, contentState) {
   }, callback);
 }
 
+function findDividerLineEntities(contentBlock, callback, contentState) {
+  contentBlock.findEntityRanges((character) => {
+    const entityKey = character.getEntity();
+    return (
+      entityKey !== null &&
+      contentState.getEntity(entityKey).getType() === "DIVIDER_LINE"
+    );
+  }, callback);
+}
+
 // Decorator to handle link rendering
 const decorator = new CompositeDecorator([
   {
@@ -45,6 +56,10 @@ const decorator = new CompositeDecorator([
   {
     strategy: findCodeBlockEntities,
     component: CodeBlockComponent,
+  },
+  {
+    strategy: findDividerLineEntities,
+    component: HrComponent,
   },
 ]);
 
@@ -292,25 +307,7 @@ export const RichTextEditorProvider = ({ children }) => {
     }
   };
 
-  // create atomic block
-  // const createAtomicBlock = (entityType, entityData) => {
-  //   const contentState = editorState.getCurrentContent();
-  //   const contentStateWithEntity = contentState.createEntity(
-  //     entityType,
-  //     "IMMUTABLE",
-  //     entityData
-  //   );
-  //   const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
-  //   const newEditorState = AtomicBlockUtils.insertAtomicBlock(
-  //     editorState,
-  //     entityKey,
-  //     " "
-  //   );
-
-  //   const newSelection = newEditorState.getCurrentContent().getSelectionAfter();
-
-  //   return EditorState.forceSelection(newEditorState, newSelection);
-  // };
+  
   const createAtomicBlock = ( entityType, entityData) => {
     console.log('hit the block creator');
     

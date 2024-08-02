@@ -4,12 +4,16 @@ import { useRichTextEditor } from "../../contexts/RichTextEditorContext";
 
 export default function AddDividerTool() {
   // state
-  const { insertHrBlock } = useRichTextEditor();
+  const { insertHrBlock, createAtomicBlock, setEditorState } =
+    useRichTextEditor();
 
   const createDivider = (e) => {
     e.preventDefault();
-    insertHrBlock();
-    console.log("Create Divider");
+    const newEditorState = createAtomicBlock("DIVIDER_LINE");
+    setEditorState(newEditorState);
+    // e.preventDefault();
+    // insertHrBlock();
+    // console.log("Create Divider");
   };
 
   return (

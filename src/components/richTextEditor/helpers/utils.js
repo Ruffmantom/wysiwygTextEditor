@@ -25,9 +25,9 @@ export const getSelectedText = (editorState) => {
 
 // key command utils
 export const myKeyBindingFn = (e) => {
-  console.log(e);
-  console.log(e.keyCode);
-  console.log(e.key);
+  // console.log(e);
+  // console.log(e.keyCode);
+  // console.log(e.key);
   // check for "ctrl + /" to clear styles
   if (e.keyCode === 191 && isCtrlKey(e)) {
     return 'clear-styles';

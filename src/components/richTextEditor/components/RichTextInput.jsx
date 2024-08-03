@@ -9,6 +9,7 @@ import ToolBar from "./ToolBar";
 import { myBlockStyleFn } from "../helpers/CustomBlockStyles";
 import { myKeyBindingFn } from "../helpers/utils";
 import CodeReadOnlyBlock from "./CodeReadOnlyBlock";
+import HrComponent from "./HrComponent";
 
 const RichTextInput = ({ options }) => {
   const {
@@ -71,6 +72,19 @@ const RichTextInput = ({ options }) => {
           props: {
             language: entity.getData().language,
             codeContent: entity.getData().codeContent,
+          },
+        };
+      } else if (entityType === "horizontal-rule") {
+        return {
+          component: HrComponent,
+          editable: false,
+        };
+      }else if (entityType === 'code-block') {
+        return {
+          component: CodeReadOnlyBlock,
+          editable: false,
+          props: {
+            // Pass any additional props if needed
           },
         };
       }

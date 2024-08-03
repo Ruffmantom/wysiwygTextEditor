@@ -1,8 +1,8 @@
 import React from 'react';
 
-const HrComponent = () => {
+const HrComponent = (props) => {
     return (
-        <div className='hr_component'>
+        <div data-offset-key={props.offsetKey} className='hr_component'>
             
         </div>
     );

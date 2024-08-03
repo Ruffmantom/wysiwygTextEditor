@@ -11,10 +11,10 @@ import { ReactComponent as CopyIcon } from "../../../assets/icons/copy.svg";
 
 const CodeBlockComponent = (props) => {
   console.log('hit code component')
-  const [codeLanguage, setCodeLanguage] = useState(props.codeLang ? props.codeLang : "JavaScript")
-  const [codeValue, setCodeValue] = useState(props.codeValue ? props.codeValue : "var noCode = null;")
-
-
+   const [codeLanguage, setCodeLanguage] = useState(props.codeLang ? props.codeLang : "JavaScript")
+   const [codeValue, setCodeValue] = useState(props.codeValue ? props.codeValue : "var noCode = null;")
+  // const entity = props.contentState.getEntity(props.block.getEntityAt(0));
+  // const { codeVal, codeLang } = entity.getData();
   const handleLanguageChange = (value) => {
     setCodeLanguage(value.toLowerCase());
   };

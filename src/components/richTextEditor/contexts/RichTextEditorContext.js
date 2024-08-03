@@ -215,6 +215,36 @@ export const RichTextEditorProvider = ({ children }) => {
     setEditorState(newEditorState);
   };
 
+  // Function to insert code block
+  function insertCodeBlock(editorState, code, language) {
+    const contentState = editorState.getCurrentContent();
+    const selectionState = editorState.getSelection();
+
+    // Create a new code block with the selected language and code
+    const contentStateWithEntity = contentState.createEntity(
+      "code-block",
+      "IMMUTABLE",
+      { language, code }
+    );
+
+    const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+    const contentStateWithText = Modifier.insertText(
+      contentStateWithEntity,
+      selectionState,
+      " ", // Placeholder for the code block
+      null,
+      entityKey
+    );
+
+    const newEditorState = EditorState.push(
+      editorState,
+      contentStateWithText,
+      "insert-characters"
+    );
+
+    return RichUtils.toggleBlockType(newEditorState, "code-block");
+  }
+
   // drop down state managers
   const setParaDropDown = (payload) => {
     setState((prevState) => ({ ...prevState, paragraphDdOpen: payload }));
@@ -307,88 +337,6 @@ export const RichTextEditorProvider = ({ children }) => {
     }
   };
 
-  
-  const createAtomicBlock = ( entityType, entityData) => {
-    console.log('hit the block creator');
-    
-    const contentState = editorState.getCurrentContent();
-    const selectionState = editorState.getSelection();
-    const currentBlock = contentState.getBlockForKey(selectionState.getStartKey());
-    const isAtEndOfBlock = selectionState.getEndOffset() === currentBlock.getLength();
-  
-    let newContentState = contentState;
-    let newSelection = selectionState;
-  
-    // If the current block is not empty and the cursor is not at the end, move to the next line
-    if (currentBlock.getText().trim() !== '' && !isAtEndOfBlock) {
-      const newBlockKey = genKey();
-      const newBlock = new ContentBlock({
-        key: newBlockKey,
-        type: 'unstyled',
-        text: '',
-      });
-  
-      const blockMap = contentState.getBlockMap();
-      const blocksBefore = blockMap.toSeq().takeUntil(v => v === currentBlock);
-      const blocksAfter = blockMap.toSeq().skipUntil(v => v === currentBlock).rest();
-      const newBlocks = blocksBefore.concat(
-        [[currentBlock.getKey(), currentBlock], [newBlockKey, newBlock]],
-        blocksAfter
-      ).toOrderedMap();
-  
-      newContentState = contentState.merge({
-        blockMap: newBlocks,
-        selectionBefore: selectionState,
-        selectionAfter: SelectionState.createEmpty(newBlockKey),
-      });
-  
-      newSelection = newContentState.getSelectionAfter().set('focusKey', newBlockKey);
-    }
-  
-    const contentStateWithEntity = newContentState.createEntity(
-      entityType,
-      "IMMUTABLE",
-      entityData
-    );
-  
-    const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
-    const newEditorState = AtomicBlockUtils.insertAtomicBlock(
-      EditorState.set(editorState, { currentContent: newContentState }),
-      entityKey,
-      " "
-    );
-  
-    // Create an empty block after the atomic block for typing
-    const newBlockKey = genKey();
-    const newBlock = new ContentBlock({
-      key: newBlockKey,
-      type: 'unstyled',
-      text: '',
-    });
-  
-    const blockMap = newEditorState.getCurrentContent().getBlockMap();
-    const blocksBefore = blockMap.toSeq().takeUntil(v => v === newEditorState.getCurrentContent().getBlockForKey(newSelection.getFocusKey()));
-    const blocksAfter = blockMap.toSeq().skipUntil(v => v === newEditorState.getCurrentContent().getBlockForKey(newSelection.getFocusKey())).rest();
-    const newBlocks = blocksBefore.concat(
-      [[newSelection.getFocusKey(), newEditorState.getCurrentContent().getBlockForKey(newSelection.getFocusKey())], [newBlockKey, newBlock]],
-      blocksAfter
-    ).toOrderedMap();
-  
-    newContentState = newEditorState.getCurrentContent().merge({
-      blockMap: newBlocks,
-      selectionAfter: SelectionState.createEmpty(newBlockKey),
-    });
-  
-    const finalEditorState = EditorState.push(
-      newEditorState,
-      newContentState,
-      'insert-fragment'
-    );
-  
-    const finalSelection = finalEditorState.getCurrentContent().getSelectionAfter();
-    return EditorState.forceSelection(finalEditorState, finalSelection);
-  };
-
   return (
     <RichTextEditorContext.Provider
       value={{
@@ -408,11 +356,11 @@ export const RichTextEditorProvider = ({ children }) => {
         setMoreToolDd,
         insertHrBlock,
         setEditorState,
+        insertCodeBlock,
         setParaDropDown,
         setCodeLanguage,
         clearFormatting,
         setColorDropDown,
-        createAtomicBlock,
         keyCodeApplyStyle,
         setToolBarBkgColor,
         setHighlightDropDown,

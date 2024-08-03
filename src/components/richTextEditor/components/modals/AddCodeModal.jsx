@@ -20,6 +20,8 @@ const AddCodeModal = () => {
     codeValue,
     setCodeLanguage,
     setCodeValue,
+    editorState,
+    insertCodeBlock,
     setEditorState,
     createAtomicBlock,
   } = useRichTextEditor();
@@ -55,10 +57,7 @@ const AddCodeModal = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const newEditorState = createAtomicBlock("CODE_BLOCK", {
-      language: codeLang,
-      codeContent: codeValue,
-    });
+    const newEditorState = insertCodeBlock(editorState, codeValue, codeLang );
     setEditorState(newEditorState);
     // clear inputs and close modal
     setCodeModal(false);

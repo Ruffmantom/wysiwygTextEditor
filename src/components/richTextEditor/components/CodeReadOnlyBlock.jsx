@@ -5,12 +5,14 @@ import { ReactComponent as CopyIcon } from "../../../assets/icons/copy.svg";
 
 const CodeReadOnlyBlock = (props) => {
   const codeRef = useRef(null);
-  const { language, codeContent } = props.blockProps;
+  // const { language, codeContent } = props.blockProps;
+  const entity = props.contentState.getEntity(props.block.getEntityAt(0));
+  const { codeVal, codeLang } = entity.getData();
 
   const copyCode = (e) => {
     e.preventDefault();
     navigator.clipboard
-      .writeText(codeContent)
+      .writeText(codeVal)
       .then(() => {
         console.log('copied code!')
       })
@@ -21,7 +23,7 @@ const CodeReadOnlyBlock = (props) => {
 
   useEffect(() => {
     hljs.highlightElement(codeRef.current);
-  }, [codeContent]);
+  }, [codeVal]);
 
   return (
     <div
@@ -29,7 +31,7 @@ const CodeReadOnlyBlock = (props) => {
       className="formatted_code_block read_only"
     >
       <div className="code_block_header code_block_header_read_only">
-        <p className="code_block_lang_text">{language}</p>
+        <p className="code_block_lang_text">{codeLang}</p>
         <button
           className="icon_button tool_bar"
           onClick={copyCode}
@@ -40,8 +42,8 @@ const CodeReadOnlyBlock = (props) => {
         </button>
       </div>
       <pre className="code_block_cont">
-        <code ref={codeRef} className={language.toLowerCase()}>
-          {codeContent && codeContent.trim()}
+        <code ref={codeRef} className={codeLang.toLowerCase()}>
+          {codeVal && codeVal.trim()}
         </code>
       </pre>
     </div>

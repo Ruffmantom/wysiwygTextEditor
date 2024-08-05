@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from 'react'
 import { ReactComponent as HighlightIcon } from "../../../../assets/icons/highlight.svg";
 // state
 import { useRichTextEditor } from '../../contexts/RichTextEditorContext';
-
 const highlightColors = [
     "#FFEB3B",
     "#FF5722",

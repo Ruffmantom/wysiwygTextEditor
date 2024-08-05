@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useRef } from "react";
-
 import {
   EditorState,
   Modifier,
@@ -8,15 +7,11 @@ import {
   genKey,
   SelectionState,
   CompositeDecorator,
-  AtomicBlockUtils,
 } from "draft-js";
 import LinkComponent from "../components/LinkComponent";
 import CodeBlockComponent from "../components/CodeBlockComponent";
 import HrComponent from "../components/HrComponent";
-
-const RichTextEditorContext = createContext();
-// add custom link
-// Function to find link entities in the content
+// Strategies
 function findLinkEntities(contentBlock, callback, contentState) {
   contentBlock.findEntityRanges((character) => {
     const entityKey = character.getEntity();
@@ -47,7 +42,7 @@ function findDividerLineEntities(contentBlock, callback, contentState) {
   }, callback);
 }
 
-// Decorator to handle link rendering
+// Decorator to handle block rendering
 const decorator = new CompositeDecorator([
   {
     strategy: findLinkEntities,
@@ -63,6 +58,10 @@ const decorator = new CompositeDecorator([
   },
 ]);
 
+
+// Declare the context
+const RichTextEditorContext = createContext();
+// use the context
 export const useRichTextEditor = () => {
   return useContext(RichTextEditorContext);
 };
@@ -70,16 +69,16 @@ export const useRichTextEditor = () => {
 export const RichTextEditorProvider = ({ children }) => {
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty(decorator)
-  );
+);
 
-  const [state, setState] = useState({
-    colorDdOpen: false,
-    linkModalOpen: false,
-    codeModalOpen: false,
-    highlightDdOpen: false,
-    textAlignDdOpen: false,
-    paragraphDdOpen: false,
-    toolBarBoldActive: false,
+const [state, setState] = useState({
+  colorDdOpen: false,
+  linkModalOpen: false,
+  codeModalOpen: false,
+  highlightDdOpen: false,
+  textAlignDdOpen: false,
+  paragraphDdOpen: false,
+  toolBarBoldActive: false,
     toolBarColorActive: false,
     toolBarItalicActive: false,
     toolBarBkgColorActive: false,
@@ -92,19 +91,65 @@ export const RichTextEditorProvider = ({ children }) => {
     codeLang: "javascript",
     codeValue: "",
   });
-  // const { codeLang, codeValue } = state;
+
+  // Official ref of the editor
   const editorRef = useRef(null);
+  // Ref for the link input field
   const hrefRef = useRef(null);
 
+  // focus the editor
   const focusEditor = () => {
     editorRef.current.focus();
   };
-
+  // un focus the editor
   const blurEditor = () => {
-    if (editorRef.current) {
-      console.log("unfocus editor");
-      editorRef.current.blur();
-    }
+    editorRef.current.blur();
+  };
+
+  // drop down state managers
+  const setParaDropDown = (payload) => {
+    setState((prevState) => ({ ...prevState, paragraphDdOpen: payload }));
+  };
+
+  // background highlight drop down
+  const setHighlightDropDown = (payload) => {
+    setState((prevState) => ({ ...prevState, highlightDdOpen: payload }));
+  };
+
+  // Font color drop down
+  const setColorDropDown = (payload) => {
+    setState((prevState) => ({ ...prevState, colorDdOpen: payload }));
+  };
+
+  const setLinkModal = (payload) => {
+    setState((prevState) => ({ ...prevState, linkModalOpen: payload }));
+  };
+
+  const setCodeModal = (payload) => {
+    setState((prevState) => ({ ...prevState, codeModalOpen: payload }));
+  };
+
+  const setMoreToolDd = (payload) => {
+    setState((prevState) => ({ ...prevState, textAlignDdOpen: payload }));
+  };
+
+  // value for the link modal
+  const setUrlValue = (payload) => {
+    setState((prevState) => ({ ...prevState, urlValue: payload }));
+  };
+
+  // value for the link modal
+  const setLabelValue = (payload) => {
+    setState((prevState) => ({ ...prevState, labelValue: payload }));
+  };
+  // Language value for the Code modal
+  const setCodeLanguage = (payload) => {
+    setState((prevState) => ({ ...prevState, codeLang: payload }));
+  };
+
+  // Code value for the Code modal
+  const setCodeValue = (payload) => {
+    setState((prevState) => ({ ...prevState, codeValue: payload }));
   };
 
   // clear format function
@@ -245,69 +290,6 @@ export const RichTextEditorProvider = ({ children }) => {
     return RichUtils.toggleBlockType(newEditorState, "code-block");
   }
 
-  // drop down state managers
-  const setParaDropDown = (payload) => {
-    setState((prevState) => ({ ...prevState, paragraphDdOpen: payload }));
-  };
-
-  // background highlight drop down
-  const setHighlightDropDown = (payload) => {
-    setState((prevState) => ({ ...prevState, highlightDdOpen: payload }));
-  };
-
-  // Font color drop down
-  const setColorDropDown = (payload) => {
-    setState((prevState) => ({ ...prevState, colorDdOpen: payload }));
-  };
-
-  // value for the link modal
-  const setUrlValue = (payload) => {
-    setState((prevState) => ({ ...prevState, urlValue: payload }));
-  };
-
-  // value for the link modal
-  const setLabelValue = (payload) => {
-    setState((prevState) => ({ ...prevState, labelValue: payload }));
-  };
-  // value for the link modal
-  const setCodeLanguage = (payload) => {
-    setState((prevState) => ({ ...prevState, codeLang: payload }));
-  };
-
-  // value for the link modal
-  const setCodeValue = (payload) => {
-    setState((prevState) => ({ ...prevState, codeValue: payload }));
-  };
-
-  const setLinkModal = (payload) => {
-    setState((prevState) => ({ ...prevState, linkModalOpen: payload }));
-  };
-
-  const setCodeModal = (payload) => {
-    setState((prevState) => ({ ...prevState, codeModalOpen: payload }));
-  };
-
-  const setMoreToolDd = (payload) => {
-    setState((prevState) => ({ ...prevState, textAlignDdOpen: payload }));
-  };
-
-  // Toolbar states
-  const setToolBarBoldActive = (payload) => {
-    setState((prevState) => ({ ...prevState, toolBarBoldActive: payload }));
-  };
-
-  const setToolBarItalicActive = (payload) => {
-    setState((prevState) => ({ ...prevState, toolBarItalicActive: payload }));
-  };
-
-  const setToolBarBkgColorActive = (payload) => {
-    setState((prevState) => ({ ...prevState, toolBarBkgColorActive: payload }));
-  };
-
-  const setToolBarBkgColor = (payload) => {
-    setState((prevState) => ({ ...prevState, toolBarBkgColor: payload }));
-  };
-
   // apply block or inline style
   const applyStyle = (e, style, method) => {
     e.preventDefault();
@@ -362,11 +344,7 @@ export const RichTextEditorProvider = ({ children }) => {
         clearFormatting,
         setColorDropDown,
         keyCodeApplyStyle,
-        setToolBarBkgColor,
         setHighlightDropDown,
-        setToolBarBoldActive,
-        setToolBarItalicActive,
-        setToolBarBkgColorActive,
       }}
     >
       {children}

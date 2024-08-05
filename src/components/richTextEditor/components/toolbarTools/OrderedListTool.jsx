@@ -1,7 +1,6 @@
 import React from 'react'
 import { ReactComponent as OLIcon } from "../../../../assets/icons/ordered-list.svg";
 import { useRichTextEditor } from "../../contexts/RichTextEditorContext"
-import { isMac } from '../../helpers/helpers';
 
 
 export default function OrderedListTool() {

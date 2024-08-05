@@ -7,9 +7,6 @@ import { ReactComponent as H4Icon } from "../../../../assets/icons/h4.svg";
 import { useRichTextEditor } from "../../contexts/RichTextEditorContext";
 
 export default function ParagraphTool() {
-
-
-
     const {
         paragraphDdOpen,
         setParaDropDown,
@@ -22,11 +19,6 @@ export default function ParagraphTool() {
     const handleOpenDropDown = (e) => {
         e.preventDefault()
         setParaDropDown(true)
-    }
-
-    const createHeadings = (e, tag) => {
-        e.preventDefault()
-        toggleBlockType(tag)
     }
 
     const handleClickOutside = (event) => {

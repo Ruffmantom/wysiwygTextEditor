@@ -6,7 +6,7 @@ export const myBlockStyleFn = (contentBlock) => {
     case "code-block":
       return "code_block_preview";
     case "horizontal-rule":
-      return "custom-hr";
+      return "hr_component";
     default:
       break;
   }

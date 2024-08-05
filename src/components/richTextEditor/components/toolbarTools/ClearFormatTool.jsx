@@ -1,6 +1,5 @@
 import React from 'react'
 import { ReactComponent as ClearFormatIcon } from "../../../../assets/icons/clearFormat.svg";
-import { RichUtils } from 'draft-js';
 import { useRichTextEditor } from "../../contexts/RichTextEditorContext"
 import { isMac } from '../../helpers/helpers';
 

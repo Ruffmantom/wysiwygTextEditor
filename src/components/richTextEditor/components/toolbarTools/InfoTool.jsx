@@ -1,7 +1,6 @@
 import React from 'react'
 import { ReactComponent as InfoToolIcon } from "../../../../assets/icons/infoTwo.svg";
 import { useRichTextEditor } from "../../contexts/RichTextEditorContext"
-import { isMac } from '../../helpers/helpers';
 // INFO_ELM
 export default function InfoTool() {
     const { applyStyle, isActive } = useRichTextEditor()
@@ -14,7 +13,6 @@ export default function InfoTool() {
             <InfoToolIcon />
             <span className="wysiwyg_tool_tip">
                 Info Block{" "}
-                {/* <span className="key_command">{isMac ? "cmd + b" : "ctrl + b"}</span> */}
             </span>
         </button>
     )

@@ -1,7 +1,6 @@
 import React from 'react'
 import { ReactComponent as ItalicIcon } from "../../../../assets/icons/italic.svg";
 import { isMac } from '../../helpers/helpers';
-import { RichUtils } from 'draft-js';
 import { useRichTextEditor } from "../../contexts/RichTextEditorContext"
 
 export default function ItalicTool() {

@@ -213,9 +213,10 @@ blockquote {
   max-width: 100%;
   overflow-x: auto;
   overflow-y: auto;
-  background-color: var(--shade-2);
+  background-color: var(--shade-1);
   border-radius: 3px;
-  outline: none;
+  outline: 2px solid var(--shade-3);
+  padding: 1em;
 }
 
 .wysiwyg_tool_bar_divider {

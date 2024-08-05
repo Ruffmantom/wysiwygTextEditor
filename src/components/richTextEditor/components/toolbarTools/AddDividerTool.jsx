@@ -9,7 +9,7 @@ export default function AddDividerTool() {
 
   const createDivider = (e) => {
     e.preventDefault();
-    insertHrBlock();
+    // insertHrBlock();
   };
 
   return (

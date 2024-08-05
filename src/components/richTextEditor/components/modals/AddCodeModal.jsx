@@ -19,9 +19,7 @@ const AddCodeModal = () => {
     codeValue,
     setCodeLanguage,
     setCodeValue,
-    editorState,
-    insertCodeBlock,
-    setEditorState,
+    confirmMedia,
   } = useRichTextEditor();
 
   const handleClose = (e) => {
@@ -53,10 +51,15 @@ const AddCodeModal = () => {
     }
   };
 
+  const onCodeInputKeyDown = (e) => {
+    // pressing enter
+    if (e.which === 13) {
+      confirmMedia(e);
+    }
+  };
+
   const handleSubmit = (e) => {
-    e.preventDefault();
-    const newEditorState = insertCodeBlock(editorState, codeValue, codeLang );
-    setEditorState(newEditorState);
+    confirmMedia(e)
     // clear inputs and close modal
     setCodeModal(false);
     setCodeLanguage("");
@@ -97,6 +100,7 @@ const AddCodeModal = () => {
                 height="200px"
                 extensions={[getLanguageExtension(codeLang.toLowerCase()), vscodeDark]}
                 onChange={(value) => setCodeValue(value)}
+                onKeyDown={onCodeInputKeyDown}
               />
             </div>
           </div>

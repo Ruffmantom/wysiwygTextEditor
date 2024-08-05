@@ -1,3 +1,4 @@
+import CodeBlockComponent from "./components/richTextEditor/components/CodeBlockComponent";
 import RichTextEditor from "./components/richTextEditor/RichTextEditor";
 
 
@@ -6,7 +7,7 @@ function App() {
     <div className="App">
       <div className="content">
         {/* Examples */}
-
+        {/* <CodeBlockComponent/> */}
         {/* WIP Tool */}
         <RichTextEditor options={{
           tools: {
@@ -24,14 +25,14 @@ function App() {
             code: true,
             quote: true,
             divider: true,
-            orderedList:true,
-            unorderedList:true,
-            info:true,
-            monospace:true,
+            orderedList: true,
+            unorderedList: true,
+            info: true,
+            monospace: true,
           }
         }} />
 
-        
+
       </div>
     </div>
   );

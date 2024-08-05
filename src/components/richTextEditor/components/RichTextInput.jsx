@@ -7,7 +7,7 @@ import { customStyleMap } from "../helpers/CustomStyleMaps";
 // import { blockRendererFn } from '../helpers/CustomBlockRenderer'
 import ToolBar from "./ToolBar";
 import { myBlockStyleFn } from "../helpers/CustomBlockStyles";
-import { myKeyBindingFn } from "../helpers/utils";
+import { myKeyBindingFn } from "../helpers/helpers";
 import CodeReadOnlyBlock from "./CodeReadOnlyBlock";
 import HrComponent from "./HrComponent";
 
@@ -74,12 +74,12 @@ const RichTextInput = ({ options }) => {
             codeContent: entity.getData().codeContent,
           },
         };
-      } else if (entityType === "horizontal-rule") {
+      } else if (entityType === "HORIZONTAL_RULE") {
         return {
           component: HrComponent,
           editable: false,
         };
-      }else if (entityType === 'code-block') {
+      }else if (entityType === 'READ_ONLY_CODE_BLOCK') {
         return {
           component: CodeReadOnlyBlock,
           editable: false,

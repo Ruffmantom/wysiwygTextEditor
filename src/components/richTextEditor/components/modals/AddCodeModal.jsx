@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { ReactComponent as CloseIcon } from "../../../../assets/icons/close.svg";
 import CodeMirror from "@uiw/react-codemirror";
 import { vscodeDark } from "@uiw/codemirror-themes-all";
@@ -8,7 +8,6 @@ import { css } from "@codemirror/lang-css";
 import { xml } from "@codemirror/lang-xml";
 import CustomSelect from "../CustomSelect";
 import { useRichTextEditor } from "../../contexts/RichTextEditorContext";
-import { AtomicBlockUtils, EditorState, RichUtils } from "draft-js";
 const languageList = ["HTML", "XML", "CSS", "JavaScript", "TypeScript"];
 
 const AddCodeModal = () => {
@@ -23,7 +22,6 @@ const AddCodeModal = () => {
     editorState,
     insertCodeBlock,
     setEditorState,
-    createAtomicBlock,
   } = useRichTextEditor();
 
   const handleClose = (e) => {

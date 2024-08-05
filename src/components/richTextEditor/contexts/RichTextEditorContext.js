@@ -37,7 +37,7 @@ function findDividerLineEntities(contentBlock, callback, contentState) {
     const entityKey = character.getEntity();
     return (
       entityKey !== null &&
-      contentState.getEntity(entityKey).getType() === "DIVIDER_LINE"
+      contentState.getEntity(entityKey).getType() === "HORIZONTAL_RULE"
     );
   }, callback);
 }
@@ -205,59 +205,28 @@ const [state, setState] = useState({
     const contentState = editorState.getCurrentContent();
     const selectionState = editorState.getSelection();
 
-    // Create a new ContentBlock for the <hr> element
-    const hrBlock = new ContentBlock({
-      key: genKey(),
-      type: "hr",
-      text: "",
-    });
+    // Create a new code block with the selected language and code
+    const contentStateWithEntity = contentState.createEntity(
+      "HORIZONTAL_RULE",
+      "IMMUTABLE"
+    );
 
-    // Create a new ContentBlock for the paragraph after the <hr>
-    const newBlock = new ContentBlock({
-      key: genKey(),
-      type: "unstyled",
-      text: "",
-    });
-
-    const blockMap = contentState.getBlockMap();
-    const blocksBefore = blockMap
-      .toSeq()
-      .takeUntil(
-        (v) => v === contentState.getBlockForKey(selectionState.getStartKey())
-      );
-    const blocksAfter = blockMap
-      .toSeq()
-      .skipUntil(
-        (v) => v === contentState.getBlockForKey(selectionState.getStartKey())
-      )
-      .rest();
-
-    const newBlocks = blocksBefore
-      .concat(
-        [
-          [
-            contentState.getBlockForKey(selectionState.getStartKey()).getKey(),
-            contentState.getBlockForKey(selectionState.getStartKey()),
-          ],
-          [hrBlock.getKey(), hrBlock],
-          [newBlock.getKey(), newBlock],
-        ],
-        blocksAfter
-      )
-      .toOrderedMap();
-
-    const newContentState = contentState.merge({
-      blockMap: newBlocks,
-      selectionBefore: selectionState,
-      selectionAfter: SelectionState.createEmpty(newBlock.getKey()),
-    });
+    const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+    const contentStateWithText = Modifier.insertText(
+      contentStateWithEntity,
+      selectionState,
+      " ", // Placeholder for the code block
+      null,
+      entityKey
+    );
 
     const newEditorState = EditorState.push(
       editorState,
-      newContentState,
-      "insert-fragment"
+      contentStateWithText,
+      "insert-characters"
     );
-    setEditorState(newEditorState);
+
+    return RichUtils.toggleBlockType(newEditorState, "HORIZONTAL_RULE");
   };
 
   // Function to insert code block
@@ -267,7 +236,7 @@ const [state, setState] = useState({
 
     // Create a new code block with the selected language and code
     const contentStateWithEntity = contentState.createEntity(
-      "code-block",
+      "CODE_BLOCK",
       "IMMUTABLE",
       { language, code }
     );
@@ -287,7 +256,7 @@ const [state, setState] = useState({
       "insert-characters"
     );
 
-    return RichUtils.toggleBlockType(newEditorState, "code-block");
+    return RichUtils.toggleBlockType(newEditorState, "CODE_BLOCK");
   }
 
   // apply block or inline style

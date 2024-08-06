@@ -3,10 +3,10 @@ export const myBlockStyleFn = (contentBlock) => {
   switch (type) {
     case "INFO_ELEMENT":
       return "info_element";
-    case "code-block":
+    case "CODE_BLOCK":
       return "code_block_preview";
-    case "horizontal-rule":
-      return "custom-hr";
+    case "HORIZONTAL_RULE":
+      return "hr_component";
     default:
       break;
   }

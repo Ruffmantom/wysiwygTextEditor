@@ -1,22 +1,14 @@
 import React, { createContext, useContext, useState, useRef } from "react";
-
 import {
   EditorState,
   Modifier,
   RichUtils,
-  ContentBlock,
-  genKey,
-  SelectionState,
   CompositeDecorator,
   AtomicBlockUtils,
 } from "draft-js";
 import LinkComponent from "../components/LinkComponent";
-import CodeBlockComponent from "../components/CodeBlockComponent";
-import HrComponent from "../components/HrComponent";
 
-const RichTextEditorContext = createContext();
-// add custom link
-// Function to find link entities in the content
+// Strategies
 function findLinkEntities(contentBlock, callback, contentState) {
   contentBlock.findEntityRanges((character) => {
     const entityKey = character.getEntity();
@@ -27,42 +19,18 @@ function findLinkEntities(contentBlock, callback, contentState) {
   }, callback);
 }
 
-function findCodeBlockEntities(contentBlock, callback, contentState) {
-  contentBlock.findEntityRanges((character) => {
-    const entityKey = character.getEntity();
-    return (
-      entityKey !== null &&
-      contentState.getEntity(entityKey).getType() === "CODE_BLOCK"
-    );
-  }, callback);
-}
-
-function findDividerLineEntities(contentBlock, callback, contentState) {
-  contentBlock.findEntityRanges((character) => {
-    const entityKey = character.getEntity();
-    return (
-      entityKey !== null &&
-      contentState.getEntity(entityKey).getType() === "DIVIDER_LINE"
-    );
-  }, callback);
-}
-
-// Decorator to handle link rendering
+// Decorator to handle block rendering
 const decorator = new CompositeDecorator([
   {
     strategy: findLinkEntities,
     component: LinkComponent,
-  },
-  {
-    strategy: findCodeBlockEntities,
-    component: CodeBlockComponent,
-  },
-  {
-    strategy: findDividerLineEntities,
-    component: HrComponent,
-  },
+  }
 ]);
 
+
+// Declare the context
+const RichTextEditorContext = createContext();
+// use the context
 export const useRichTextEditor = () => {
   return useContext(RichTextEditorContext);
 };
@@ -87,24 +55,80 @@ export const RichTextEditorProvider = ({ children }) => {
     toolBarBkgColor: "", // string of what color is selected to highlight the tool
     toolBarParagraph: "", // string of what the parent is
     // link test
+    mediaType: "",
+    urlType: "",
     urlValue: "",
     labelValue: "",
     codeLang: "javascript",
     codeValue: "",
   });
-  // const { codeLang, codeValue } = state;
+
+  // Official ref of the editor
   const editorRef = useRef(null);
+  // Ref for the link input field
   const hrefRef = useRef(null);
 
+  // focus the editor
   const focusEditor = () => {
     editorRef.current.focus();
   };
-
+  // un focus the editor
   const blurEditor = () => {
-    if (editorRef.current) {
-      console.log("unfocus editor");
-      editorRef.current.blur();
-    }
+    editorRef.current.blur();
+  };
+
+  // drop down state managers
+  const setParaDropDown = (payload) => {
+    setState((prevState) => ({ ...prevState, paragraphDdOpen: payload }));
+  };
+
+  // background highlight drop down
+  const setHighlightDropDown = (payload) => {
+    setState((prevState) => ({ ...prevState, highlightDdOpen: payload }));
+  };
+
+  // Font color drop down
+  const setColorDropDown = (payload) => {
+    setState((prevState) => ({ ...prevState, colorDdOpen: payload }));
+  };
+
+  const setLinkModal = (payload) => {
+    setState((prevState) => ({ ...prevState, linkModalOpen: payload }));
+  };
+
+  const setCodeModal = (payload) => {
+    setState((prevState) => ({ ...prevState, codeModalOpen: payload }));
+  };
+
+  const setMoreToolDd = (payload) => {
+    setState((prevState) => ({ ...prevState, textAlignDdOpen: payload }));
+  };
+
+  // value for the link modal
+  const setUrlValue = (payload) => {
+    setState((prevState) => ({ ...prevState, urlValue: payload }));
+  };
+
+  // value for the link modal
+  const setLabelValue = (payload) => {
+    setState((prevState) => ({ ...prevState, labelValue: payload }));
+  };
+  // Language value for the Code modal
+  const setCodeLanguage = (payload) => {
+    setState((prevState) => ({ ...prevState, codeLang: payload }));
+  };
+
+  // Code value for the Code modal
+  const setCodeValue = (payload) => {
+    setState((prevState) => ({ ...prevState, codeValue: payload }));
+  };
+  // Code value for the media types
+  const setUrlType = (payload) => {
+    setState((prevState) => ({ ...prevState, urlType: payload }));
+  };
+  // Code value for the media types
+  const setMediaType = (payload) => {
+    setState((prevState) => ({ ...prevState, mediaType: payload }));
   };
 
   // clear format function
@@ -155,159 +179,6 @@ export const RichTextEditorProvider = ({ children }) => {
     setEditorState(RichUtils.toggleBlockType(newEditorState, "unstyled"));
   };
 
-  // toggle hr element
-  const insertHrBlock = () => {
-    const contentState = editorState.getCurrentContent();
-    const selectionState = editorState.getSelection();
-
-    // Create a new ContentBlock for the <hr> element
-    const hrBlock = new ContentBlock({
-      key: genKey(),
-      type: "hr",
-      text: "",
-    });
-
-    // Create a new ContentBlock for the paragraph after the <hr>
-    const newBlock = new ContentBlock({
-      key: genKey(),
-      type: "unstyled",
-      text: "",
-    });
-
-    const blockMap = contentState.getBlockMap();
-    const blocksBefore = blockMap
-      .toSeq()
-      .takeUntil(
-        (v) => v === contentState.getBlockForKey(selectionState.getStartKey())
-      );
-    const blocksAfter = blockMap
-      .toSeq()
-      .skipUntil(
-        (v) => v === contentState.getBlockForKey(selectionState.getStartKey())
-      )
-      .rest();
-
-    const newBlocks = blocksBefore
-      .concat(
-        [
-          [
-            contentState.getBlockForKey(selectionState.getStartKey()).getKey(),
-            contentState.getBlockForKey(selectionState.getStartKey()),
-          ],
-          [hrBlock.getKey(), hrBlock],
-          [newBlock.getKey(), newBlock],
-        ],
-        blocksAfter
-      )
-      .toOrderedMap();
-
-    const newContentState = contentState.merge({
-      blockMap: newBlocks,
-      selectionBefore: selectionState,
-      selectionAfter: SelectionState.createEmpty(newBlock.getKey()),
-    });
-
-    const newEditorState = EditorState.push(
-      editorState,
-      newContentState,
-      "insert-fragment"
-    );
-    setEditorState(newEditorState);
-  };
-
-  // Function to insert code block
-  function insertCodeBlock(editorState, code, language) {
-    const contentState = editorState.getCurrentContent();
-    const selectionState = editorState.getSelection();
-
-    // Create a new code block with the selected language and code
-    const contentStateWithEntity = contentState.createEntity(
-      "code-block",
-      "IMMUTABLE",
-      { language, code }
-    );
-
-    const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
-    const contentStateWithText = Modifier.insertText(
-      contentStateWithEntity,
-      selectionState,
-      " ", // Placeholder for the code block
-      null,
-      entityKey
-    );
-
-    const newEditorState = EditorState.push(
-      editorState,
-      contentStateWithText,
-      "insert-characters"
-    );
-
-    return RichUtils.toggleBlockType(newEditorState, "code-block");
-  }
-
-  // drop down state managers
-  const setParaDropDown = (payload) => {
-    setState((prevState) => ({ ...prevState, paragraphDdOpen: payload }));
-  };
-
-  // background highlight drop down
-  const setHighlightDropDown = (payload) => {
-    setState((prevState) => ({ ...prevState, highlightDdOpen: payload }));
-  };
-
-  // Font color drop down
-  const setColorDropDown = (payload) => {
-    setState((prevState) => ({ ...prevState, colorDdOpen: payload }));
-  };
-
-  // value for the link modal
-  const setUrlValue = (payload) => {
-    setState((prevState) => ({ ...prevState, urlValue: payload }));
-  };
-
-  // value for the link modal
-  const setLabelValue = (payload) => {
-    setState((prevState) => ({ ...prevState, labelValue: payload }));
-  };
-  // value for the link modal
-  const setCodeLanguage = (payload) => {
-    setState((prevState) => ({ ...prevState, codeLang: payload }));
-  };
-
-  // value for the link modal
-  const setCodeValue = (payload) => {
-    setState((prevState) => ({ ...prevState, codeValue: payload }));
-  };
-
-  const setLinkModal = (payload) => {
-    setState((prevState) => ({ ...prevState, linkModalOpen: payload }));
-  };
-
-  const setCodeModal = (payload) => {
-    setState((prevState) => ({ ...prevState, codeModalOpen: payload }));
-  };
-
-  const setMoreToolDd = (payload) => {
-    setState((prevState) => ({ ...prevState, textAlignDdOpen: payload }));
-  };
-
-  // Toolbar states
-  const setToolBarBoldActive = (payload) => {
-    setState((prevState) => ({ ...prevState, toolBarBoldActive: payload }));
-  };
-
-  const setToolBarItalicActive = (payload) => {
-    setState((prevState) => ({ ...prevState, toolBarItalicActive: payload }));
-  };
-
-  const setToolBarBkgColorActive = (payload) => {
-    setState((prevState) => ({ ...prevState, toolBarBkgColorActive: payload }));
-  };
-
-  const setToolBarBkgColor = (payload) => {
-    setState((prevState) => ({ ...prevState, toolBarBkgColor: payload }));
-  };
-
   // apply block or inline style
   const applyStyle = (e, style, method) => {
     e.preventDefault();
@@ -321,6 +192,7 @@ export const RichTextEditorProvider = ({ children }) => {
       ? setEditorState(RichUtils.toggleBlockType(editorState, style))
       : setEditorState(RichUtils.toggleInlineStyle(editorState, style));
   };
+
 
   // is active function
   const isActive = (style, method) => {
@@ -337,6 +209,31 @@ export const RichTextEditorProvider = ({ children }) => {
     }
   };
 
+  const confirmMedia = (e) => {
+    e.preventDefault();
+    const contentState = editorState.getCurrentContent();
+    console.log(`Hit confirm media: code value: ${state.codeValue} here is the urlType: ${state.mediaType}`)
+    const contentStateWithEntity = contentState.createEntity(
+      state.mediaType,
+      'IMMUTABLE',
+      {
+        src: state.urlValue,
+        code: state.codeValue
+      }
+    );
+    const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+    const newEditorState = EditorState.set(
+      editorState,
+      { currentContent: contentStateWithEntity }
+    );
+
+    setEditorState(
+      AtomicBlockUtils.insertAtomicBlock(newEditorState, entityKey, ' ')
+    );
+    // restore focus to editor
+    setTimeout(() => focusEditor(), 0);
+  };
+
   return (
     <RichTextEditorContext.Provider
       value={{
@@ -346,7 +243,10 @@ export const RichTextEditorProvider = ({ children }) => {
         editorRef,
         applyStyle,
         blurEditor,
+        setMediaType,
         editorState,
+        confirmMedia,
+        setUrlType,
         focusEditor,
         setUrlValue,
         setCodeValue,
@@ -354,19 +254,13 @@ export const RichTextEditorProvider = ({ children }) => {
         setCodeModal,
         setLabelValue,
         setMoreToolDd,
-        insertHrBlock,
         setEditorState,
-        insertCodeBlock,
         setParaDropDown,
         setCodeLanguage,
         clearFormatting,
         setColorDropDown,
         keyCodeApplyStyle,
-        setToolBarBkgColor,
         setHighlightDropDown,
-        setToolBarBoldActive,
-        setToolBarItalicActive,
-        setToolBarBkgColorActive,
       }}
     >
       {children}

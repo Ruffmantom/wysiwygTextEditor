@@ -2,8 +2,6 @@ import React, { useEffect, useState, useRef } from "react";
 import { ReactComponent as FontcolorIcon } from "../../../../assets/icons/fontcolor.svg";
 // state
 import { useRichTextEditor } from '../../contexts/RichTextEditorContext';
-
-
 const deepFontColors = [
     "#D0C031",
     "#D0481C",
@@ -15,7 +13,6 @@ const deepFontColors = [
     "#B12917",
 ];
 
-
 export default function ColorTextTool() {
     const colorDropDownRef = useRef(null);
     const [currentStyle, setCurrentStyle] = useState('')
@@ -23,7 +20,6 @@ export default function ColorTextTool() {
         colorDdOpen,
         setColorDropDown,
         applyStyle,
-        defaultTextColor,
         isActive
     } = useRichTextEditor();
 

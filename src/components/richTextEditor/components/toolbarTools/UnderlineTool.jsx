@@ -6,7 +6,6 @@ import { isMac } from '../../helpers/helpers';
 export default function UnderlineTool() {
     const { applyStyle, isActive, setMoreToolDd } = useRichTextEditor()
 
-
     return (
         <button
             className={`icon_button tool_bar ${isActive('UNDERLINE', 'inline') ? 'active' : ""}`}

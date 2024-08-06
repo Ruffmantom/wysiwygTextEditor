@@ -6,6 +6,7 @@ import "highlight.js/styles/github.css";
 import "./style.css"
 import { RichTextEditorProvider } from './contexts/RichTextEditorContext';
 import RichTextInput from "./components/RichTextInput";
+// import MediaEditorExample from "./EXAMPLES/media";
 // helpers
 
 export default function RichTextEditor({ options }) {

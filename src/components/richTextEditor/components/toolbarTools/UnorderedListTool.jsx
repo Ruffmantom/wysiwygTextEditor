@@ -1,7 +1,6 @@
 import React from 'react'
 import { ReactComponent as ULIcon } from "../../../../assets/icons/unordered-list.svg";
 import { useRichTextEditor } from "../../contexts/RichTextEditorContext"
-import { isMac } from '../../helpers/helpers';
 
 export default function UnorderedListTool() {
    const { applyStyle, isActive } = useRichTextEditor()

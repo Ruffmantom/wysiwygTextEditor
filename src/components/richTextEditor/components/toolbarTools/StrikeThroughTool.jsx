@@ -1,6 +1,5 @@
 import React from 'react'
 import { ReactComponent as StrikeIcon } from "../../../../assets/icons/strike.svg";
-import { isMac } from '../../helpers/helpers';
 import { useRichTextEditor } from "../../contexts/RichTextEditorContext"
 
 export default function StrikeThroughTool() {

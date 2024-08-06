@@ -1,7 +1,6 @@
 import React from 'react'
 import { ReactComponent as MonoIcon } from "../../../../assets/icons/monotype.svg";
 import { useRichTextEditor } from "../../contexts/RichTextEditorContext"
-import { isMac } from '../../helpers/helpers';
 
 
 export default function MonoSpaceTool() {

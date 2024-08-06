@@ -6,14 +6,16 @@ export default function AddCodeTool() {
 
     const {
         setCodeModal,
-
+        setMediaType,
+        setCodeValue,
     } = useRichTextEditor();
 
 
     const handleTriggerAddCode = (e) => {
         e.preventDefault()
-
         // show the modal
+        setCodeValue("")
+        setMediaType('code')
         setCodeModal(true)
     }
 

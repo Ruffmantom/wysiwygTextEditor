@@ -1,16 +1,16 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import CodeMirror from "@uiw/react-codemirror";
 import { vscodeDark } from '@uiw/codemirror-themes-all';
 import { javascript } from "@codemirror/lang-javascript";
 import { html } from "@codemirror/lang-html";
 import { css } from "@codemirror/lang-css";
 import { xml } from "@codemirror/lang-xml";
-import CustomSelect from './CustomSelect';
-import { ReactComponent as CopyIcon } from "../../../assets/icons/copy.svg";
+import CustomSelect from './richTextEditor/components/CustomSelect';
+import { ReactComponent as CopyIcon } from "../assets/icons/copy.svg";
 
 
 const CodeBlockComponent = (props) => {
-  console.log('hit code component')
+  // console.log('hit code component')
    const [codeLanguage, setCodeLanguage] = useState(props.codeLang ? props.codeLang : "JavaScript")
    const [codeValue, setCodeValue] = useState(props.codeValue ? props.codeValue : "var noCode = null;")
   // const entity = props.contentState.getEntity(props.block.getEntityAt(0));
@@ -58,7 +58,7 @@ const CodeBlockComponent = (props) => {
           />
         </div>
         <div className="code_block_header_right">
-          <button
+          {/* <button
             className={`icon_button tool_bar`}
             onClick={(e) => copyCode(e)}
             onMouseDown={(e) => e.preventDefault()}
@@ -67,7 +67,7 @@ const CodeBlockComponent = (props) => {
             <span className="wysiwyg_tool_tip">
               Copy Code
             </span>
-          </button>
+          </button> */}
         </div>
       </div>
       <CodeMirror

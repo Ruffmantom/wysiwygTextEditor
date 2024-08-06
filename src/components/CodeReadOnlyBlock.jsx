@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import hljs from "highlight.js";
 import "highlight.js/styles/github.css"; // Import the CSS file for styling
-import { ReactComponent as CopyIcon } from "../../../assets/icons/copy.svg";
+import { ReactComponent as CopyIcon } from "../assets/icons/copy.svg";
 
 const CodeReadOnlyBlock = (props) => {
   const codeRef = useRef(null);

@@ -1,7 +1,6 @@
 import React, { useCallback } from "react";
 import { ReactComponent as LinkIcon } from "../../../../assets/icons/link.svg";
 import { useRichTextEditor } from "../../contexts/RichTextEditorContext";
-import { getSelectedText } from "../../helpers/utils";
 
 export default function AddLinkTool() {
   const { setLinkModal, setUrlValue,

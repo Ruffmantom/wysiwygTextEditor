@@ -1,0 +1,100 @@
+:root {
+  --red: #fb2943;
+  --black: #070707;
+  --black-1: #333;
+  --black-2: #646464;
+  --black-3: hsl(0, 0%, 59%);
+  --yellow: #fedc57;
+  --blue: #306aff;
+  --blue-1: #0047fa;
+  --green: #19e68c;
+  --green-1: #14b870;
+  /* shades */
+  --shade-red-0: #f8eaed;
+  --shade-bl-0: #f0f4ff;
+  --action-text: #fff;
+  --dd-bkg: #fff;
+  --shade-0: #fff;
+  --shade-1: #fafafa;
+  --shade-2: #e1e1e1;
+  --shade-3: #c4c4c4;
+  --modal-bkg: #e1e1e169;
+  --modal-blur: 10px;
+  --font-color: var(--black);
+  --end-cap-l: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 1) 20%,
+    rgba(255, 255, 255, 0.5) 40%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  --end-cap-r: linear-gradient(
+    270deg,
+    rgba(255, 255, 255, 1) 20%,
+    rgba(255, 255, 255, 0.5) 40%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  --shadow: 0 6px 13px rgba(0, 0, 0, 0.164);
+}
+
+:root:has(#id_hub_dark_mode:checked) {
+  --shade-red-0: #f8eaed;
+  --shade-bl-0: #f0f4ff;
+  --black: #fff;
+  --black-1: #b4b4b4;
+  --black-2: #888888;
+
+  --font-color: var(--black);
+  --shade-0: #070707;
+  --shade-1: #232323;
+  --shade-2: #333333;
+  --shade-3: #4d4d4d;
+  --modal-bkg: #33333373;
+  --modal-blur: 10px;
+  --shadow: 0 6px 16px rgba(49, 49, 49, 0.164);
+  --dd-bkg: #232323;
+  --end-cap-l: linear-gradient(
+    90deg,
+    #4d4d4d 20%,
+    #4d4d4d80 40%,
+    #4d4d4d00 100%
+  );
+  --end-cap-r: linear-gradient(
+    270deg,
+    #4d4d4d 20%,
+    #4d4d4d80 40%,
+    #4d4d4d00 100%
+  );
+}
+
+.my_editor_cont {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  padding: 5px;
+  border-radius: 7px;
+}
+.placeholder {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  color: var(--black-2);
+  opacity: 1;
+  z-index: 2;
+  transition: opacity 150ms ease-in;
+}
+.placeholder.hide {
+  opacity: 0;
+  z-index: -1;
+  transition: all 150ms ease-out;
+}
+.my_editor {
+  height: 100%;
+  overflow-y: auto;
+  background-color: var(--shade-2);
+  border-radius: 5px;
+  padding: 10px;
+  outline: none;
+}
+.my_editor_cont:has(:focus) {
+  outline: 2px solid var(--blue-1);
+}

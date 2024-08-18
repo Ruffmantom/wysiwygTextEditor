@@ -7,7 +7,6 @@
     "@codemirror/lang-html": "^6.4.9",
     "@codemirror/lang-javascript": "^6.2.2",
     "@codemirror/lang-xml": "^6.1.0",
-<<<<<<< HEAD
     "@editorjs/code": "^2.9.0",
     "@editorjs/editorjs": "^2.30.2",
     "@editorjs/header": "^2.8.7",
@@ -23,8 +22,6 @@
     "@testing-library/user-event": "^13.5.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
-=======
->>>>>>> 271fac3fad486a15c00d9759f4ea0d7a20258212
     "@uiw/codemirror-themes-all": "^4.23.0",
     "@uiw/react-codemirror": "^4.23.0",
     "draft-js": "^0.11.7",

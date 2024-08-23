@@ -1,12 +1,14 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./style.css";
 
 const MyEditor = () => {
   const editorRef = useRef(null);
-  const [editorState, setEditorState] = useState("");
+  const [editorState, setEditorState] = useState([]);
   const [undoStack, setUndoStack] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
-
+  const uid = function () {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+  }
   // Function to get the current selection and cursor position
   const getCursorPosition = () => {
     const selection = window.getSelection();
@@ -85,6 +87,35 @@ const MyEditor = () => {
     console.log("handle Redo:", redoStack);
     console.log("Editor State:", editorState);
   };
+  const initializeElement = () => {
+    console.log('about to initalize')
+    const initialElement = {
+      _id: uid(),
+      parent: "div",
+      element: "p",
+      startCursor: 0,
+      endCursor: 0,
+      cursorLocation: 0,
+      isEditable: true,
+      innerContent: 'Hello World!',
+
+    }
+    setEditorState((prev) => [{ ...prev, initialElement }])
+  }
+
+  const DivElement = ({data}) => (
+console.log(data)
+    // <div key={data._id}>
+    //   <p>{data.innerContent}</p>
+    // </div>
+  )
+
+  useEffect(() => {
+    // on load make sure editor 
+    // if (editorState === "" || editorState === undefined) {
+    //   initializeElement()
+    // }
+  },[])
 
   return (
     <div className="my_editor_cont">
@@ -93,13 +124,18 @@ const MyEditor = () => {
       </p>
 
       <div
-        contentEditable="true"
+        // contentEditable="true"
         className="my_editor"
         autoCorrect="true"
         ref={editorRef}
-        onKeyUp={handleKeyUp}
-        onKeyDown={handleKeyDown} // Listen for keydown events
-      ></div>
+        // onKeyUp={handleKeyUp}
+        onClick={()=>initializeElement()}
+        // onKeyDown={handleKeyDown} // Listen for keydown events
+      >
+        {editorState && editorState.map(elm => (
+          <DivElement data={elm} />
+        ))}
+      </div>
     </div>
   );
 };

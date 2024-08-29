@@ -581,8 +581,10 @@ padding-bottom: 10px;
 }
 
 
-.editor_js_cont{
+.editor_js_cont {
   background-color: var(--shade-1);
   max-height: 550px;
   border-radius: 10px;
+  overflow: auto;
+  padding-bottom: 20px;
 }

@@ -94,9 +94,6 @@
   border-radius: 5px;
   padding: 10px;
   outline: none;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
 }
 .my_editor_cont:has(:focus) {
   outline: 2px solid var(--blue-1);
@@ -133,4 +130,11 @@
   font-size: large;
   font-weight: bold;
 
+}
+.ce_block:first-of-type{
+  margin-top: 0;
+}
+.ce_block{
+  position: relative;
+  margin-top: 5px;
 }

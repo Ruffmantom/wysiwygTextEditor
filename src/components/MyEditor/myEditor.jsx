@@ -1,121 +1,91 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./style.css";
+import InputElement from "./components/InputElement";
+import ImageElement from "./components/ImageElement";
+import EditableDiv from "./components/EditableDiv";
+
+const uid = function () {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2);
+};
+
+const sampleData = [
+ 
+  {
+    _id: uid(),
+    type: "text",
+    element: "headingOne",
+    className: "formatted_heading_one",
+    value: "This is a Heading",
+    position: 1,
+    src: "",
+    alt: "",
+    data: {
+      key: "heading",
+      value: "one",
+    },
+    elementId: "",
+  },
+  {
+    _id: uid(),
+    type: "text",
+    element: "headingTwo",
+    className: "formatted_heading_two",
+    value: "This is a sub heading!",
+    position: 1,
+    src: "",
+    alt: "",
+    data: {
+      key: "",
+      value: "",
+    },
+    elementId: "",
+  },
+  {
+    _id: uid(),
+    type: "text",
+    element: "headingThree",
+    className: "formatted_heading_three",
+    value: "This is a sub sub heading",
+    position: 1,
+    src: "",
+    alt: "",
+    data: {
+      key: "",
+      value: "",
+    },
+    elementId: "",
+  },
+  {
+    _id: uid(),
+    type: "text",
+    element: "plainText",
+    className: "formatted_paragraph",
+    value: "This is some text!",
+    position: 1,
+    src: "",
+    alt: "",
+    data: {
+      key: "",
+      value: "",
+    },
+    elementId: "",
+  },
+];
 
 const MyEditor = () => {
   const editorRef = useRef(null);
-  const [editorState, setEditorState] = useState([]);
+  const [editorState, setEditorState] = useState(sampleData || []);
   const [undoStack, setUndoStack] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
-  const uid = function () {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
-  }
-  // Function to get the current selection and cursor position
-  const getCursorPosition = () => {
-    const selection = window.getSelection();
-    if (!selection.rangeCount) return null;
 
-    const range = selection.getRangeAt(0);
-    return {
-      startOffset: range.startOffset,
-      endOffset: range.endOffset,
-      startContainer: range.startContainer,
-      endContainer: range.endContainer,
-    };
-  };
-
-  // Function to update the content in the editor
-  const updateEditorContent = (content) => {
-    if (editorRef.current) {
-      editorRef.current.innerHTML = content;
+  const returnElement = (elm) => {
+    if (elm.type === "text") {
+      // return <InputElement key={elm._id} elm={elm} />;
+      return <EditableDiv key={elm._id} elm={elm} />;
+    } else if (elm.type === "image") {
+      return <ImageElement key={elm._id} elm={elm} />;
     }
   };
-
-  // Handle key up event to track actions
-  const handleKeyUp = (e) => {
-    const cursorPosition = getCursorPosition();
-
-    // Create an action object for the undo stack
-    const action = {
-      content: editorRef.current.innerHTML,
-      cursorPosition: cursorPosition,
-    };
-
-    // Add the new action to the undo stack and reset the redo stack
-    setUndoStack((prevUndoStack) => [...prevUndoStack, action]);
-    setRedoStack([]);
-
-    setEditorState(editorRef.current.innerHTML);
-  };
-
-  // Handle the key down event to detect shortcuts
-  const handleKeyDown = (e) => {
-    if (e.ctrlKey && e.key === "z") {
-      e.preventDefault();
-      handleUndo();
-    } else if (e.ctrlKey && e.shiftKey && e.key === "Z") {
-      e.preventDefault();
-      handleRedo();
-    }
-  };
-
-  // Handle the undo operation
-  const handleUndo = () => {
-    setUndoStack((prevUndoStack) => {
-      if (prevUndoStack.length === 0) return prevUndoStack;
-
-      const lastAction = prevUndoStack[prevUndoStack.length - 1];
-
-      setRedoStack((prevRedoStack) => [...prevRedoStack, lastAction]);
-
-      const newUndoStack = prevUndoStack.slice(0, -1);
-      const previousAction = newUndoStack[newUndoStack.length - 1];
-
-      if (previousAction) {
-        updateEditorContent(previousAction.content);
-        setEditorState(previousAction.content);
-      } else {
-        updateEditorContent("");
-        setEditorState("");
-      }
-
-      return newUndoStack;
-    });
-  };
-
-  // Handle the redo operation
-  const handleRedo = () => {
-    console.log("handle Redo:", redoStack);
-    console.log("Editor State:", editorState);
-  };
-  const initializeElement = () => {
-    console.log('about to initalize')
-    const initialElement = {
-      _id: uid(),
-      parent: "div",
-      element: "p",
-      startCursor: 0,
-      endCursor: 0,
-      cursorLocation: 0,
-      isEditable: true,
-      innerContent: 'Hello World!',
-
-    }
-    setEditorState((prev) => [{ ...prev, initialElement }])
-  }
-
-  const DivElement = ({data}) => (
-console.log(data)
-    // <div key={data._id}>
-    //   <p>{data.innerContent}</p>
-    // </div>
-  )
-
-  useEffect(() => {
-    // on load make sure editor 
-    // if (editorState === "" || editorState === undefined) {
-    //   initializeElement()
-    // }
-  },[])
 
   return (
     <div className="my_editor_cont">
@@ -124,17 +94,11 @@ console.log(data)
       </p>
 
       <div
-        // contentEditable="true"
         className="my_editor"
         autoCorrect="true"
-        ref={editorRef}
-        // onKeyUp={handleKeyUp}
-        onClick={()=>initializeElement()}
-        // onKeyDown={handleKeyDown} // Listen for keydown events
+        // onClick={()=>initializeElement()}
       >
-        {editorState && editorState.map(elm => (
-          <DivElement data={elm} />
-        ))}
+        {editorState && editorState.map((elm) => returnElement(elm))}
       </div>
     </div>
   );

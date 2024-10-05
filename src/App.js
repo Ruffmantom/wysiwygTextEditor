@@ -1,4 +1,4 @@
-import EditorJs from "./components/editorjs/RichTextEditor";
+// import EditorJs from "./components/editorjs/RichTextEditor";
 import MyEditor from "./components/MyEditor/myEditor";
 // import RichTextEditor from "./components/richTextEditor/RichTextEditor";
 
@@ -6,9 +6,9 @@ function App() {
   return (
     <div className="App">
       <div className="content"> 
-        <EditorJs />
+        {/* <EditorJs /> */}
         {/* Examples */}
-        {/* <MyEditor /> */}
+        <MyEditor />
         {/* WIP Tool */}
         {/* <RichTextEditor
           options={{

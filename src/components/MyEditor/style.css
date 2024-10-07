@@ -80,6 +80,8 @@ ol>li {
 
 code {
   border-radius: 5px;
+  background-color: var(--shade-2);
+  padding: 2px 5px;
 }
 
 pre.code_block_preview {

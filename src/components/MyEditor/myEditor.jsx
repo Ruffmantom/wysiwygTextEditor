@@ -37,7 +37,7 @@ const MyEditor = ({
     orderedList: true,
     unorderedList: true,
     info: false,
-    monospace: false,
+    monospace: true,
     undoRedo: true,
   }
 

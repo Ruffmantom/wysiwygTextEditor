@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 // helpers
 import BoldTool from "./toolbarTools/BoldTool";
 import ItalicTool from "./toolbarTools/ItalicTool";
@@ -14,6 +14,8 @@ import OrderedListTool from "./toolbarTools/OrderedListTool"
 import UnorderedListTool from "./toolbarTools/UnorderedListTool";
 import InfoTool from "./toolbarTools/InfoTool";
 import MonoSpaceTool from "./toolbarTools/MonoSpaceTool";
+import UndoTool from "./toolbarTools/UndoTool";
+import RedoTool from "./toolbarTools/RedoTool";
 /*
 
 tool options: {
@@ -40,31 +42,36 @@ tool options: {
 */
 
 
-const ToolBar = ({ options, handleEditorChange}) => {
+const ToolBar = ({ options, handleEditorChange }) => {
 
+ // Ensure other has a default structure if options.other is not provided
+ const { more = {} } = options;
 
   return (
     <div className="wysiwyg_tool_bar">
       {options.bold || !options ? <BoldTool handleEditorChange={handleEditorChange} /> : ""}
-      {options.italic || !options ? <ItalicTool /> : ""}
-      {options.monospace || !options ? <MonoSpaceTool /> : ""}
+      {options.italic || !options ? <ItalicTool handleEditorChange={handleEditorChange} /> : ""}
+      {options.monospace || !options ? <MonoSpaceTool handleEditorChange={handleEditorChange} /> : ""}
       {options.highlight || options.color || options.headings ? <div className="wysiwyg_tool_bar_divider"></div> : ""}
-      {options.highlight || !options ? <HighlightTool /> : ""}
-      {options.color || !options ? <ColorTextTool /> : ""}
-      {options.headings || !options ? <ParagraphTool /> : ""}
+      {options.highlight || !options ? <HighlightTool handleEditorChange={handleEditorChange} /> : ""}
+      {options.color || !options ? <ColorTextTool handleEditorChange={handleEditorChange} /> : ""}
+      {options.headings || !options ? <ParagraphTool handleEditorChange={handleEditorChange} /> : ""}
       {
-        options.other.underline ||
-          options.other.strikeThrough ||
-          options.other.removeFormats || !options ? <MoreTools options={options} /> : ""
+        more.underline ||
+        more.strikeThrough ||
+        more.removeFormats ||
+        !options ? <MoreTools options={options} handleEditorChange={handleEditorChange} /> : ""
       }
+      {options.undoRedo || !options ? <UndoTool handleEditorChange={handleEditorChange} /> : ""}
+      {options.undoRedo || !options ? <RedoTool handleEditorChange={handleEditorChange} /> : ""}
       {options.link || options.code || options.quote || options.divider ? <div className="wysiwyg_tool_bar_divider"></div> : ""}
-      {options.info || !options ? <InfoTool /> : ""}
-      {options.link || !options ? <AddLinkTool /> : ""}
-      {options.code || !options ? <AddCodeTool /> : ""}
-      {options.quote || !options ? <AddQuoteTool /> : ""}
-      {options.divider || !options ? <AddDividerTool /> : ""}
-      {options.orderedList || !options ? <OrderedListTool /> : ""}
-      {options.unorderedList || !options ? <UnorderedListTool /> : ""}
+      {options.info || !options ? <InfoTool handleEditorChange={handleEditorChange} /> : ""}
+      {options.link || !options ? <AddLinkTool handleEditorChange={handleEditorChange} /> : ""}
+      {options.code || !options ? <AddCodeTool handleEditorChange={handleEditorChange} /> : ""}
+      {options.quote || !options ? <AddQuoteTool handleEditorChange={handleEditorChange} /> : ""}
+      {options.divider || !options ? <AddDividerTool handleEditorChange={handleEditorChange} /> : ""}
+      {options.orderedList || !options ? <OrderedListTool handleEditorChange={handleEditorChange} /> : ""}
+      {options.unorderedList || !options ? <UnorderedListTool handleEditorChange={handleEditorChange} /> : ""}
     </div>
   );
 };

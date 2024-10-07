@@ -4,7 +4,8 @@ import UnderlineTool from "./UnderlineTool";
 import StrikeThroughTool from "./StrikeThroughTool";
 import ClearFormatTool from "./ClearFormatTool";
 
-export default function MoreTools({ options }) {
+export default function MoreTools({ options ,handleEditorChange}) {
+    
 const [moreToolDd,setMoreToolDd]= useState(false)
     const moreToolsRef = useRef(null);
 
@@ -44,9 +45,9 @@ const [moreToolDd,setMoreToolDd]= useState(false)
                     }`}
                 ref={moreToolsRef}
             >
-                { options.tools.other.underline || !options ? <UnderlineTool setMoreToolDd={setMoreToolDd} /> : ""}
-                { options.tools.other.strikeThrough || !options ? <StrikeThroughTool setMoreToolDd={setMoreToolDd} /> : ""}
-                { options.tools.other.removeFormats || !options ? <ClearFormatTool setMoreToolDd={setMoreToolDd} /> : ""}
+                { options.more.underline || !options ? <UnderlineTool handleEditorChange={handleEditorChange} setMoreToolDd={setMoreToolDd} /> : ""}
+                { options.more.strikeThrough || !options ? <StrikeThroughTool handleEditorChange={handleEditorChange} setMoreToolDd={setMoreToolDd} /> : ""}
+                { options.more.removeFormats || !options ? <ClearFormatTool handleEditorChange={handleEditorChange} setMoreToolDd={setMoreToolDd} /> : ""}
 
 
             </div>

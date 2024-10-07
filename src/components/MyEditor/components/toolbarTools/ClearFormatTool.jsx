@@ -1,27 +1,22 @@
 import React from 'react'
 import { ReactComponent as ClearFormatIcon } from "../../../../assets/icons/clearFormat.svg";
-import { isMac } from '../../helpers/helpers';
 
-export default function ClearFormatTool() {
+export default function ClearFormatTool({handleEditorChange}) {
 
-    const clearFormat = (e) => {
-        e.preventDefault()
-        // clearFormatting()
-        // setMoreToolDd(false);
-    }
-
+    const handleClearFormat = (e) => {
+        e.preventDefault();
+        document.execCommand("removeFormat", false, null);
+        handleEditorChange(); // Save the state change
+      };
     return (
         <button
             className="icon_button tool_bar"
-            onClick={e => clearFormat(e)}
+            onClick={e => handleClearFormat(e)}
             onMouseDown={(e) => e.preventDefault()}
         >
             <ClearFormatIcon />
             <span className="wysiwyg_tool_tip">
-                Clear Format{" "}
-                <span className="key_command">
-                    {isMac ? "cmd + /" : "ctrl + /"}
-                </span>
+                Clear Format
             </span>
         </button>
     )

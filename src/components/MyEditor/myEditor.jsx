@@ -16,16 +16,16 @@ const MyEditor = () => {
   const [showPlaceHolder, setShowPlaceholder] = useState(true)
 
   // toolbar options
-  const tools = {
+  const toolbarOptions = {
     bold: true,
     italic: true,
     highlight: false,
     color: false,
     headings: false,
-    other: {
-      underline: false,
-      strikeThrough: false,
-      removeFormats: false,
+    more: {
+      underline: true,
+      strikeThrough: true,
+      removeFormats: true,
     },
     link: false,
     code: false,
@@ -35,6 +35,7 @@ const MyEditor = () => {
     unorderedList: false,
     info: false,
     monospace: false,
+    undoRedo: true,
   }
 
   const saveEditorState = (changeType, addedContent = "", removedContent = "") => {
@@ -67,10 +68,10 @@ const MyEditor = () => {
     }
   };
 
-  const handleEditorChange = () => {
+  const handleEditorChange = (e) => {
     const editor = editorRef.current;
     const textContent = editor.innerText || "";
-
+    console.log(e)
     // Only save if there's a change
     if (textContent !== lastSavedState.textContent) {
       // Use a buffer timeout to delay the state saving
@@ -85,15 +86,9 @@ const MyEditor = () => {
   };
 
 
-  const handleItalicText = (e) => {
-    e.preventDefault();
-    document.execCommand("italic", false, null); // Basic italic functionality
-    handleEditorChange(); // Save the state change
-  };
-
   return (
     <div className="editor_main_container">
-      <ToolBar options={tools} handleEditorChange={handleEditorChange} />
+      <ToolBar options={toolbarOptions} handleEditorChange={handleEditorChange} />
       <div className="editor_wrapper">
         {showPlaceHolder ? <p className="placeholder">Start Typing here...</p> : ""}
         <div

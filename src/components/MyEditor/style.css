@@ -69,9 +69,12 @@
   text-decoration: underline;
   cursor: pointer;
 }
-
-.ul>li,
-.ol>li {
+ol,ul{
+  margin-bottom: 15px;
+  margin-left: 2rem;
+}
+ul>li,
+ol>li {
   margin-bottom: 10px;
 }
 
@@ -262,12 +265,15 @@ blockquote {
   }
 }
 
+.btn_overlay:hover>.wysiwyg_tool_tip,
 .icon_button:hover>.wysiwyg_tool_tip {
   width: max-content;
   min-width: max-content;
   height: unset;
   overflow: unset;
   bottom: 40px;
+  left: 50%;
+  transform: translate(-50%);
   opacity: 1;
   z-index: 9;
   transition: opacity 150ms ease-in-out;
@@ -382,6 +388,7 @@ blockquote {
   height: 100%;
   width: 100%;
 }
+
 
 .highlight_colors {
   display: flex;

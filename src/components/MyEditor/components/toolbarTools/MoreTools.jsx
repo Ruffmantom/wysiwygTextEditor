@@ -4,9 +4,9 @@ import UnderlineTool from "./UnderlineTool";
 import StrikeThroughTool from "./StrikeThroughTool";
 import ClearFormatTool from "./ClearFormatTool";
 
-export default function MoreTools({ options ,handleEditorChange}) {
-    
-const [moreToolDd,setMoreToolDd]= useState(false)
+export default function MoreTools({ options, handleEditorChange }) {
+
+    const [moreToolDd, setMoreToolDd] = useState(false)
     const moreToolsRef = useRef(null);
 
     const handleClickOutside = (event) => {
@@ -33,21 +33,26 @@ const [moreToolDd,setMoreToolDd]= useState(false)
         <div className="icon_button tool_bar tool_bar_dd icon">
             <button
                 className="btn_overlay"
-                onClick={() => setMoreToolDd(true)}
+                onClick={(e) => {
+                    e.preventDefault()
+                    setMoreToolDd(true)
+                }}
                 onMouseDown={(e) => e.preventDefault()}
-            ></button>
+            >
+                <span className="wysiwyg_tool_tip">More</span>
+
+            </button>
             <div className="icon_button tool_bar heading">
                 <MoreIcon />
-                <span className="wysiwyg_tool_tip">More</span>
             </div>
             <div
                 className={`tool_bar_dd_content icons ${moreToolDd ? "active" : ""
                     }`}
                 ref={moreToolsRef}
             >
-                { options.more.underline || !options ? <UnderlineTool handleEditorChange={handleEditorChange} setMoreToolDd={setMoreToolDd} /> : ""}
-                { options.more.strikeThrough || !options ? <StrikeThroughTool handleEditorChange={handleEditorChange} setMoreToolDd={setMoreToolDd} /> : ""}
-                { options.more.removeFormats || !options ? <ClearFormatTool handleEditorChange={handleEditorChange} setMoreToolDd={setMoreToolDd} /> : ""}
+                {options.more.underline || !options ? <UnderlineTool handleEditorChange={handleEditorChange} setMoreToolDd={setMoreToolDd} /> : ""}
+                {options.more.strikeThrough || !options ? <StrikeThroughTool handleEditorChange={handleEditorChange} setMoreToolDd={setMoreToolDd} /> : ""}
+                {options.more.removeFormats || !options ? <ClearFormatTool handleEditorChange={handleEditorChange} setMoreToolDd={setMoreToolDd} /> : ""}
 
 
             </div>

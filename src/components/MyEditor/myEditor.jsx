@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ReactComponent as BoldIcon } from '../../assets/icons/bold.svg';
 import "./style.css";
 import ToolBar from "./components/ToolBar";
 
@@ -7,32 +6,36 @@ const uid = function () {
   return Date.now().toString(36) + Math.random().toString(36).substr(2);
 };
 
-const MyEditor = () => {
+const MyEditor = ({ 
+  placeholder = "Add Content here...", 
+  options, 
+  handleReturnState = (state) => { console.log("Editor State: ", state) } 
+}) => {
+
   const editorRef = useRef(null);
-  const [undoStack, setUndoStack] = useState([]);
-  const [redoStack, setRedoStack] = useState([]);
   const [lastSavedState, setLastSavedState] = useState(""); // Track last saved text for comparison
   const typingTimeoutRef = useRef(null);
   const [showPlaceHolder, setShowPlaceholder] = useState(true)
 
   // toolbar options
+  // this will eventually be used when the editor is in a module
   const toolbarOptions = {
     bold: true,
     italic: true,
-    highlight: false,
-    color: false,
-    headings: false,
     more: {
       underline: true,
       strikeThrough: true,
       removeFormats: true,
     },
+    highlight: true,
+    color: true,
+    headings: true,
     link: false,
     code: false,
     quote: false,
     divider: false,
-    orderedList: false,
-    unorderedList: false,
+    orderedList: true,
+    unorderedList: true,
     info: false,
     monospace: false,
     undoRedo: true,
@@ -41,12 +44,14 @@ const MyEditor = () => {
   const saveEditorState = (changeType, addedContent = "", removedContent = "") => {
     const editor = editorRef.current;
     const textContent = editor.innerText || ""; // Grab text content of the editor
+    const htmlContent = editor.innerHTML || ""; // Grab text content of the editor
     const selection = window.getSelection();
     const carrotPos = selection.focusOffset; // Current caret position
 
     const state = {
       _id: uid(),
       textContent,
+      htmlContent,
       offset: carrotPos,
       carrotPos,
       previousCarrotPos: lastSavedState.carrotPos || 0,
@@ -54,13 +59,11 @@ const MyEditor = () => {
       addedContent,
       removedContent,
       timestamp: Date.now(),
-      styles: [], // You can populate styles based on selection if needed
     };
 
-    // Push the new state onto the undo stack
-    setUndoStack(prevStack => [...prevStack, state]);
+    // return state to whatever module is using this.
+    handleReturnState(state)
     setLastSavedState(state);
-    console.log("Last saved item: ", state)
     if (textContent === "") {
       setShowPlaceholder(true)
     } else {
@@ -85,12 +88,16 @@ const MyEditor = () => {
     }
   };
 
+  useEffect(() => {
+    // init editor
+    document.execCommand("styleWithCSS", false, true);
+  }, [])
 
   return (
     <div className="editor_main_container">
       <ToolBar options={toolbarOptions} handleEditorChange={handleEditorChange} />
       <div className="editor_wrapper">
-        {showPlaceHolder ? <p className="placeholder">Start Typing here...</p> : ""}
+        {showPlaceHolder ? <p className="placeholder">{placeholder}</p> : ""}
         <div
           className="my_editor_cont"
           ref={editorRef}

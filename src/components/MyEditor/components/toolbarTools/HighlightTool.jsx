@@ -11,10 +11,18 @@ const highlightColors = [
     "#eb361e",
 ];
 
-export default function HighlightTool() {
+
+export default function HighlightTool({ handleEditorChange }) {
     const highlightColorDropDownRef = useRef(null);
-    const [currentStyle, setCurrentStyle] = useState('')
     const [highlightDdOpen, setHighlightDropDown] = useState(false)
+
+    //hiliteColor
+    const highlightText = (e, color) => {
+        e.preventDefault();
+        // document.execCommand("styleWithCSS", false, true);
+        document.execCommand("hiliteColor", false, color);
+        handleEditorChange(); // Save the state change
+    };
 
     const handleDropDown = (e) => {
         e.preventDefault()
@@ -38,6 +46,7 @@ export default function HighlightTool() {
     // if click outside of dropdowns
     useEffect(() => {
         document.addEventListener("mousedown", (e) => handleClickOutside(e));
+       
         return () => {
             document.removeEventListener("mousedown", (e) => handleClickOutside(e));
         };
@@ -65,8 +74,7 @@ export default function HighlightTool() {
                             // ${isActive(c, 'inline') ? 'active' : ""}
                             className={`color_swatch `}
                             onClick={e => {
-                                // applyStyle(e, c, 'inline')
-                                setCurrentStyle(c)
+                                highlightText(e, c)
                                 setHighlightDropDown(false)
                             }}
                             onMouseDown={(e) => e.preventDefault()}
@@ -78,12 +86,8 @@ export default function HighlightTool() {
                 <button
                     className='tool_bar_dd_item p center clear_style_btn'
                     onClick={e => {
-                        console.log('Clearing bkg, current color: ', currentStyle)
-                        if (currentStyle !== "") {
-                            // applyStyle(e, currentStyle, 'inline')
-                            setCurrentStyle('')
-                            setHighlightDropDown(false)
-                        }
+                        highlightText(e, "transparent")
+                        setHighlightDropDown(false)
                     }}
                     onMouseDown={(e) => e.preventDefault()}
                 >

@@ -4,7 +4,7 @@ import { ReactComponent as H2Icon } from "../../../../assets/icons/h2.svg";
 import { ReactComponent as H3Icon } from "../../../../assets/icons/h3.svg";
 import { ReactComponent as H4Icon } from "../../../../assets/icons/h4.svg";
 
-export default function ParagraphTool() {
+export default function ParagraphTool({ handleEditorChange }) {
     const paragraphDropDownRef = useRef(null);
     const [paraDropDown, setParaDropDown] = useState(false)
     const handleOpenDropDown = (e) => {
@@ -20,6 +20,13 @@ export default function ParagraphTool() {
             event.stopPropagation();
             setParaDropDown(false);
         }
+    };
+
+    const changeTag = (e, level) => {
+        e.preventDefault();
+        // document.execCommand("styleWithCSS", false, true);
+        document.execCommand("formatBlock", false, `H${level}`);
+        handleEditorChange(); // Save the state change
     };
 
     // if click outside of dropdowns
@@ -43,10 +50,10 @@ export default function ParagraphTool() {
                 ref={paragraphDropDownRef}
             >
                 <button
-                //${isActive("header-one", 'block') ? "active" : ""}
+                    //${isActive("header-one", 'block') ? "active" : ""}
                     className={`tool_bar_dd_item h1 `}
                     onClick={(e) => {
-                        // applyStyle(e, "header-one", 'block')
+                        changeTag(e, 1)
                         // close dropdown
                         setParaDropDown(false)
                     }}
@@ -56,10 +63,10 @@ export default function ParagraphTool() {
                     <H1Icon />
                 </button>
                 <button
-                //${isActive("header-two", 'block') ? "active" : ""}
+                    //${isActive("header-two", 'block') ? "active" : ""}
                     className={`tool_bar_dd_item h2 `}
                     onClick={(e) => {
-                        // applyStyle(e, "header-two", 'block')
+                        changeTag(e, 2)
                         // close dropdown
                         setParaDropDown(false)
                     }}
@@ -69,10 +76,10 @@ export default function ParagraphTool() {
                     <H2Icon />
                 </button>
                 <button
-                //${isActive("header-three", 'block') ? "active" : ""}
+                    //${isActive("header-three", 'block') ? "active" : ""}
                     className={`tool_bar_dd_item h3 `}
                     onClick={(e) => {
-                        // applyStyle(e, "header-three", 'block')
+                        changeTag(e, 3)
                         // close dropdown
                         setParaDropDown(false)
                     }}
@@ -82,10 +89,10 @@ export default function ParagraphTool() {
                     <H3Icon />
                 </button>
                 <button
-                //${isActive("header-four", 'block') ? "active" : ""}
+                    //${isActive("header-four", 'block') ? "active" : ""}
                     className={`tool_bar_dd_item h4 `}
                     onClick={(e) => {
-                        // applyStyle(e, "header-four", 'block')
+                        changeTag(e, 4)
                         // close dropdown
                         setParaDropDown(false)
                     }}

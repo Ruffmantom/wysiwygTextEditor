@@ -11,13 +11,18 @@ const deepFontColors = [
     "#B12917",
 ];
 
-export default function ColorTextTool() {
+export default function ColorTextTool({ handleEditorChange }) {
     const colorDropDownRef = useRef(null);
-    const [currentStyle, setCurrentStyle] = useState('')
+    const [defaultColor, setDefaultColor] = useState('')
     const [colorDdOpen, setColorDropDown] = useState(false)
-    const isActive = false
 
-
+    //foreColor
+    const colorText = (e, color) => {
+        e.preventDefault();
+        // document.execCommand("styleWithCSS", false, true);
+        document.execCommand("foreColor", false, color);
+        handleEditorChange(); // Save the state change
+    };
 
     const handleDropDown = (e) => {
         e.preventDefault()
@@ -40,6 +45,9 @@ export default function ColorTextTool() {
     };
     // if click outside of dropdowns
     useEffect(() => {
+        // Retrieve the value of the CSS variable
+        let foundColor = getComputedStyle(document.documentElement).getPropertyValue('--black').trim();
+        setDefaultColor(foundColor)
         document.addEventListener("mousedown", (e) => handleClickOutside(e));
         return () => {
             document.removeEventListener("mousedown", (e) => handleClickOutside(e));
@@ -65,10 +73,10 @@ export default function ColorTextTool() {
                     {deepFontColors.map((c) => (
                         <button
                             key={c}
-                            className={`color_swatch ${isActive(c, 'inline') ? 'active' : ""}`}
+                            //${isActive(c, 'inline') ? 'active' : ""}
+                            className={`color_swatch `}
                             onClick={e => {
-                                // applyStyle(e, c, 'inline')
-                                setCurrentStyle(c)
+                                colorText(e, c)
                                 setColorDropDown(false)
                             }}
                             onMouseDown={(e) => e.preventDefault()}
@@ -80,13 +88,9 @@ export default function ColorTextTool() {
                 <button
                     className='tool_bar_dd_item p center clear_style_btn'
                     onClick={e => {
-                        console.log('Clearing color, current color: ', currentStyle)
                         // and set new state as default
-                        if (currentStyle !== "") {
-                            // applyStyle(e, currentStyle, 'inline')
-                            setCurrentStyle('')
-                            setColorDropDown(false)
-                        }
+                        colorText(e, defaultColor)
+                        setColorDropDown(false)
                     }}
                     onMouseDown={(e) => e.preventDefault()}
                 >

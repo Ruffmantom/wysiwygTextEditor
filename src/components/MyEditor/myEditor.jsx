@@ -30,15 +30,16 @@ const MyEditor = ({
     highlight: true,
     color: true,
     headings: true,
-    link: false,
-    code: false,
-    quote: false,
-    divider: false,
     orderedList: true,
     unorderedList: true,
-    info: false,
     monospace: true,
     undoRedo: true,
+    // -------------
+    link: false,
+    code: true,
+    quote: false,
+    divider: false,
+    info: false,
   }
 
   const saveEditorState = (changeType, addedContent = "", removedContent = "") => {

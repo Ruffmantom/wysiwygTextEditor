@@ -3,34 +3,26 @@ import { ReactComponent as MonoIcon } from "../../../../assets/icons/monotype.sv
 
 
 export default function MonoSpaceTool({ handleEditorChange }) {
-    // ${isActive('MONOSPACE', 'inline') ? 'active' : ""}
-    const [currentlyActive, setCurrentlyActive] = useState(false)
-
 
     function toggleCodeFormat(e) {
         e.preventDefault();
         const selection = window.getSelection();
-
+    
         if (selection.rangeCount > 0 && !selection.isCollapsed) {
+            // Get the selected content as HTML
             const range = selection.getRangeAt(0);
+            const selectedContent = range.cloneContents();
+            const div = document.createElement('div');
+            div.appendChild(selectedContent);
+            const html = div.innerHTML;
     
-            // Create a <code> element and wrap the selected text with it
-            const codeElement = document.createElement("code");
-            range.surroundContents(codeElement);
+            // Wrap the selected HTML with <code> tags and add a non-breaking space
+            const codeHTML = `<code>${html}</code>\u00A0`;
     
-            // Create a new text node or <span> after the <code> element
-            const spaceNode = document.createTextNode(" "); // Plain text node as a space
-            codeElement.parentNode.appendChild(spaceNode);
-    
-            // Move the caret to the newly created text node
-            range.setStart(spaceNode, 1);
-            range.collapse(true);
-    
-            // Clear the current selection and apply the new range with the updated caret position
-            selection.removeAllRanges();
-            selection.addRange(range);
+            // Use execCommand to insert the HTML, which the browser will track in the undo stack
+            document.execCommand('insertHTML', false, codeHTML);
         }
-
+    
         handleEditorChange(); // Save the state change
     }
 
